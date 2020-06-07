@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="item"
+            type="com.f2h.f2h_admin.network.models.Item" />
+        <variable
+            name="clickListener"
+            type="com.f2h.f2h_admin.screens.group.all_items.AllItemClickListener" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="@{() -> clickListener.onClick(item)}">
+
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardElevation="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraintLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/itemImage"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="5dp"
+                    android:contentDescription="TODO"
+                    app:layout_constraintBottom_toBottomOf="@+id/amount"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/itemDetails"
+                    app:customImageFormatted="@{item.itemId}" />
+
+                <TextView
+                    android:id="@+id/itemDetails"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginEnd="20dp"
+                    android:text="@{item.itemName}"
+                    android:textSize="15sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/itemImage"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/date"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    android:text="@{item.description}"
+                    android:textSize="12sp"
+                    app:layout_constraintEnd_toEndOf="@+id/itemDetails"
+                    app:layout_constraintStart_toStartOf="@+id/itemDetails"
+                    app:layout_constraintTop_toBottomOf="@+id/itemDetails" />
+
+                <TextView
+                    android:id="@+id/amount"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="15dp"
+                    android:text="Rs. "
+                    app:priceFormattedFromItem="@{item}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="@+id/nextAvailable"
+                    app:layout_constraintStart_toStartOf="@+id/nextAvailable"
+                    app:layout_constraintTop_toBottomOf="@+id/nextAvailable" />
+
+                <TextView
+                    android:id="@+id/groupDescription"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@{`Farmer - ` + item.farmerUserName}"
+                    android:textSize="12sp"
+                    app:layout_constraintEnd_toEndOf="@+id/date"
+                    app:layout_constraintStart_toStartOf="@+id/date"
+                    app:layout_constraintTop_toBottomOf="@+id/date" />
+
+                <TextView
+                    android:id="@+id/nextAvailable"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:textSize="12sp"
+                    app:availableDateFormatted="@{item}"
+                    app:layout_constraintEnd_toEndOf="@+id/groupDescription"
+                    app:layout_constraintStart_toStartOf="@+id/groupDescription"
+                    app:layout_constraintTop_toBottomOf="@+id/groupDescription" />
+
+                <View
+                    android:id="@+id/view"
+                    android:layout_width="0dp"
+                    android:layout_height="0.5dp"
+                    android:background="@color/grey"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.cardview.widget.CardView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

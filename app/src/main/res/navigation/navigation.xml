@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation"
+    app:startDestination="@id/groupsFragment">
+
+    <fragment
+        android:id="@+id/dailyOrdersFragment"
+        android:name="com.f2h.f2h_admin.screens.group.daily_orders.DailyOrdersFragment" />
+    <fragment
+        android:id="@+id/groupsFragment"
+        android:name="com.f2h.f2h_admin.screens.group_list.GroupsFragment">
+        <action
+            android:id="@+id/action_groupsFragment_to_groupDetailsTabsFragment"
+            app:destination="@id/groupDetailsTabsFragment"
+            app:enterAnim="@android:anim/slide_in_left" />
+        <action
+            android:id="@+id/action_groupsFragment_to_searchGroupsFragment"
+            app:destination="@id/searchGroupsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/groupDetailsTabsFragment"
+        android:name="com.f2h.f2h_admin.screens.group.group_tabs.GroupDetailsTabsFragment"
+        tools:layout="@layout/fragment_group_details_tabs">
+        <argument
+            android:name="groupName"
+            android:defaultValue="Group Name"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_groupDetailsTabsFragment_to_allItemsFragment"
+            app:destination="@id/allItemsFragment"
+            app:enterAnim="@android:anim/slide_in_left" />
+        <action
+            android:id="@+id/action_groupDetailsTabsFragment_to_groupWalletFragment"
+            app:destination="@id/groupWalletFragment"
+            app:enterAnim="@android:anim/slide_in_left" />
+        <action
+            android:id="@+id/action_groupDetailsTabsFragment_to_preOrderFragment"
+            app:destination="@id/preOrderFragment"
+            app:enterAnim="@android:anim/slide_in_left" />
+        <action
+            android:id="@+id/action_groupDetailsTabsFragment_to_dailyOrdersFragment"
+            app:destination="@id/dailyOrdersFragment" />
+        <action
+            android:id="@+id/action_groupDetailsTabsFragment_to_reportFragment"
+            app:destination="@id/reportFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/allItemsFragment"
+        android:name="com.f2h.f2h_admin.screens.group.all_items.AllItemsFragment" />
+    <fragment
+        android:id="@+id/groupWalletFragment"
+        android:name="com.f2h.f2h_admin.screens.group.group_wallet.GroupWalletFragment" />
+    <fragment
+        android:id="@+id/preOrderFragment"
+        android:name="com.f2h.f2h_admin.screens.group.pre_order.PreOrderFragment">
+        <argument
+            android:name="itemId"
+            android:defaultValue="0L"
+            app:argType="long" />
+    </fragment>
+    <fragment
+        android:id="@+id/contactUsFragment"
+        android:name="com.f2h.f2h_admin.screens.contact_us.ContactUsFragment"
+        android:label="@string/contact_us" />
+    <fragment
+        android:id="@+id/signOutFragment"
+        android:name="com.f2h.f2h_admin.screens.sign_out.SignOutFragment"
+        android:label="@string/sign_out" />
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.f2h.f2h_admin.screens.settings.SettingsFragment"
+        android:label="@string/my_profile" >
+        <action
+            android:id="@+id/action_settingsFragment_to_editProfileFragment"
+            app:destination="@id/editProfileFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/reportFragment"
+        android:name="com.f2h.f2h_admin.screens.report.ReportFragment"
+        />
+    <fragment
+        android:id="@+id/searchGroupsFragment"
+        android:name="com.f2h.f2h_admin.screens.search_group.SearchGroupsFragment"
+        android:label="SearchGroupsFragment" />
+    <fragment
+        android:id="@+id/editProfileFragment"
+        android:name="com.f2h.f2h_admin.screens.settings.edit_profile.EditProfileFragment"
+        android:label="EditProfileFragment" />
+</navigation>
