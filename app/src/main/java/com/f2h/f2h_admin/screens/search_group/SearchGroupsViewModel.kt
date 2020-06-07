@@ -10,6 +10,7 @@ import com.f2h.f2h_admin.constants.F2HConstants.USER_ROLE_GROUP_ADMIN
 import com.f2h.f2h_admin.database.SessionDatabaseDao
 import com.f2h.f2h_admin.database.SessionEntity
 import com.f2h.f2h_admin.network.GroupApi
+import com.f2h.f2h_admin.network.GroupMembershipApi
 import com.f2h.f2h_admin.network.LocalityApi
 import com.f2h.f2h_admin.network.models.Group
 import com.f2h.f2h_admin.network.models.GroupMembershipRequest
@@ -148,7 +149,7 @@ class SearchGroupsViewModel(val database: SessionDatabaseDao, application: Appli
             userSession.userName
         )
         coroutineScope.launch {
-            var getGroupMembershipDataDeferred = GroupApi.retrofitService.requestGroupMembership(membershipRequest)
+            var getGroupMembershipDataDeferred = GroupMembershipApi.retrofitService.requestGroupMembership(membershipRequest)
             try {
                 var requestedMembership = getGroupMembershipDataDeferred.await()
                 getUserGroupsInformation()

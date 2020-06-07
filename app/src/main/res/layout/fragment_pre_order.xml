@@ -10,7 +10,7 @@
             name="viewModel"
             type="com.f2h.f2h_admin.screens.group.pre_order.PreOrderViewModel" />
     </data>
-    
+
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">

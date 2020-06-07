@@ -2,12 +2,9 @@ package com.f2h.f2h_admin.screens.group.group_wallet
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.Button
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.f2h.f2h_admin.databinding.ListOrderedItemsBinding
-import com.f2h.f2h_admin.databinding.ListReportItemsBinding
 import com.f2h.f2h_admin.databinding.ListWalletItemsBinding
 
 class WalletItemsAdapter(val clickListener: WalletItemClickListener): ListAdapter<WalletItemsModel, WalletItemsAdapter.ViewHolder>(ListItemDiffCallback()) {

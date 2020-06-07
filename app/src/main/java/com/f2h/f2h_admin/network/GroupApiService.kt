@@ -37,9 +37,6 @@ interface GroupApiService{
     fun searchGroupsByLocality(@Query("localities") localities: List<String>):
             Deferred<List<Group>>
 
-    @POST("group_membership")
-    fun requestGroupMembership(@Body createMembership: GroupMembershipRequest): Deferred<GroupMembership>
-
 }
 
 object GroupApi {

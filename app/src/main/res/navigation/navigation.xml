@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/dailyOrdersFragment"
-        android:name="com.f2h.f2h_admin.screens.group.daily_orders.DailyOrdersFragment" />
+        android:name="com.f2h.f2h_admin.screens.group.members.MembersFragment" />
     <fragment
         android:id="@+id/groupsFragment"
         android:name="com.f2h.f2h_admin.screens.group_list.GroupsFragment">

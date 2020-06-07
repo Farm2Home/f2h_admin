@@ -1,4 +1,4 @@
-package com.f2h.f2h_admin.screens.group.daily_orders
+package com.f2h.f2h_admin.screens.group.members
 
 import android.app.Application
 import androidx.lifecycle.ViewModel

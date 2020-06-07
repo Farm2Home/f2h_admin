@@ -44,14 +44,13 @@ class GroupDetailsTabsFragment : Fragment() {
         viewPager.adapter = groupDetailsTabsAdapter
         viewPager.setUserInputEnabled(false)
 
-
         //Set app bar title to group name here
         (context as AppCompatActivity).supportActionBar!!.title = args.groupName
 
         val tabLayout = view.findViewById<TabLayout>(R.id.tab_layout)
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
             when(position) {
-                0 -> tab.text = "My Cart"
+                0 -> tab.text = "Members"
                 1 -> tab.text = "All Items"
                 2 -> tab.text = "Group Wallet"
             }

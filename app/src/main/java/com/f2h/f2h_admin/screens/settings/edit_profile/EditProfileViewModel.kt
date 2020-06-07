@@ -11,6 +11,7 @@ import com.f2h.f2h_admin.network.UserApi
 import com.f2h.f2h_admin.network.models.User
 import com.f2h.f2h_admin.network.models.UserCreateRequest
 import kotlinx.coroutines.*
+import java.nio.charset.Charset
 
 class EditProfileViewModel(val database: SessionDatabaseDao, application: Application) : AndroidViewModel(application) {
 
@@ -51,7 +52,7 @@ class EditProfileViewModel(val database: SessionDatabaseDao, application: Applic
                 _response.value = userData;
                 userName.value = userData.userName
                 mobile.value = userData.mobile
-                password.value = Base64.decode(userData.password, Base64.DEFAULT).toString()
+                password.value = String(Base64.decode(userData.password, Base64.DEFAULT), Charset.defaultCharset())
                 email.value = userData.email
                 address.value = userData.address
             } catch (t:Throwable){
