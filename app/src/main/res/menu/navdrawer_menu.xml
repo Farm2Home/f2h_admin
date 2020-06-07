@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/groupsFragment"
+        android:icon="@drawable/menu_icon"
+        android:title="@string/my_groups" />
+    <item
+        android:id="@+id/settingsFragment"
+        android:icon="@drawable/settings_icon"
+        android:title="@string/my_profile" />
+    <item
+        android:id="@+id/searchGroupsFragment"
+        android:icon="@drawable/menu_icon"
+        android:title="@string/search_groups" />
+    <item
+        android:id="@+id/signOutFragment"
+        android:icon="@drawable/sign_out_icon"
+        android:title="@string/sign_out" />
+</menu>
