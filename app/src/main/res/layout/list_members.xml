@@ -10,6 +10,15 @@
         <variable
             name="deleteUserButtonClickListener"
             type="com.f2h.f2h_admin.screens.group.members.DeleteUserButtonClickListener" />
+        <variable
+            name="callUserButtonClickListener"
+            type="com.f2h.f2h_admin.screens.group.members.CallUserButtonClickListener" />
+        <variable
+            name="acceptUserButtonClickListener"
+            type="com.f2h.f2h_admin.screens.group.members.AcceptUserButtonClickListener" />
+        <variable
+            name="openUserWalletButtonClickListener"
+            type="com.f2h.f2h_admin.screens.group.members.OpenUserWalletButtonClickListener" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -39,10 +48,10 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:layout_marginTop="10dp"
-                    android:layout_marginEnd="10dp"
+                    android:layout_marginEnd="55dp"
                     android:text="@{uiModel.userName}"
                     android:textSize="15sp"
-                    app:layout_constraintEnd_toStartOf="@+id/roles"
+                    app:layout_constraintEnd_toStartOf="@+id/memberMobileButton"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -62,12 +71,12 @@
                     android:id="@+id/roles"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
-                    android:layout_marginEnd="20dp"
+                    android:layout_marginStart="15dp"
                     android:textAlignment="center"
                     android:textSize="12sp"
                     app:layout_constraintBottom_toBottomOf="@+id/email"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="@+id/imageButton3"
+                    app:layout_constraintEnd_toEndOf="@+id/removeUserButton"
+                    app:layout_constraintStart_toEndOf="@+id/email"
                     app:layout_constraintTop_toBottomOf="@+id/removeUserButton"
                     app:rolesFormatted="@{uiModel}" />
 
@@ -111,29 +120,43 @@
                     android:id="@+id/removeUserButton"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:layout_marginEnd="20dp"
-                    android:onClick="@{() -> deleteUserButtonClickListener}"
+                    android:layout_marginEnd="10dp"
+                    android:onClick="@{() -> deleteUserButtonClickListener.onClick(uiModel)}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/memberUserName"
                     app:srcCompat="@drawable/delete_icon" />
 
                 <ImageButton
-                    android:id="@+id/imageButton2"
+                    android:id="@+id/memberMobileButton"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
+                    android:onClick="@{() -> callUserButtonClickListener.onClick(uiModel)}"
                     app:layout_constraintBottom_toBottomOf="@+id/removeUserButton"
                     app:layout_constraintEnd_toStartOf="@+id/removeUserButton"
                     app:layout_constraintTop_toTopOf="@+id/removeUserButton"
                     app:srcCompat="@drawable/contact_us_icon" />
 
                 <ImageButton
-                    android:id="@+id/imageButton3"
+                    android:id="@+id/memberAcceptbutton"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    app:layout_constraintBottom_toBottomOf="@+id/imageButton2"
-                    app:layout_constraintEnd_toStartOf="@+id/imageButton2"
-                    app:layout_constraintTop_toTopOf="@+id/imageButton2"
+                    android:onClick="@{() -> acceptUserButtonClickListener.onClick(uiModel)}"
+                    app:isAcceptButtonEnabled="@{uiModel}"
+                    app:layout_constraintBottom_toBottomOf="@+id/memberMobileButton"
+                    app:layout_constraintEnd_toStartOf="@+id/memberMobileButton"
+                    app:layout_constraintTop_toTopOf="@+id/memberMobileButton"
                     app:srcCompat="@drawable/accept_icon" />
+
+                <ImageButton
+                    android:id="@+id/memberWalletButton"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:onClick="@{() -> openUserWalletButtonClickListener.onClick(uiModel)}"
+                    app:isWalletButtonEnabled="@{uiModel}"
+                    app:layout_constraintBottom_toTopOf="@+id/roles"
+                    app:layout_constraintEnd_toStartOf="@+id/memberMobileButton"
+                    app:layout_constraintTop_toTopOf="@+id/memberMobileButton"
+                    app:srcCompat="@drawable/wallet_icon" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

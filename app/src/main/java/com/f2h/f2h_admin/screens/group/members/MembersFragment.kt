@@ -44,9 +44,15 @@ class MembersFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Daily Orders List recycler view
-        val adapter = OrderedItemsAdapter(DeleteUserButtonClickListener { uiDataElement ->
-            viewModel.decreaseOrderQuantity(uiDataElement)
+        // Members List recycler view
+        val adapter = MemberItemsAdapter(DeleteUserButtonClickListener { uiDataElement ->
+            viewModel.onDeleteUserButtonClicked(uiDataElement)
+        }, CallUserButtonClickListener { uiDataElement ->
+            viewModel.onCallUserButtonClicked(uiDataElement)
+        }, AcceptUserButtonClickListener { uiDataElement ->
+            viewModel.onAcceptUserButtonClicked(uiDataElement)
+        }, OpenUserWalletButtonClickListener { uiDataElement ->
+            viewModel.onOpenWalletButtonClicked(uiDataElement)
         })
         binding.itemListRecyclerView.adapter = adapter
         viewModel.visibleUiData.observe(viewLifecycleOwner, Observer {

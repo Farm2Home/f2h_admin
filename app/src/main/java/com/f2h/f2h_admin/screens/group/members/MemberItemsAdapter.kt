@@ -7,10 +7,15 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.f2h.f2h_admin.databinding.ListMembersBinding
 
-class OrderedItemsAdapter(val deleteUserButtonClickListener: DeleteUserButtonClickListener): ListAdapter<MembersUiModel, OrderedItemsAdapter.ViewHolder>(ListItemDiffCallback()) {
+class MemberItemsAdapter(val deleteUserButtonClickListener: DeleteUserButtonClickListener,
+                            val callUserButtonClickListener: CallUserButtonClickListener,
+                            val acceptUserButtonClickListener: AcceptUserButtonClickListener,
+                            val openUserWalletButtonClickListener: OpenUserWalletButtonClickListener):
+    ListAdapter<MembersUiModel, MemberItemsAdapter.ViewHolder>(ListItemDiffCallback()) {
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(getItem(position)!!, deleteUserButtonClickListener)
+        holder.bind(getItem(position)!!, deleteUserButtonClickListener, callUserButtonClickListener,
+        acceptUserButtonClickListener, openUserWalletButtonClickListener)
     }
 
 
@@ -23,10 +28,16 @@ class OrderedItemsAdapter(val deleteUserButtonClickListener: DeleteUserButtonCli
 
         fun bind(
             item: MembersUiModel,
-            deleteUserButtonClickListener: DeleteUserButtonClickListener
+            deleteUserButtonClickListener: DeleteUserButtonClickListener,
+            callUserButtonClickListener: CallUserButtonClickListener,
+            acceptUserButtonClickListener: AcceptUserButtonClickListener,
+            openUserWalletButtonClickListener: OpenUserWalletButtonClickListener
         ) {
             binding.uiModel = item
             binding.deleteUserButtonClickListener = deleteUserButtonClickListener
+            binding.callUserButtonClickListener = callUserButtonClickListener
+            binding.acceptUserButtonClickListener = acceptUserButtonClickListener
+            binding.openUserWalletButtonClickListener = openUserWalletButtonClickListener
             binding.executePendingBindings()
         }
 
@@ -52,5 +63,17 @@ class ListItemDiffCallback : DiffUtil.ItemCallback<MembersUiModel>() {
 }
 
 class DeleteUserButtonClickListener(val clickListener: (uiModel: MembersUiModel) -> Unit) {
+    fun onClick(uiModel: MembersUiModel) = clickListener(uiModel)
+}
+
+class CallUserButtonClickListener(val clickListener: (uiModel: MembersUiModel) -> Unit) {
+    fun onClick(uiModel: MembersUiModel) = clickListener(uiModel)
+}
+
+class AcceptUserButtonClickListener(val clickListener: (uiModel: MembersUiModel) -> Unit) {
+    fun onClick(uiModel: MembersUiModel) = clickListener(uiModel)
+}
+
+class OpenUserWalletButtonClickListener(val clickListener: (uiModel: MembersUiModel) -> Unit) {
     fun onClick(uiModel: MembersUiModel) = clickListener(uiModel)
 }

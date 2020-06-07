@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.f2h.f2h_admin.constants.F2HConstants.USER_ROLE_BUYER_REQUESTED
 import com.f2h.f2h_admin.database.SessionDatabaseDao
 import com.f2h.f2h_admin.database.SessionEntity
 import com.f2h.f2h_admin.network.*
@@ -78,6 +79,9 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
                 uiElement.mobile = membershipUserDetail.mobile ?: ""
                 uiElement.email = membershipUserDetail.email ?: ""
                 uiElement.roles = membership.roles ?: ""
+                if(membership.roles?.split(",")?.contains(USER_ROLE_BUYER_REQUESTED) ?: false){
+                    uiElement.isBuyerRequested = true
+                }
             }
             allUiData.add(uiElement)
         }
@@ -111,11 +115,25 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
         }
     }
 
-    // decrease order qty till min 0
-    fun decreaseOrderQuantity(updateElement: MembersUiModel){
+    // delete button
+    fun onDeleteUserButtonClicked(updateElement: MembersUiModel){
         _toastMessage.value = String.format("Delete user clicked for %s", updateElement.userName)
     }
 
+    // call button
+    fun onCallUserButtonClicked(updateElement: MembersUiModel){
+        _toastMessage.value = String.format("Call user clicked for %s", updateElement.userName)
+    }
+
+    // Accept button
+    fun onAcceptUserButtonClicked(updateElement: MembersUiModel){
+        _toastMessage.value = String.format("Accept user clicked for %s", updateElement.userName)
+    }
+
+    // Open Wallet Button
+    fun onOpenWalletButtonClicked(updateElement: MembersUiModel){
+        _toastMessage.value = String.format("Open wallet clicked for %s", updateElement.userName)
+    }
 
     override fun onCleared() {
         super.onCleared()

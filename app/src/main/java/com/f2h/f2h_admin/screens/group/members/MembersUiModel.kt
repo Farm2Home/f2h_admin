@@ -6,5 +6,6 @@ data class MembersUiModel (
     var deliveryAddress: String = "",
     var mobile: String = "",
     var email: String = "",
-    var roles: String = ""
+    var roles: String = "",
+    var isBuyerRequested : Boolean = false
 )
