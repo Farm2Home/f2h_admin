@@ -1,6 +1,9 @@
 package com.f2h.f2h_admin.screens.group.members
 
+import android.Manifest
 import android.app.Application
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -16,6 +19,7 @@ import com.f2h.f2h_admin.database.F2HDatabase
 import com.f2h.f2h_admin.database.SessionDatabaseDao
 import com.f2h.f2h_admin.databinding.FragmentMembersBinding
 import com.f2h.f2h_admin.screens.group.group_tabs.GroupDetailsTabsFragmentDirections
+
 
 /**
  * A simple [Fragment] subclass.
@@ -49,10 +53,11 @@ class MembersFragment : Fragment() {
             viewModel.onDeleteUserButtonClicked(uiDataElement)
         }, CallUserButtonClickListener { uiDataElement ->
             viewModel.onCallUserButtonClicked(uiDataElement)
+            startPhoneCall()
         }, AcceptUserButtonClickListener { uiDataElement ->
             viewModel.onAcceptUserButtonClicked(uiDataElement)
         }, OpenUserWalletButtonClickListener { uiDataElement ->
-            viewModel.onOpenWalletButtonClicked(uiDataElement)
+            openSelectedUserWallet(uiDataElement)
         })
         binding.itemListRecyclerView.adapter = adapter
         viewModel.visibleUiData.observe(viewLifecycleOwner, Observer {
@@ -72,7 +77,6 @@ class MembersFragment : Fragment() {
             }
         })
 
-
         //Toast Message
         viewModel.toastMessage.observe(viewLifecycleOwner, Observer { message ->
             Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
@@ -80,15 +84,33 @@ class MembersFragment : Fragment() {
 
     }
 
+    private fun openSelectedUserWallet(uiDataElement: MembersUiModel) {
+        val action = GroupDetailsTabsFragmentDirections.actionGroupDetailsTabsFragmentToGroupWalletFragment(uiDataElement.userId)
+        view?.let { Navigation.findNavController(it).navigate(action) }
+    }
+
+
+    fun startPhoneCall(){
+        requestPermissions(arrayOf(Manifest.permission.CALL_PHONE),42)
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        if(viewModel.selectedUiElement.value?.mobile == null){
+            Toast.makeText(activity, "Invalid mobile number", Toast.LENGTH_SHORT).show()
+            return
+        }
+        val intent = Intent(Intent.ACTION_CALL, Uri.parse("tel:" + viewModel.selectedUiElement.value?.mobile))
+        startActivity(intent)
+    }
+
 
     override fun onResume() {
         super.onResume()
         viewModel.getUserDetailsInGroup()
-    }
-
-    private fun navigateToPreOrderPage(uiData: MembersUiModel) {
-        val action = GroupDetailsTabsFragmentDirections.actionGroupDetailsTabsFragmentToPreOrderFragment(uiData.userId)
-        view?.let { Navigation.findNavController(it).navigate(action) }
     }
 
 }

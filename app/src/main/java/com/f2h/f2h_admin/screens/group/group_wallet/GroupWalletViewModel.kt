@@ -20,6 +20,11 @@ class GroupWalletViewModel(val database: SessionDatabaseDao, application: Applic
     val visibleUiData: LiveData<MutableList<WalletItemsModel>>
         get() = _visibleUiData
 
+    private val selectedUserId = MutableLiveData<Long>()
+    fun setSelectedUserId(id: Long){
+        selectedUserId.value = id
+    }
+
     private var allUiData = ArrayList<WalletItemsModel>()
     private var userSession = SessionEntity()
     private var viewModelJob = Job()
@@ -34,7 +39,7 @@ class GroupWalletViewModel(val database: SessionDatabaseDao, application: Applic
             userSession = retrieveSession()
             try {
                 var walletTransactions = listOf<WalletTransaction>()
-                var activeWalletData = WalletApi.retrofitService.getWalletDetails(userSession.groupId, userSession.userId).await()
+                var activeWalletData = WalletApi.retrofitService.getWalletDetails(userSession.groupId, selectedUserId.value ?: -1).await()
                 var walletData = activeWalletData.firstOrNull() ?: Wallet()
                 if(walletData != null){
                     var activeWalletTransactionData = WalletApi.retrofitService.getWalletTransactionDetails(walletData.walletId ?: -1).await()

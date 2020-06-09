@@ -4,9 +4,8 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.f2h.f2h_admin.constants.F2HConstants.USER_ROLE_BUYER
-import com.f2h.f2h_admin.constants.F2HConstants.USER_ROLE_BUYER_REQUESTED
 import com.f2h.f2h_admin.constants.F2HConstants.USER_ROLE_GROUP_ADMIN
+import com.f2h.f2h_admin.constants.F2HConstants.USER_ROLE_GROUP_ADMIN_REQUESTED
 import com.f2h.f2h_admin.database.SessionDatabaseDao
 import com.f2h.f2h_admin.database.SessionEntity
 import com.f2h.f2h_admin.network.GroupApi
@@ -14,9 +13,7 @@ import com.f2h.f2h_admin.network.GroupMembershipApi
 import com.f2h.f2h_admin.network.LocalityApi
 import com.f2h.f2h_admin.network.models.Group
 import com.f2h.f2h_admin.network.models.GroupMembershipRequest
-import com.f2h.f2h_admin.network.models.Locality
 import kotlinx.coroutines.*
-import java.util.*
 
 class SearchGroupsViewModel(val database: SessionDatabaseDao, application: Application) : AndroidViewModel(application) {
 
@@ -37,7 +34,7 @@ class SearchGroupsViewModel(val database: SessionDatabaseDao, application: Appli
         get() = _selectedLocality
 
 
-    private val roles = listOf<String>(USER_ROLE_BUYER, USER_ROLE_GROUP_ADMIN, USER_ROLE_BUYER_REQUESTED)
+    private val roles = listOf<String>(USER_ROLE_GROUP_ADMIN, USER_ROLE_GROUP_ADMIN_REQUESTED)
     private var userGroups = listOf<Group>()
     private var userSession = SessionEntity()
     private var viewModelJob = Job()
@@ -145,7 +142,7 @@ class SearchGroupsViewModel(val database: SessionDatabaseDao, application: Appli
         var membershipRequest = GroupMembershipRequest(
             group.groupId,
             userSession.userId,
-            USER_ROLE_BUYER_REQUESTED,
+            USER_ROLE_GROUP_ADMIN_REQUESTED,
             userSession.userName
         )
         coroutineScope.launch {

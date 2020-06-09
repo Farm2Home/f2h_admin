@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.f2h.f2h_admin.constants.F2HConstants.USER_ROLE_BUYER
 import com.f2h.f2h_admin.constants.F2HConstants.USER_ROLE_BUYER_REQUESTED
 import com.f2h.f2h_admin.database.SessionDatabaseDao
 import com.f2h.f2h_admin.database.SessionEntity
@@ -24,6 +25,10 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
     private var _visibleUiData = MutableLiveData<MutableList<MembersUiModel>>()
     val visibleUiData: LiveData<MutableList<MembersUiModel>>
         get() = _visibleUiData
+
+    private var _selectedUiElement = MutableLiveData<MembersUiModel>()
+    val selectedUiElement: LiveData<MembersUiModel>
+        get() = _selectedUiElement
 
     private var _toastMessage = MutableLiveData<String>()
     val toastMessage: LiveData<String>
@@ -79,6 +84,7 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
                 uiElement.mobile = membershipUserDetail.mobile ?: ""
                 uiElement.email = membershipUserDetail.email ?: ""
                 uiElement.roles = membership.roles ?: ""
+                uiElement.groupMembershipId = membership.groupMembershipId ?: -1
                 if(membership.roles?.split(",")?.contains(USER_ROLE_BUYER_REQUESTED) ?: false){
                     uiElement.isBuyerRequested = true
                 }
@@ -97,6 +103,7 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
             filteredItems.add(element.copy())
         }
         filteredItems.sortBy { it.userName }
+        filteredItems.sortByDescending { it.isBuyerRequested }
         return filteredItems
     }
 
@@ -116,24 +123,44 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
     }
 
     // delete button
-    fun onDeleteUserButtonClicked(updateElement: MembersUiModel){
-        _toastMessage.value = String.format("Delete user clicked for %s", updateElement.userName)
+    fun onDeleteUserButtonClicked(uiElement: MembersUiModel){
+        _toastMessage.value = String.format("Delete user clicked for %s", uiElement.userName)
     }
 
     // call button
-    fun onCallUserButtonClicked(updateElement: MembersUiModel){
-        _toastMessage.value = String.format("Call user clicked for %s", updateElement.userName)
+    fun onCallUserButtonClicked(uiElement: MembersUiModel){
+        _selectedUiElement.value = uiElement
     }
 
     // Accept button
-    fun onAcceptUserButtonClicked(updateElement: MembersUiModel){
-        _toastMessage.value = String.format("Accept user clicked for %s", updateElement.userName)
+    fun onAcceptUserButtonClicked(uiElement: MembersUiModel){
+        acceptBuyerMembership(uiElement)
     }
 
-    // Open Wallet Button
-    fun onOpenWalletButtonClicked(updateElement: MembersUiModel){
-        _toastMessage.value = String.format("Open wallet clicked for %s", updateElement.userName)
+
+    fun acceptBuyerMembership(uiElement: MembersUiModel) {
+        _isProgressBarActive.value = true
+        var modifiedRoles = uiElement.roles.split(",").filter { !it.equals(USER_ROLE_BUYER_REQUESTED) }
+        modifiedRoles = modifiedRoles.plus(USER_ROLE_BUYER)
+        var membershipRequest = GroupMembershipRequest(
+            null,
+            null,
+            modifiedRoles.joinToString(),
+            null
+        )
+        coroutineScope.launch {
+            var updateGroupMembershipDataDeferred =
+                GroupMembershipApi.retrofitService.updateGroupMembership(uiElement.groupMembershipId, membershipRequest)
+            try {
+                var updatedMembership = updateGroupMembershipDataDeferred.await()
+                getUserDetailsInGroup()
+            } catch (t:Throwable){
+                println(t.message)
+            }
+            _isProgressBarActive.value = false
+        }
     }
+
 
     override fun onCleared() {
         super.onCleared()

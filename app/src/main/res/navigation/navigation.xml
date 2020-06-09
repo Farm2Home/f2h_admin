@@ -6,7 +6,7 @@
     app:startDestination="@id/groupsFragment">
 
     <fragment
-        android:id="@+id/dailyOrdersFragment"
+        android:id="@+id/membersFragment"
         android:name="com.f2h.f2h_admin.screens.group.members.MembersFragment" />
     <fragment
         android:id="@+id/groupsFragment"
@@ -32,26 +32,30 @@
             app:destination="@id/allItemsFragment"
             app:enterAnim="@android:anim/slide_in_left" />
         <action
-            android:id="@+id/action_groupDetailsTabsFragment_to_groupWalletFragment"
-            app:destination="@id/groupWalletFragment"
-            app:enterAnim="@android:anim/slide_in_left" />
-        <action
             android:id="@+id/action_groupDetailsTabsFragment_to_preOrderFragment"
             app:destination="@id/preOrderFragment"
             app:enterAnim="@android:anim/slide_in_left" />
         <action
-            android:id="@+id/action_groupDetailsTabsFragment_to_dailyOrdersFragment"
-            app:destination="@id/dailyOrdersFragment" />
+            android:id="@+id/action_groupDetailsTabsFragment_to_membersFragment"
+            app:destination="@id/membersFragment" />
         <action
             android:id="@+id/action_groupDetailsTabsFragment_to_reportFragment"
             app:destination="@id/reportFragment" />
+        <action
+            android:id="@+id/action_groupDetailsTabsFragment_to_groupWalletFragment"
+            app:destination="@id/groupWalletFragment" />
     </fragment>
     <fragment
         android:id="@+id/allItemsFragment"
         android:name="com.f2h.f2h_admin.screens.group.all_items.AllItemsFragment" />
     <fragment
         android:id="@+id/groupWalletFragment"
-        android:name="com.f2h.f2h_admin.screens.group.group_wallet.GroupWalletFragment" />
+        android:name="com.f2h.f2h_admin.screens.group.group_wallet.GroupWalletFragment" >
+        <argument
+            android:name="userId"
+            app:argType="long"
+            android:defaultValue="-1L" />
+    </fragment>
     <fragment
         android:id="@+id/preOrderFragment"
         android:name="com.f2h.f2h_admin.screens.group.pre_order.PreOrderFragment">

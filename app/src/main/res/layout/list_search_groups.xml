@@ -90,7 +90,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="10dp"
                     android:onClick="@{() -> requestMembershipButtonClickListener.onClick(uiModel)}"
-                    android:text="Request\nMembership"
+                    android:text="Request Admin\nMembership"
                     android:textAllCaps="false"
                     android:textSize="10sp"
                     app:buttonVisibilityFormatted="@{uiModel}"

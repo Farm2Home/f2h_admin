@@ -11,6 +11,7 @@ data class GroupMembershipRequest (
 
 
 data class GroupMembership (
+    @Json(name = "group_membership_id") val groupMembershipId: Long? = -1L,
     @Json(name = "group_id") val groupId: Long? = -1L,
     @Json(name = "user_id") val userId: Long? = -1L,
     @Json(name = "roles") val roles: String? = "",

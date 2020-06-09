@@ -28,6 +28,10 @@ interface GroupMembershipApiService{
     fun getGroupMembership(@Query("group_id") groupId: Long):
             Deferred<List<GroupMembership>>
 
+    @PUT("group_membership/{group_membership_id}")
+    fun updateGroupMembership(@Path("group_membership_id") groupMembershipId: Long, @Body updateMembership: GroupMembershipRequest):
+            Deferred<GroupMembership>
+
     @POST("group_membership")
     fun requestGroupMembership(@Body createMembership: GroupMembershipRequest): Deferred<GroupMembership>
 

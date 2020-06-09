@@ -7,5 +7,6 @@ data class MembersUiModel (
     var mobile: String = "",
     var email: String = "",
     var roles: String = "",
+    var groupMembershipId: Long = 0,
     var isBuyerRequested : Boolean = false
 )
