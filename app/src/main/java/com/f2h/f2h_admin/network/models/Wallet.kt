@@ -17,3 +17,11 @@ data class WalletTransaction (
     @Json(name = "amount") val amount: Double? = 0.0
 )
 
+data class WalletTransactionRequest (
+    @Json(name = "recipient_user_id") val recipientUserId: Long? = -1,
+    @Json(name = "group_id") val groupId: Long? = -1,
+    @Json(name = "order_id") val orderId: Long? = -1,
+    @Json(name = "transaction_date") val transactionDate: String? = "",
+    @Json(name = "description") val transactionDescription: String? = "",
+    @Json(name = "amount") val amount: Double? = 0.0
+)

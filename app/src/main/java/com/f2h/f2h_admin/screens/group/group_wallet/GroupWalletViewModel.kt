@@ -6,12 +6,24 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.f2h.f2h_admin.database.SessionDatabaseDao
 import com.f2h.f2h_admin.database.SessionEntity
+import com.f2h.f2h_admin.network.UserApi
 import com.f2h.f2h_admin.network.WalletApi
 import com.f2h.f2h_admin.network.models.Wallet
 import com.f2h.f2h_admin.network.models.WalletTransaction
+import com.f2h.f2h_admin.network.models.WalletTransactionRequest
 import kotlinx.coroutines.*
+import java.lang.Exception
+import java.text.DateFormat
+import java.text.SimpleDateFormat
+import java.time.Instant
+import java.util.*
+import kotlin.collections.ArrayList
 
 class GroupWalletViewModel(val database: SessionDatabaseDao, application: Application) : AndroidViewModel(application) {
+
+    var transactionAmount = ""
+    var transactionDescription = ""
+
     private val _wallet = MutableLiveData<Wallet>()
     val wallet: LiveData<Wallet>
         get() = _wallet
@@ -23,6 +35,10 @@ class GroupWalletViewModel(val database: SessionDatabaseDao, application: Applic
     private var _visibleUiData = MutableLiveData<MutableList<WalletItemsModel>>()
     val visibleUiData: LiveData<MutableList<WalletItemsModel>>
         get() = _visibleUiData
+
+    private val _toastText = MutableLiveData<String>()
+    val toastText: LiveData<String>
+        get() = _toastText
 
     private val selectedUserId = MutableLiveData<Long>()
     fun setSelectedUserId(id: Long){
@@ -39,6 +55,7 @@ class GroupWalletViewModel(val database: SessionDatabaseDao, application: Applic
     }
 
     private fun getWalletInformation() {
+        allUiData.clear()
         _isProgressBarActive.value = true
         coroutineScope.launch {
             userSession = retrieveSession()
@@ -69,6 +86,59 @@ class GroupWalletViewModel(val database: SessionDatabaseDao, application: Applic
         }
     }
 
+    fun onAddMoneyButtonClick() {
+        if(isAnyFieldInvalid()){
+            return
+        }
+        _isProgressBarActive.value = true
+        var newTransaction = createWalletTransactionRequestObject()
+        coroutineScope.launch {
+            val createTransactionDeferred = WalletApi.retrofitService.createWalletTransaction(newTransaction)
+            try {
+                val response = createTransactionDeferred.await()
+            } catch (t:Throwable){
+                println(t.message)
+                _toastText.value = "Oops, something went wrong"
+            }
+            _isProgressBarActive.value = false
+            getWalletInformation()
+        }
+    }
+
+
+    private fun createWalletTransactionRequestObject(): WalletTransactionRequest {
+        var today = Calendar.getInstance()
+        val formatter: DateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+        var transactionRequest = WalletTransactionRequest (
+            wallet.value?.userId,
+            wallet.value?.groupId,
+            null,
+            formatter.format(today.time),
+            transactionDescription,
+            transactionAmount.toDouble()
+        )
+        return transactionRequest
+    }
+
+
+    fun isAnyFieldInvalid(): Boolean{
+        if (transactionAmount.isNullOrBlank()) {
+            try {
+                transactionAmount.toDouble()
+            } catch (e: Exception) {
+                _toastText.value = "Amount is an invalid number"
+                return true
+            }
+            _toastText.value = "Please enter an amount"
+            return true
+        }
+        if (transactionDescription.isNullOrBlank()) {
+            transactionDescription = "Adding money to wallet"
+            return false
+        }
+
+        return false
+    }
 
     private suspend fun retrieveSession() : SessionEntity {
         return withContext(Dispatchers.IO) {
