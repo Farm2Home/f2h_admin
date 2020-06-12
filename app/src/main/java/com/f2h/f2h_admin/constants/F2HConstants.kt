@@ -1,6 +1,10 @@
 package com.f2h.f2h_admin.constants
 
+import com.f2h.f2h_admin.BuildConfig
+
 object F2HConstants {
+    const val SERVER_URL = BuildConfig.SERVER_URL
+
     const val ORDER_STATUS_ORDERED = "ORDERED"
     const val ORDER_STATUS_CONFIRMED = "CONFIRMED"
     const val ORDER_STATUS_REJECTED = "REJECTED"

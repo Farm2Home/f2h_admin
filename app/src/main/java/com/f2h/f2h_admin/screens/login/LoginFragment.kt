@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
+import com.f2h.f2h_admin.BuildConfig
 import com.f2h.f2h_admin.R
 import com.f2h.f2h_admin.database.F2HDatabase
 import com.f2h.f2h_admin.database.SessionDatabaseDao
@@ -34,6 +35,8 @@ class LoginFragment: Fragment() {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_login, container, false)
         binding.viewModel = viewModel
         binding.setLifecycleOwner(this)
+
+        binding.appVersion.text = String.format("%s-%s", BuildConfig.ENVIRONMENT, BuildConfig.VERSION_NAME)
 
         viewModel.isLoginComplete.observe(viewLifecycleOwner, Observer { isLoginComplete ->
             if(isLoginComplete) {

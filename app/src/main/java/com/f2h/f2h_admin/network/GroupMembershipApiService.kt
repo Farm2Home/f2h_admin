@@ -1,5 +1,6 @@
 package com.f2h.f2h_admin.network
 
+import com.f2h.f2h_admin.constants.F2HConstants.SERVER_URL
 import com.f2h.f2h_admin.network.models.GroupMembership
 import com.f2h.f2h_admin.network.models.GroupMembershipRequest
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
@@ -10,7 +11,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.*
 
-private const val BASE_URL = "http://f2h.herokuapp.com/"
+private const val BASE_URL = SERVER_URL
 
 private val moshi = Moshi.Builder()
     .add(KotlinJsonAdapterFactory())
