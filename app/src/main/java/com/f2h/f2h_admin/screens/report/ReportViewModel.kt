@@ -120,6 +120,7 @@ class ReportViewModel(val database: SessionDatabaseDao, application: Application
                 uiElement.itemName = item.itemName ?: ""
                 uiElement.itemDescription = item.description ?: ""
                 uiElement.itemUom = item.uom ?: ""
+                uiElement.itemImageLink = item.imageLink ?: ""
                 uiElement.price = item.pricePerUnit ?: 0.0
             }
             uiElement.orderedDate = formatter.format(df.parse(order.orderedDate))

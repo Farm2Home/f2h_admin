@@ -33,13 +33,6 @@ class SignUpFragment: Fragment() {
         binding.viewModel = viewModel
         binding.setLifecycleOwner(this)
 
-        viewModel.isProgressBarActive.observe(viewLifecycleOwner, Observer { isProgressBarActive ->
-            if(isProgressBarActive){
-                binding.progressBar.visibility = View.VISIBLE
-            } else {
-                binding.progressBar.visibility = View.GONE
-            }
-        })
 
         viewModel.isSignUpComplete.observe(viewLifecycleOwner, Observer { isSignUpComplete ->
             if (isSignUpComplete){

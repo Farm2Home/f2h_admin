@@ -65,16 +65,6 @@ class ReportFragment : Fragment() {
         })
 
 
-        //Progress Bar loader
-        viewModel.isProgressBarActive.observe(viewLifecycleOwner, Observer { isProgressBarActive ->
-            if (isProgressBarActive) {
-                binding.progressBar.visibility = View.VISIBLE
-            } else {
-                binding.progressBar.visibility = View.GONE
-            }
-        })
-
-
         //Item Spinner
         binding.itemSelector?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(parent: AdapterView<*>?) {

@@ -16,6 +16,10 @@ class GroupWalletViewModel(val database: SessionDatabaseDao, application: Applic
     val wallet: LiveData<Wallet>
         get() = _wallet
 
+    private val _isProgressBarActive = MutableLiveData<Boolean>()
+    val isProgressBarActive: LiveData<Boolean>
+        get() = _isProgressBarActive
+
     private var _visibleUiData = MutableLiveData<MutableList<WalletItemsModel>>()
     val visibleUiData: LiveData<MutableList<WalletItemsModel>>
         get() = _visibleUiData
@@ -35,6 +39,7 @@ class GroupWalletViewModel(val database: SessionDatabaseDao, application: Applic
     }
 
     private fun getWalletInformation() {
+        _isProgressBarActive.value = true
         coroutineScope.launch {
             userSession = retrieveSession()
             try {
@@ -60,6 +65,7 @@ class GroupWalletViewModel(val database: SessionDatabaseDao, application: Applic
             } catch (t:Throwable){
                 println(t.message)
             }
+            _isProgressBarActive.value = false
         }
     }
 

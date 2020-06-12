@@ -96,6 +96,7 @@ class SearchGroupsViewModel(val database: SessionDatabaseDao, application: Appli
                 group.groupId ?: -1,
                 group.ownerUserId ?: -1,
                 group.groupName ?: "",
+                group.imageLink ?: "",
                 group.description ?: "",
                 false
             )

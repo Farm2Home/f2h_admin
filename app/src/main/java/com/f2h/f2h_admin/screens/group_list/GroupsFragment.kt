@@ -49,16 +49,8 @@ class GroupsFragment : Fragment() {
             }
         })
 
-        // Progress Bar loader
-        viewModel.isProgressBarActive.observe(viewLifecycleOwner, Observer { isProgressBarActive ->
-            if(isProgressBarActive){
-                binding.progressBar.visibility = View.VISIBLE
-            } else {
-                binding.progressBar.visibility = View.GONE
-            }
-        })
 
-        // Progress Bar loader
+        // No group text
         viewModel.isGroupListEmpty.observe(viewLifecycleOwner, Observer { isGroupListEmpty ->
             if(isGroupListEmpty){
                 binding.emptyGroupsText.visibility = View.VISIBLE

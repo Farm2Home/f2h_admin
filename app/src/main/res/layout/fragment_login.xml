@@ -80,7 +80,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:indeterminate="true"
-            android:visibility="visible"
+            app:progressBarVisibility="@{viewModel.isProgressBarActive().booleanValue()}"
             app:layout_constraintEnd_toStartOf="@+id/loginButton"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/signUp"

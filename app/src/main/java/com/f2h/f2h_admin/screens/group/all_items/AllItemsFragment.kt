@@ -54,17 +54,6 @@ class AllItemsFragment : Fragment() {
         })
 
 
-
-        // Progress Bar loader
-        viewModel.isProgressBarActive.observe(viewLifecycleOwner, Observer { isProgressBarActive ->
-            if(isProgressBarActive){
-                binding.progressBar.visibility = View.VISIBLE
-            } else {
-                binding.progressBar.visibility = View.GONE
-            }
-        })
-
-
         viewModel.toastText.observe(viewLifecycleOwner, Observer { message ->
             Toast.makeText(this.context, message, Toast.LENGTH_SHORT).show()
         })

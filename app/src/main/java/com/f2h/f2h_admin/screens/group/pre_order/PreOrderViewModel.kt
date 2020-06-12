@@ -94,6 +94,7 @@ class PreOrderViewModel(val database: SessionDatabaseDao, application: Applicati
         uiModel.itemPrice = item.pricePerUnit ?: 0.0
         uiModel.itemUom = item.uom ?: ""
         uiModel.farmerName = item.farmerUserName ?: ""
+        uiModel.itemImageLink = item.imageLink ?: ""
         _preOrderUiModel.value = uiModel
 
         itemAvailabilities.filter { compareDates(it.availableDate, startDate) >= 0 &&
