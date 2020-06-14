@@ -23,6 +23,8 @@ class GroupWalletViewModel(val database: SessionDatabaseDao, application: Applic
 
     var transactionAmount = ""
     var transactionDescription = ""
+    var selectedUserId = MutableLiveData<Long>()
+    var selectedUserName = MutableLiveData<String>()
 
     private val _wallet = MutableLiveData<Wallet>()
     val wallet: LiveData<Wallet>
@@ -40,11 +42,6 @@ class GroupWalletViewModel(val database: SessionDatabaseDao, application: Applic
     val toastText: LiveData<String>
         get() = _toastText
 
-    private val selectedUserId = MutableLiveData<Long>()
-    fun setSelectedUserId(id: Long){
-        selectedUserId.value = id
-    }
-
     private var allUiData = ArrayList<WalletItemsModel>()
     private var userSession = SessionEntity()
     private var viewModelJob = Job()
@@ -55,7 +52,9 @@ class GroupWalletViewModel(val database: SessionDatabaseDao, application: Applic
     }
 
     private fun getWalletInformation() {
+        //Clear all screen data
         allUiData.clear()
+
         _isProgressBarActive.value = true
         coroutineScope.launch {
             userSession = retrieveSession()
@@ -96,6 +95,7 @@ class GroupWalletViewModel(val database: SessionDatabaseDao, application: Applic
             val createTransactionDeferred = WalletApi.retrofitService.createWalletTransaction(newTransaction)
             try {
                 val response = createTransactionDeferred.await()
+                _toastText.value = "Successfully created transaction"
             } catch (t:Throwable){
                 println(t.message)
                 _toastText.value = "Oops, something went wrong"

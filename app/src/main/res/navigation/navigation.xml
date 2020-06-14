@@ -44,6 +44,9 @@
         <action
             android:id="@+id/action_groupDetailsTabsFragment_to_groupWalletFragment"
             app:destination="@id/groupWalletFragment" />
+        <action
+            android:id="@+id/action_groupDetailsTabsFragment_to_confirmRejectFragment"
+            app:destination="@id/confirmRejectFragment" />
     </fragment>
     <fragment
         android:id="@+id/allItemsFragment"
@@ -55,6 +58,10 @@
             android:name="userId"
             app:argType="long"
             android:defaultValue="-1L" />
+        <argument
+            android:name="userName"
+            app:argType="string"
+            android:defaultValue='""' />
     </fragment>
     <fragment
         android:id="@+id/preOrderFragment"
@@ -92,4 +99,8 @@
         android:id="@+id/editProfileFragment"
         android:name="com.f2h.f2h_admin.screens.settings.edit_profile.EditProfileFragment"
         android:label="EditProfileFragment" />
+    <fragment
+        android:id="@+id/confirmRejectFragment"
+        android:name="com.f2h.f2h_admin.screens.confirm_reject.ConfirmRejectFragment"
+        android:label="@string/confirm_reject" />
 </navigation>

@@ -35,9 +35,12 @@ class GroupWalletFragment : Fragment() {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_group_wallet, container, false)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
-        viewModel.setSelectedUserId(args.userId)
+        viewModel.selectedUserId.value = args.userId
+        viewModel.selectedUserName.value = args.userName
 
         viewModel.toastText.observe(viewLifecycleOwner, Observer { message ->
+            binding.transactionDescription.text.clear()
+            binding.walletAmount.text.clear()
             Toast.makeText(this.context, message, Toast.LENGTH_SHORT).show()
         })
 

@@ -108,7 +108,7 @@
                     android:id="@+id/total"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="Payable - "
+                    android:text="Receivable - "
                     app:layout_constraintEnd_toEndOf="@+id/discount"
                     app:layout_constraintStart_toStartOf="@+id/discount"
                     app:layout_constraintTop_toBottomOf="@+id/discount"

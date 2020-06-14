@@ -76,7 +76,8 @@ class MembersFragment : Fragment() {
     }
 
     private fun openSelectedUserWallet(uiDataElement: MembersUiModel) {
-        val action = GroupDetailsTabsFragmentDirections.actionGroupDetailsTabsFragmentToGroupWalletFragment(uiDataElement.userId)
+        val action = GroupDetailsTabsFragmentDirections
+            .actionGroupDetailsTabsFragmentToGroupWalletFragment(uiDataElement.userId, uiDataElement.userName)
         view?.let { Navigation.findNavController(it).navigate(action) }
     }
 

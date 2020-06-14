@@ -276,9 +276,10 @@ class PreOrderViewModel(val database: SessionDatabaseDao, application: Applicati
         var updatedOrders = OrderUpdateRequest(
             orderId = preOrder.orderId,
             orderStatus = preOrder.orderStatus,
+            paymentStatus = "",
             discountAmount = null,
-            orderedAmount = calculateOrderAmount(preOrder.orderedQuantity),
-            orderedQuantity = preOrder.orderedQuantity
+            orderedQuantity = preOrder.orderedQuantity,
+            confirmedQuantity = null
         )
 
         return updatedOrders
