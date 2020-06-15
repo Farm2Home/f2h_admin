@@ -1,4 +1,4 @@
-package com.f2h.f2h_admin.screens.confirm_reject
+package com.f2h.f2h_admin.screens.group.confirm_reject
 
 data class ConfirmRejectUiModel (
     var selectedItem: String = "",

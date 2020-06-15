@@ -6,13 +6,19 @@
     <data>
         <variable
             name="uiModel"
-            type="com.f2h.f2h_admin.screens.confirm_reject.ConfirmRejectItemsModel" />
+            type="com.f2h.f2h_admin.screens.group.confirm_reject.ConfirmRejectItemsModel" />
         <variable
             name="clickListener"
-            type="com.f2h.f2h_admin.screens.confirm_reject.OrderedItemClickListener" />
+            type="com.f2h.f2h_admin.screens.group.confirm_reject.OrderedItemClickListener" />
         <variable
             name="checkBoxClickListener"
-            type="com.f2h.f2h_admin.screens.confirm_reject.CheckBoxClickListener" />
+            type="com.f2h.f2h_admin.screens.group.confirm_reject.CheckBoxClickListener" />
+        <variable
+            name="increaseButtonClickListener"
+            type="com.f2h.f2h_admin.screens.group.confirm_reject.IncreaseButtonClickListener" />
+        <variable
+            name="decreaseButtonClickListener"
+            type="com.f2h.f2h_admin.screens.group.confirm_reject.DecreaseButtonClickListener" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -64,28 +70,27 @@
                     android:id="@+id/date"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="10dp"
                     android:ellipsize="end"
                     android:singleLine="true"
                     android:textSize="12sp"
-                    app:layout_constraintEnd_toStartOf="@+id/confirmedQuantity"
+                    app:layout_constraintEnd_toEndOf="@+id/confirmItemDetails"
                     app:layout_constraintStart_toStartOf="@+id/confirmItemDetails"
                     app:layout_constraintTop_toBottomOf="@+id/confirmItemDetails"
                     app:orderDateFormatted="@{uiModel}" />
 
-                <EditText
+                <TextView
                     android:id="@+id/confirmedQuantity"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginStart="10dp"
                     android:layout_marginEnd="5dp"
-                    android:inputType="number|numberDecimal"
-                    android:text="@={`` + uiModel.confirmedQuantity}"
+                    android:text="@{`` + uiModel.confirmedQuantity}"
                     android:textAlignment="center"
                     android:textSize="16sp"
-                    app:confirmedQuantityFormatted="@{uiModel}"
-                    app:layout_constraintEnd_toStartOf="@+id/textView9"
-                    app:layout_constraintTop_toTopOf="@+id/date" />
+                    app:layout_constraintBottom_toBottomOf="@+id/crDecreaseButton"
+                    app:layout_constraintEnd_toStartOf="@+id/crUom"
+                    app:layout_constraintStart_toEndOf="@+id/crDecreaseButton"
+                    app:layout_constraintTop_toBottomOf="@+id/total" />
 
                 <TextView
                     android:id="@+id/amount"
@@ -112,10 +117,11 @@
                     android:id="@+id/total"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
                     android:text="Receivable - "
-                    app:layout_constraintEnd_toEndOf="@+id/discount"
-                    app:layout_constraintStart_toStartOf="@+id/discount"
-                    app:layout_constraintTop_toBottomOf="@+id/discount"
+                    app:layout_constraintEnd_toEndOf="@+id/confirmRejectUserName"
+                    app:layout_constraintStart_toStartOf="@+id/confirmRejectUserName"
+                    app:layout_constraintTop_toBottomOf="@+id/confirmRejectUserName"
                     app:totalPriceFormatted="@{uiModel}" />
 
                 <TextView
@@ -132,24 +138,14 @@
                     app:statusFormatted="@{uiModel}" />
 
                 <TextView
-                    android:id="@+id/discount"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:textSize="8sp"
-                    app:discountFormatted="@{uiModel}"
-                    app:layout_constraintEnd_toEndOf="@+id/deliveryAddress"
-                    app:layout_constraintStart_toStartOf="@+id/deliveryAddress"
-                    app:layout_constraintTop_toBottomOf="@+id/deliveryAddress" />
-
-                <TextView
-                    android:id="@+id/deliveryAddress"
+                    android:id="@+id/confirmRejectUserName"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
                     android:maxLines="2"
                     android:singleLine="false"
+                    android:text="@{uiModel.buyerName}"
                     android:textSize="10sp"
-                    app:addressFormatted="@{uiModel}"
                     app:layout_constraintEnd_toEndOf="@+id/date"
                     app:layout_constraintStart_toStartOf="@+id/date"
                     app:layout_constraintTop_toBottomOf="@+id/date" />
@@ -166,16 +162,41 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
-                    android:id="@+id/textView9"
+                    android:id="@+id/crUom"
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
-                    android:layout_marginEnd="20dp"
+                    android:layout_marginEnd="10dp"
                     android:gravity="center_vertical"
                     android:text="@{uiModel.itemUom}"
                     android:textAlignment="gravity"
                     app:layout_constraintBottom_toBottomOf="@+id/confirmedQuantity"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/crIncreaseButton"
                     app:layout_constraintTop_toTopOf="@+id/confirmedQuantity" />
+
+                <Button
+                    android:id="@+id/crDecreaseButton"
+                    android:layout_width="50dp"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="10dp"
+                    android:onClick="@{() -> decreaseButtonClickListener.onClick(uiModel)}"
+                    android:text="-"
+                    app:quantityChangeButtonState="@{uiModel}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/amount"
+                    app:layout_constraintStart_toStartOf="@+id/total"
+                    app:layout_constraintTop_toBottomOf="@+id/total" />
+
+                <Button
+                    android:id="@+id/crIncreaseButton"
+                    android:layout_width="50dp"
+                    android:layout_height="40dp"
+                    android:onClick="@{() -> increaseButtonClickListener.onClick(uiModel)}"
+                    android:text="+"
+                    app:quantityChangeButtonState="@{uiModel}"
+                    app:layout_constraintBottom_toBottomOf="@+id/crDecreaseButton"
+                    app:layout_constraintEnd_toEndOf="@+id/total"
+                    app:layout_constraintTop_toTopOf="@+id/crDecreaseButton" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -52,6 +52,7 @@ class GroupDetailsTabsFragment : Fragment() {
             when(position) {
                 0 -> tab.text = "Members"
                 1 -> tab.text = "Products"
+                2 -> tab.text = "Orders"
             }
         }.attach()
     }

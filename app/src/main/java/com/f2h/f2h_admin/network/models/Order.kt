@@ -33,7 +33,8 @@ data class OrderUpdateRequest (
     @Json(name = "payment_status") var paymentStatus: String?,
     @Json(name = "ordered_quantity") var orderedQuantity: Double?,
     @Json(name = "confirmed_quantity") var confirmedQuantity: Double?,
-    @Json(name = "discount_amount") var discountAmount: Double?
+    @Json(name = "discount_amount") var discountAmount: Double?,
+    @Json(name = "ordered_amount") var orderedAmount: Double?
 )
 
 

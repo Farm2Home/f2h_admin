@@ -101,6 +101,6 @@
         android:label="EditProfileFragment" />
     <fragment
         android:id="@+id/confirmRejectFragment"
-        android:name="com.f2h.f2h_admin.screens.confirm_reject.ConfirmRejectFragment"
+        android:name="com.f2h.f2h_admin.screens.group.confirm_reject.ConfirmRejectFragment"
         android:label="@string/confirm_reject" />
 </navigation>

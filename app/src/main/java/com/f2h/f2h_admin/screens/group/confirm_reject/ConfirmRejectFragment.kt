@@ -1,4 +1,4 @@
-package com.f2h.f2h_admin.screens.confirm_reject
+package com.f2h.f2h_admin.screens.group.confirm_reject
 
 import android.app.Application
 import android.os.Bundle
@@ -63,6 +63,10 @@ class ConfirmRejectFragment : Fragment() {
             println("Clicked Report Item")
         }, CheckBoxClickListener {uiModel ->
             viewModel.onCheckBoxClicked(uiModel)
+        }, IncreaseButtonClickListener { uiModel ->
+            viewModel.increaseConfirmedQuantity(uiModel)
+        }, DecreaseButtonClickListener { uiModel ->
+            viewModel.decreaseConfirmedQuantity(uiModel)
         })
         binding.reportListRecyclerView.adapter = adapter
         viewModel.visibleUiData.observe(viewLifecycleOwner, Observer {

@@ -8,8 +8,4 @@
         android:id="@+id/reportFragment"
         android:icon="@drawable/report_icon"
         android:title="@string/report" />
-    <item
-        android:id="@+id/confirmRejectFragment"
-        android:icon="@drawable/report_icon"
-        android:title="@string/confirm_reject" />
 </menu>

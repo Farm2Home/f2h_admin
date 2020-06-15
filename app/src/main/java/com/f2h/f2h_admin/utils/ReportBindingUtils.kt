@@ -82,7 +82,7 @@ fun TextView.setDiscountFormatted(data: ReportItemsModel){
 
 
 @BindingAdapter("addressFormatted")
-fun TextView.setAddressFormatted(data: ReportItemsModel){
+fun TextView.setNameFormatted(data: ReportItemsModel){
     var address = String.format("%s - %s",data.buyerName, data.deliveryAddress)
     text = address
 }

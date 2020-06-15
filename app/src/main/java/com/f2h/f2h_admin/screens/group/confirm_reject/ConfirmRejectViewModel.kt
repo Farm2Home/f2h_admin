@@ -1,4 +1,4 @@
-package com.f2h.f2h_admin.screens.confirm_reject
+package com.f2h.f2h_admin.screens.group.confirm_reject
 
 import android.app.Application
 import android.util.Log
@@ -55,6 +55,7 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
     private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main)
 
     init {
+        createAllUiFilters()
         getOrdersReportForGroup()
     }
 
@@ -84,7 +85,6 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
                 var userDetailsList = getUserDetailsDataDeferred.await()
 
                 allUiData = createAllUiData(itemAvailabilities, orders, userDetailsList)
-                _reportUiFilterModel.value = createAllUiFilters()
                 if (allUiData.size > 0) {
                     filterVisibleItems()
                 }
@@ -130,6 +130,7 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
                 uiElement.itemUom = item.uom ?: ""
                 uiElement.itemImageLink = item.imageLink ?: ""
                 uiElement.price = item.pricePerUnit ?: 0.0
+                uiElement.confirmedQuantityJump = item.confirmQtyJump ?: 0.0
             }
             uiElement.orderedDate = formatter.format(df.parse(order.orderedDate))
             uiElement.orderedQuantity = order.orderedQuantity ?: 0.0
@@ -161,7 +162,7 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
     }
 
 
-    private fun createAllUiFilters(): ConfirmRejectUiModel {
+    private fun createAllUiFilters() {
         var filters = ConfirmRejectUiModel()
 
         filters.itemList = arrayListOf("ALL").plus(allUiData.sortedBy { uiElement -> uiElement.itemName }
@@ -191,7 +192,7 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
         filters.selectedBuyer = "ALL"
         setTimeFilterRange(0,0) //Today
 
-        return filters
+        _reportUiFilterModel.value = filters
     }
 
 
@@ -313,14 +314,14 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
     }
 
 
-    fun onCheckBoxClicked(uiModel: ConfirmRejectItemsModel) {
+    fun onCheckBoxClicked(selectedUiModel: ConfirmRejectItemsModel) {
         var isChecked = visibleUiData.value
-            ?.filter { it.orderId.equals(uiModel.orderId) }
+            ?.filter { it.orderId.equals(selectedUiModel.orderId) }
             ?.first()
             ?.isItemChecked ?: true
 
         _visibleUiData.value
-            ?.filter { it.orderId.equals(uiModel.orderId) }
+            ?.filter { it.orderId.equals(selectedUiModel.orderId) }
             ?.first()
             ?.isItemChecked = !isChecked
     }
@@ -335,6 +336,46 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
     }
 
 
+
+    // increase order qty till max available qty
+    fun increaseConfirmedQuantity(selectedUiModel: ConfirmRejectItemsModel){
+        _visibleUiData.value?.forEach { element ->
+            if (element.orderId.equals(selectedUiModel.orderId)){
+                element.confirmedQuantity = element.confirmedQuantity.plus(element.confirmedQuantityJump)
+                element.quantityChange = element.quantityChange.plus(element.confirmedQuantityJump)
+
+                // logic to prevent increasing quantity beyond maximum
+                if (element.quantityChange > element.availableQuantity) {
+                    element.confirmedQuantity = element.confirmedQuantity.minus(element.confirmedQuantityJump)
+                    element.quantityChange = element.quantityChange.minus(element.confirmedQuantityJump)
+                    _toastMessage.value = "No more stock"
+                }
+                element.orderAmount = calculateOrderAmount(element)
+            }
+        }
+        _visibleUiData.value = _visibleUiData.value
+    }
+
+
+    // decrease order qty till min 0
+    fun decreaseConfirmedQuantity(selectedUiModel: ConfirmRejectItemsModel){
+        _visibleUiData.value?.forEach { element ->
+            if (element.orderId.equals(selectedUiModel.orderId)){
+                element.confirmedQuantity = element.confirmedQuantity.minus(element.confirmedQuantityJump)
+                element.quantityChange = element.quantityChange.minus(element.confirmedQuantityJump)
+
+                if (element.confirmedQuantity < 0) {
+                    element.confirmedQuantity = 0.0
+                    element.quantityChange = element.quantityChange.plus(element.confirmedQuantityJump)
+                }
+            }
+            element.orderAmount = calculateOrderAmount(element)
+        }
+        _visibleUiData.value = _visibleUiData.value
+    }
+
+
+
     fun onRejectOrderButtonClicked() {
         var orderUpdateRequests = createRejectOrderRequests(visibleUiData.value)
         _isProgressBarActive.value = true;
@@ -343,6 +384,7 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
             try{
                 updateOrdersDataDeferred.await()
                 _toastMessage.value = "Successfully rejected orders"
+                getOrdersReportForGroup()
             } catch (t:Throwable){
                 _toastMessage.value = "Oops, Something went wrong " + t.message
             }
@@ -358,7 +400,8 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
                 paymentStatus = "",
                 orderedQuantity = null,
                 confirmedQuantity = 0.0,
-                discountAmount = 0.0
+                discountAmount = 0.0,
+                orderedAmount = 0.0
             )
             orderUpdateRequestList.add(updateRequest)
         }
@@ -368,12 +411,13 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
 
     fun onConfirmOrderButtonClicked() {
         var orderUpdateRequests = createConfirmedOrderRequests(visibleUiData.value)
-        _isProgressBarActive.value = true;
+        _isProgressBarActive.value = true
         coroutineScope.launch {
             var updateOrdersDataDeferred = OrderApi.retrofitService.updateOrders(orderUpdateRequests)
             try{
                 updateOrdersDataDeferred.await()
                 _toastMessage.value = "Successfully confirmed orders"
+                getOrdersReportForGroup()
             } catch (t:Throwable){
                 _toastMessage.value = "Oops, Something went wrong " + t.message
             }
@@ -383,18 +427,22 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
     private fun createConfirmedOrderRequests(uiDataElements: MutableList<ConfirmRejectItemsModel>?): List<OrderUpdateRequest> {
         var orderUpdateRequestList: ArrayList<OrderUpdateRequest> = arrayListOf()
         uiDataElements?.filter { it.isItemChecked }?.forEach { element ->
-
             var updateRequest = OrderUpdateRequest(
                 orderId = element.orderId,
                 orderStatus = ORDER_STATUS_CONFIRMED,
                 paymentStatus = "",
                 orderedQuantity = null,
                 confirmedQuantity = element.confirmedQuantity,
-                discountAmount = element.discountAmount
+                discountAmount = element.discountAmount,
+                orderedAmount = calculateOrderAmount(element)
             )
             orderUpdateRequestList.add(updateRequest)
         }
         return orderUpdateRequestList
+    }
+
+    private fun calculateOrderAmount(element: ConfirmRejectItemsModel): Double {
+        return element.confirmedQuantity * element.price - element.discountAmount
     }
 
 }

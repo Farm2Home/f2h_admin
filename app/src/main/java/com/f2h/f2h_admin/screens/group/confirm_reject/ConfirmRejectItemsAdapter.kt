@@ -1,4 +1,4 @@
-package com.f2h.f2h_admin.screens.confirm_reject
+package com.f2h.f2h_admin.screens.group.confirm_reject
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -6,15 +6,16 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.f2h.f2h_admin.databinding.ListConfirmRejectItemsBinding
-import com.f2h.f2h_admin.databinding.ListReportItemsBinding
-import com.f2h.f2h_admin.screens.group.pre_order.DecreaseButtonClickListener
 
 class ConfirmRejectItemsAdapter(val clickListener: OrderedItemClickListener,
-                                val checkBoxClickListener: CheckBoxClickListener
+                                val checkBoxClickListener: CheckBoxClickListener,
+                                val increaseButtonClickListener: IncreaseButtonClickListener,
+                                val decreaseButtonClickListener: DecreaseButtonClickListener
 ): ListAdapter<ConfirmRejectItemsModel, ConfirmRejectItemsAdapter.ViewHolder>(ListItemDiffCallback()) {
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(getItem(position)!!, clickListener, checkBoxClickListener)
+        holder.bind(getItem(position)!!, clickListener, checkBoxClickListener,
+            increaseButtonClickListener, decreaseButtonClickListener)
     }
 
 
@@ -28,11 +29,15 @@ class ConfirmRejectItemsAdapter(val clickListener: OrderedItemClickListener,
         fun bind(
             item: ConfirmRejectItemsModel,
             clickListener: OrderedItemClickListener,
-            checkBoxClickListener: CheckBoxClickListener
+            checkBoxClickListener: CheckBoxClickListener,
+            increaseButtonClickListener: IncreaseButtonClickListener,
+            decreaseButtonClickListener: DecreaseButtonClickListener
         ) {
             binding.uiModel = item
             binding.clickListener = clickListener
             binding.checkBoxClickListener = checkBoxClickListener
+            binding.increaseButtonClickListener = increaseButtonClickListener
+            binding.decreaseButtonClickListener = decreaseButtonClickListener
             binding.executePendingBindings()
         }
 
@@ -66,3 +71,10 @@ class CheckBoxClickListener(val clickListener: (uiModel: ConfirmRejectItemsModel
     fun onClick(uiModel: ConfirmRejectItemsModel) = clickListener(uiModel)
 }
 
+class IncreaseButtonClickListener(val clickListener: (uiModel: ConfirmRejectItemsModel) -> Unit) {
+    fun onClick(uiModel: ConfirmRejectItemsModel) = clickListener(uiModel)
+}
+
+class DecreaseButtonClickListener(val clickListener: (uiModel: ConfirmRejectItemsModel) -> Unit) {
+    fun onClick(uiModel: ConfirmRejectItemsModel) = clickListener(uiModel)
+}

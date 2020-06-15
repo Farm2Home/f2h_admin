@@ -1,19 +1,14 @@
 package com.f2h.f2h_admin.utils
 
 import android.graphics.Color
-import android.text.InputType
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
 import android.text.style.RelativeSizeSpan
 import android.text.style.StrikethroughSpan
-import android.util.Log
-import android.view.View
-import android.widget.CheckBox
-import android.widget.Spinner
+import android.widget.Button
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
-import androidx.databinding.InverseBindingAdapter
 import com.f2h.f2h_admin.R
 import com.f2h.f2h_admin.constants.F2HConstants.ORDER_STATUS_CONFIRMED
 import com.f2h.f2h_admin.constants.F2HConstants.ORDER_STATUS_DELIVERED
@@ -21,11 +16,7 @@ import com.f2h.f2h_admin.constants.F2HConstants.ORDER_STATUS_ORDERED
 import com.f2h.f2h_admin.constants.F2HConstants.ORDER_STATUS_REJECTED
 import com.f2h.f2h_admin.constants.F2HConstants.PAYMENT_STATUS_PAID
 import com.f2h.f2h_admin.constants.F2HConstants.PAYMENT_STATUS_PENDING
-import com.f2h.f2h_admin.screens.confirm_reject.ConfirmRejectItemsModel
-import com.f2h.f2h_admin.screens.report.ReportItemsModel
-import kotlinx.android.synthetic.main.list_all_items.view.*
-import java.text.DateFormat
-import java.text.SimpleDateFormat
+import com.f2h.f2h_admin.screens.group.confirm_reject.ConfirmRejectItemsModel
 
 
 @BindingAdapter("priceFormatted")
@@ -53,10 +44,11 @@ fun TextView.setOrderDateFormatted(data: ConfirmRejectItemsModel?){
 }
 
 
-@BindingAdapter("confirmedQuantityFormatted")
-fun TextView.setConfirmedQuantityFormatted(data: ConfirmRejectItemsModel){
+@BindingAdapter("quantityChangeButtonState")
+fun Button.setQuantityChangeButtonState(data: ConfirmRejectItemsModel){
     if(data.orderStatus.equals(ORDER_STATUS_DELIVERED)){
         isEnabled = false
+        return
     }
 }
 
@@ -77,13 +69,6 @@ fun TextView.setDiscountFormatted(data: ConfirmRejectItemsModel){
     } else {
         text = ""
     }
-}
-
-
-@BindingAdapter("addressFormatted")
-fun TextView.setAddressFormatted(data: ConfirmRejectItemsModel){
-    var address = String.format("%s - %s",data.buyerName, data.deliveryAddress)
-    text = address
 }
 
 
@@ -129,29 +114,6 @@ fun TextView.setTotalPriceFormatted(data: ConfirmRejectItemsModel){
     text = receivaableStringFormatted
 }
 
-
-
-@BindingAdapter("aggregationFormatted")
-fun TextView.setAggregationFormatted(list: List<ConfirmRejectItemsModel>?){
-    if (list != null) {
-        var totalAmount = (0).toDouble()
-        var totalQuantity: Double? = (0).toDouble()
-        var uom = ""
-        list.forEach { element ->
-            totalAmount += (element.orderAmount)
-            totalQuantity = totalQuantity?.plus((element.displayQuantity))
-            uom = element.itemUom
-        }
-
-        //If there are multiple items do not show the UOM/Quantity
-        if (list.map { x -> x.itemName }.distinct().count() == 1){
-            text = String.format("₹%.0f - %s %s", totalAmount, getFormattedQtyNumber(totalQuantity), uom)
-        } else {
-            text = String.format("₹%.0f", totalAmount)
-        }
-
-    }
-}
 
 
 @BindingAdapter("statusFormatted")
