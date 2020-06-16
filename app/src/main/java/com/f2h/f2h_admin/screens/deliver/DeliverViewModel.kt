@@ -9,6 +9,7 @@ import com.f2h.f2h_admin.constants.F2HConstants.ORDER_STATUS_CONFIRMED
 import com.f2h.f2h_admin.constants.F2HConstants.ORDER_STATUS_DELIVERED
 import com.f2h.f2h_admin.constants.F2HConstants.ORDER_STATUS_ORDERED
 import com.f2h.f2h_admin.constants.F2HConstants.ORDER_STATUS_REJECTED
+import com.f2h.f2h_admin.constants.F2HConstants.PAYMENT_STATUS_PAID
 import com.f2h.f2h_admin.constants.F2HConstants.PAYMENT_STATUS_PENDING
 import com.f2h.f2h_admin.database.SessionDatabaseDao
 import com.f2h.f2h_admin.database.SessionEntity
@@ -344,14 +345,14 @@ class DeliverViewModel(val database: SessionDatabaseDao, application: Applicatio
     }
 
 
-    fun onRejectOrderButtonClicked() {
-        var orderUpdateRequests = createRejectOrderRequests(visibleUiData.value)
+    fun onPaidAndDeliveredButtonClicked() {
+        var orderUpdateRequests = createPaidAndDeliveredOrderRequests(visibleUiData.value)
         _isProgressBarActive.value = true;
         coroutineScope.launch {
             var updateOrdersDataDeferred = OrderApi.retrofitService.updateOrders(orderUpdateRequests)
             try{
                 updateOrdersDataDeferred.await()
-                _toastMessage.value = "Successfully rejected orders"
+                _toastMessage.value = "Successfully paid and delivered orders"
                 getOrdersReportForGroup()
             } catch (t:Throwable){
                 _toastMessage.value = "Oops, Something went wrong " + t.message
@@ -359,19 +360,19 @@ class DeliverViewModel(val database: SessionDatabaseDao, application: Applicatio
         }
     }
 
-    private fun createRejectOrderRequests(uiDataElements: MutableList<DeliverItemsModel>?): List<OrderUpdateRequest> {
+    private fun createPaidAndDeliveredOrderRequests(uiDataElements: MutableList<DeliverItemsModel>?): List<OrderUpdateRequest> {
         var orderUpdateRequestList: ArrayList<OrderUpdateRequest> = arrayListOf()
         uiDataElements?.filter { it.isItemChecked }?.forEach { element ->
             var updateRequest = OrderUpdateRequest(
                 orderId = element.orderId,
-                orderStatus = ORDER_STATUS_REJECTED,
-                paymentStatus = "",
+                orderStatus = ORDER_STATUS_DELIVERED,
+                paymentStatus = PAYMENT_STATUS_PAID,
                 orderedQuantity = null,
-                confirmedQuantity = 0.0,
-                discountAmount = 0.0,
-                orderedAmount = 0.0,
-                orderComment = element.deliveryComment,
-                deliveryComment = null
+                confirmedQuantity = null,
+                discountAmount = null,
+                orderedAmount = null,
+                orderComment = null,
+                deliveryComment = element.deliveryComment
             )
             orderUpdateRequestList.add(updateRequest)
         }
