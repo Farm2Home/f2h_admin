@@ -20,7 +20,7 @@ data class DeliverItemsModel (
     var displayQuantity: Double = 0.0,
     var orderAmount: Double = 0.0,
     var orderStatus: String = "",
-    var orderComment: String = "",
+    var deliveryComment: String = "",
     var paymentStatus: String = "",
     var deliveryAddress: String = "",
     var isFreezed: Boolean = false,

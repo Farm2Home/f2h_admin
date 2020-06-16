@@ -410,7 +410,7 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
                 discountAmount = 0.0,
                 orderedAmount = 0.0,
                 orderComment = element.orderComment,
-                discountComment = null
+                deliveryComment = null
             )
             orderUpdateRequestList.add(updateRequest)
         }
@@ -445,7 +445,7 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
                 discountAmount = element.discountAmount,
                 orderedAmount = calculateOrderAmount(element),
                 orderComment = element.orderComment,
-                discountComment = null
+                deliveryComment = null
             )
             orderUpdateRequestList.add(updateRequest)
         }

@@ -55,7 +55,7 @@ class DeliverViewModel(val database: SessionDatabaseDao, application: Applicatio
     private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main)
 
     init {
-        createAllUiFilters()
+        setUpDefaultSelectedFilters()
         getOrdersReportForGroup()
     }
 
@@ -85,9 +85,8 @@ class DeliverViewModel(val database: SessionDatabaseDao, application: Applicatio
                 var userDetailsList = getUserDetailsDataDeferred.await()
 
                 allUiData = createAllUiData(itemAvailabilities, orders, userDetailsList)
-                if (allUiData.size > 0) {
-                    filterVisibleItems()
-                }
+                createAllUiFilters()
+                filterVisibleItems()
             } catch (t:Throwable){
                 println(t.message)
             }
@@ -144,7 +143,7 @@ class DeliverViewModel(val database: SessionDatabaseDao, application: Applicatio
             uiElement.discountAmount = order.discountAmount ?: 0.0
             uiElement.orderStatus = order.orderStatus ?: ""
             uiElement.paymentStatus = order.paymentStatus ?: ""
-            uiElement.orderComment = order.orderComment ?: ""
+            uiElement.deliveryComment = order.deliveryComment ?: ""
             uiElement.buyerName = userDetailsList.filter { x -> x.userId?.equals(order.buyerUserId) ?: false }.single().userName ?: ""
             uiElement.sellerName = userDetailsList.filter { x -> x.userId?.equals(order.sellerUserId) ?: false }.single().userName ?: ""
             uiElement.deliveryAddress = order.deliveryLocation ?: ""
@@ -162,37 +161,46 @@ class DeliverViewModel(val database: SessionDatabaseDao, application: Applicatio
     }
 
 
-    private fun createAllUiFilters() {
-        var filters = DeliverUiModel()
 
-        filters.itemList = arrayListOf("ALL").plus(allUiData.sortedBy { uiElement -> uiElement.itemName }
+    fun setUpDefaultSelectedFilters() {
+        _reportUiFilterModel.value = DeliverUiModel()
+        _reportUiFilterModel.value?.selectedItem = "ALL"
+        _reportUiFilterModel.value?.selectedPaymentStatus = "ALL"
+        _reportUiFilterModel.value?.selectedOrderStatus = "ALL"
+        _reportUiFilterModel.value?.selectedFarmer = "ALL"
+        _reportUiFilterModel.value?.selectedBuyer = "ALL"
+
+        // Set date range as today
+        var rangeStartDate = Calendar.getInstance()
+        var rangeEndDate = Calendar.getInstance()
+        _reportUiFilterModel.value?.selectedStartDate = formatter.format(rangeStartDate.time)
+        _reportUiFilterModel.value?.selectedEndDate = formatter.format(rangeEndDate.time)
+    }
+
+
+    private fun createAllUiFilters() {
+        _reportUiFilterModel.value?.itemList = arrayListOf("ALL").plus(allUiData.sortedBy { uiElement -> uiElement.itemName }
             .filter { uiElement -> !uiElement.itemName.isBlank() }
             .map { uiElement -> uiElement.itemName }.distinct().sorted())
 
-        filters.orderStatusList = arrayListOf("ALL", "Open Orders", "Delivered Orders", "Payment Pending")
+        _reportUiFilterModel.value?.orderStatusList = arrayListOf("ALL", "Open Orders", "Delivered Orders", "Payment Pending")
 
-        filters.paymentStatusList = arrayListOf("ALL").plus(allUiData.sortedBy { uiElement -> uiElement.paymentStatus }
+        _reportUiFilterModel.value?.paymentStatusList = arrayListOf("ALL").plus(allUiData.sortedBy { uiElement -> uiElement.paymentStatus }
             .filter { uiElement -> !uiElement.paymentStatus.isBlank() }
             .map { uiElement -> uiElement.paymentStatus }.distinct().sorted())
 
-        filters.buyerNameList = arrayListOf("ALL").plus(allUiData.sortedBy { uiElement -> uiElement.buyerName }
+        _reportUiFilterModel.value?.buyerNameList = arrayListOf("ALL").plus(allUiData.sortedBy { uiElement -> uiElement.buyerName }
             .filter { uiElement -> !uiElement.buyerName.isBlank() }
             .map { uiElement -> uiElement.buyerName }.distinct().sorted())
 
-        filters.farmerNameList = arrayListOf("ALL").plus(allUiData.sortedBy { uiElement -> uiElement.sellerName }
+        _reportUiFilterModel.value?.farmerNameList = arrayListOf("ALL").plus(allUiData.sortedBy { uiElement -> uiElement.sellerName }
             .filter { uiElement -> !uiElement.sellerName.isBlank() }
             .map { uiElement -> uiElement.sellerName }.distinct().sorted())
 
-        filters.timeFilterList = arrayListOf("Today", "Tomorrow", "Next 7 days")
+        _reportUiFilterModel.value?.timeFilterList = arrayListOf("Today", "Tomorrow", "Next 7 days")
 
-        filters.selectedItem = "ALL"
-        filters.selectedPaymentStatus = "ALL"
-        filters.selectedOrderStatus = "ALL"
-        filters.selectedFarmer = "ALL"
-        filters.selectedBuyer = "ALL"
-        setTimeFilterRange(0,0) //Today
-
-        _reportUiFilterModel.value = filters
+        //Refresh filter
+        _reportUiFilterModel.value = _reportUiFilterModel.value
     }
 
 
@@ -362,8 +370,8 @@ class DeliverViewModel(val database: SessionDatabaseDao, application: Applicatio
                 confirmedQuantity = 0.0,
                 discountAmount = 0.0,
                 orderedAmount = 0.0,
-                orderComment = element.orderComment,
-                discountComment = null
+                orderComment = element.deliveryComment,
+                deliveryComment = null
             )
             orderUpdateRequestList.add(updateRequest)
         }
@@ -371,14 +379,14 @@ class DeliverViewModel(val database: SessionDatabaseDao, application: Applicatio
     }
 
 
-    fun onConfirmOrderButtonClicked() {
-        var orderUpdateRequests = createConfirmedOrderRequests(visibleUiData.value)
+    fun onDeliverButtonClicked() {
+        var orderUpdateRequests = createDeliverOrderRequests(visibleUiData.value)
         _isProgressBarActive.value = true
         coroutineScope.launch {
             var updateOrdersDataDeferred = OrderApi.retrofitService.updateOrders(orderUpdateRequests)
             try{
                 updateOrdersDataDeferred.await()
-                _toastMessage.value = "Successfully confirmed orders"
+                _toastMessage.value = "Successfully delivered orders"
                 getOrdersReportForGroup()
             } catch (t:Throwable){
                 _toastMessage.value = "Oops, Something went wrong " + t.message
@@ -386,27 +394,23 @@ class DeliverViewModel(val database: SessionDatabaseDao, application: Applicatio
         }
     }
 
-    private fun createConfirmedOrderRequests(uiDataElements: MutableList<DeliverItemsModel>?): List<OrderUpdateRequest> {
+    private fun createDeliverOrderRequests(uiDataElements: MutableList<DeliverItemsModel>?): List<OrderUpdateRequest> {
         var orderUpdateRequestList: ArrayList<OrderUpdateRequest> = arrayListOf()
         uiDataElements?.filter { it.isItemChecked }?.forEach { element ->
             var updateRequest = OrderUpdateRequest(
                 orderId = element.orderId,
-                orderStatus = ORDER_STATUS_CONFIRMED,
-                paymentStatus = "",
+                orderStatus = ORDER_STATUS_DELIVERED,
+                paymentStatus = null,
                 orderedQuantity = null,
-                confirmedQuantity = element.confirmedQuantity,
-                discountAmount = element.discountAmount,
-                orderedAmount = calculateOrderAmount(element),
-                orderComment = element.orderComment,
-                discountComment = null
+                confirmedQuantity = null,
+                discountAmount = null,
+                orderedAmount = null,
+                orderComment = null,
+                deliveryComment = element.deliveryComment
             )
             orderUpdateRequestList.add(updateRequest)
         }
         return orderUpdateRequestList
-    }
-
-    private fun calculateOrderAmount(element: DeliverItemsModel): Double {
-        return element.confirmedQuantity * element.price - element.discountAmount
     }
 
 }
