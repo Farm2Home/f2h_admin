@@ -280,7 +280,9 @@ class PreOrderViewModel(val database: SessionDatabaseDao, application: Applicati
             discountAmount = null,
             orderedQuantity = preOrder.orderedQuantity,
             confirmedQuantity = null,
-            orderedAmount = calculateOrderAmount(preOrder.orderedQuantity)
+            orderedAmount = calculateOrderAmount(preOrder.orderedQuantity),
+            orderComment = null,
+            discountComment = null
         )
 
         return updatedOrders

@@ -55,7 +55,7 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
     private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main)
 
     init {
-        createAllUiFilters()
+        setUpDefaultSelectedFilters()
         getOrdersReportForGroup()
     }
 
@@ -68,7 +68,7 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
 
         coroutineScope.launch {
             sessionData.value = retrieveSession()
-            var getOrdersDataDeferred = OrderApi.retrofitService.getOrdersForGroup(sessionData.value!!.groupId)
+            var getOrdersDataDeferred = OrderApi.retrofitService.getOrdersForGroup(sessionData.value!!.groupId, null, null)
             try {
                 var orders = getOrdersDataDeferred.await()
                 var userIds = orders.map { x -> x.buyerUserId ?: -1}
@@ -85,9 +85,8 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
                 var userDetailsList = getUserDetailsDataDeferred.await()
 
                 allUiData = createAllUiData(itemAvailabilities, orders, userDetailsList)
-                if (allUiData.size > 0) {
-                    filterVisibleItems()
-                }
+                createAllUiFilters()
+                filterVisibleItems()
             } catch (t:Throwable){
                 println(t.message)
             }
@@ -162,37 +161,45 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
     }
 
 
-    private fun createAllUiFilters() {
-        var filters = ConfirmRejectUiModel()
+    fun setUpDefaultSelectedFilters() {
+        _reportUiFilterModel.value = ConfirmRejectUiModel()
+        _reportUiFilterModel.value?.selectedItem = "ALL"
+        _reportUiFilterModel.value?.selectedPaymentStatus = "ALL"
+        _reportUiFilterModel.value?.selectedOrderStatus = "ALL"
+        _reportUiFilterModel.value?.selectedFarmer = "ALL"
+        _reportUiFilterModel.value?.selectedBuyer = "ALL"
 
-        filters.itemList = arrayListOf("ALL").plus(allUiData.sortedBy { uiElement -> uiElement.itemName }
+        // Set date range as today
+        var rangeStartDate = Calendar.getInstance()
+        var rangeEndDate = Calendar.getInstance()
+        _reportUiFilterModel.value?.selectedStartDate = formatter.format(rangeStartDate.time)
+        _reportUiFilterModel.value?.selectedEndDate = formatter.format(rangeEndDate.time)
+    }
+
+
+    private fun createAllUiFilters() {
+        _reportUiFilterModel.value?.itemList = arrayListOf("ALL").plus(allUiData.sortedBy { uiElement -> uiElement.itemName }
             .filter { uiElement -> !uiElement.itemName.isBlank() }
             .map { uiElement -> uiElement.itemName }.distinct().sorted())
 
-        filters.orderStatusList = arrayListOf("ALL", "Open Orders", "Delivered Orders", "Payment Pending")
+        _reportUiFilterModel.value?.orderStatusList = arrayListOf("ALL", "Open Orders", "Delivered Orders", "Payment Pending")
 
-        filters.paymentStatusList = arrayListOf("ALL").plus(allUiData.sortedBy { uiElement -> uiElement.paymentStatus }
+        _reportUiFilterModel.value?.paymentStatusList = arrayListOf("ALL").plus(allUiData.sortedBy { uiElement -> uiElement.paymentStatus }
             .filter { uiElement -> !uiElement.paymentStatus.isBlank() }
             .map { uiElement -> uiElement.paymentStatus }.distinct().sorted())
 
-        filters.buyerNameList = arrayListOf("ALL").plus(allUiData.sortedBy { uiElement -> uiElement.buyerName }
+        _reportUiFilterModel.value?.buyerNameList = arrayListOf("ALL").plus(allUiData.sortedBy { uiElement -> uiElement.buyerName }
             .filter { uiElement -> !uiElement.buyerName.isBlank() }
             .map { uiElement -> uiElement.buyerName }.distinct().sorted())
 
-        filters.farmerNameList = arrayListOf("ALL").plus(allUiData.sortedBy { uiElement -> uiElement.sellerName }
+        _reportUiFilterModel.value?.farmerNameList = arrayListOf("ALL").plus(allUiData.sortedBy { uiElement -> uiElement.sellerName }
             .filter { uiElement -> !uiElement.sellerName.isBlank() }
             .map { uiElement -> uiElement.sellerName }.distinct().sorted())
 
-        filters.timeFilterList = arrayListOf("Today", "Tomorrow", "Next 7 days")
+        _reportUiFilterModel.value?.timeFilterList = arrayListOf("Today", "Tomorrow", "Next 7 days")
 
-        filters.selectedItem = "ALL"
-        filters.selectedPaymentStatus = "ALL"
-        filters.selectedOrderStatus = "ALL"
-        filters.selectedFarmer = "ALL"
-        filters.selectedBuyer = "ALL"
-        setTimeFilterRange(0,0) //Today
-
-        _reportUiFilterModel.value = filters
+        //Refresh filter
+        _reportUiFilterModel.value = _reportUiFilterModel.value
     }
 
 
@@ -401,7 +408,9 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
                 orderedQuantity = null,
                 confirmedQuantity = 0.0,
                 discountAmount = 0.0,
-                orderedAmount = 0.0
+                orderedAmount = 0.0,
+                orderComment = element.orderComment,
+                discountComment = null
             )
             orderUpdateRequestList.add(updateRequest)
         }
@@ -434,7 +443,9 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
                 orderedQuantity = null,
                 confirmedQuantity = element.confirmedQuantity,
                 discountAmount = element.discountAmount,
-                orderedAmount = calculateOrderAmount(element)
+                orderedAmount = calculateOrderAmount(element),
+                orderComment = element.orderComment,
+                discountComment = null
             )
             orderUpdateRequestList.add(updateRequest)
         }

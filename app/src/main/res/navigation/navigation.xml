@@ -47,6 +47,9 @@
         <action
             android:id="@+id/action_groupDetailsTabsFragment_to_confirmRejectFragment"
             app:destination="@id/confirmRejectFragment" />
+        <action
+            android:id="@+id/action_groupDetailsTabsFragment_to_deliverFragment2"
+            app:destination="@id/deliverFragment" />
     </fragment>
     <fragment
         android:id="@+id/allItemsFragment"
@@ -103,4 +106,8 @@
         android:id="@+id/confirmRejectFragment"
         android:name="com.f2h.f2h_admin.screens.group.confirm_reject.ConfirmRejectFragment"
         android:label="@string/confirm_reject" />
+    <fragment
+        android:id="@+id/deliverFragment"
+        android:name="com.f2h.f2h_admin.screens.deliver.DeliverFragment"
+        android:label="@string/deliver_orders" />
 </navigation>

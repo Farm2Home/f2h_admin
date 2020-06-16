@@ -53,6 +53,12 @@ fun Button.setQuantityChangeButtonState(data: ConfirmRejectItemsModel){
 }
 
 
+@BindingAdapter("confirmedQuantityFormatted")
+fun TextView.setConfirmedQuantityFormatted(data: ConfirmRejectItemsModel){
+    text = getFormattedQtyNumber(data.confirmedQuantity)
+}
+
+
 private fun getFormattedQtyNumber(number: Double?): String {
     if (number == null) return ""
     return if (number.compareTo(number.toLong()) == 0)

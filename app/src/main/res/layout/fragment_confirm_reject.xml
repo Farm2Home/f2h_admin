@@ -133,7 +133,7 @@
             android:id="@+id/constraintLayout2"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginBottom="10dp"
+            android:layout_marginBottom="5dp"
             android:orientation="vertical"
             app:layout_constraintBottom_toTopOf="@+id/rejectButton"
             app:layout_constraintEnd_toEndOf="parent"
@@ -221,8 +221,7 @@
             android:id="@+id/rejectButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
+            android:layout_marginBottom="5dp"
             android:onClick="@{() -> viewModel.onRejectOrderButtonClicked()}"
             android:text="Reject Orders"
             android:textAllCaps="false"
@@ -231,8 +230,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/confirmButton"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/constraintLayout2" />
+            app:layout_constraintStart_toStartOf="parent" />
 
         <Button
             android:id="@+id/confirmButton"

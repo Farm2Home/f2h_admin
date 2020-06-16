@@ -59,7 +59,7 @@ class ReportViewModel(val database: SessionDatabaseDao, application: Application
         _isProgressBarActive.value = true
         coroutineScope.launch {
             sessionData.value = retrieveSession()
-            var getOrdersDataDeferred = OrderApi.retrofitService.getOrdersForGroup(sessionData.value!!.groupId)
+            var getOrdersDataDeferred = OrderApi.retrofitService.getOrdersForGroup(sessionData.value!!.groupId, null, null)
             try {
                 var orders = getOrdersDataDeferred.await()
                 var userIds = orders.map { x -> x.buyerUserId ?: -1}
