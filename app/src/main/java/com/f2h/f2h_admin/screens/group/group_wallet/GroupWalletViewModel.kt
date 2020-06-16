@@ -6,16 +6,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.f2h.f2h_admin.database.SessionDatabaseDao
 import com.f2h.f2h_admin.database.SessionEntity
-import com.f2h.f2h_admin.network.UserApi
 import com.f2h.f2h_admin.network.WalletApi
 import com.f2h.f2h_admin.network.models.Wallet
 import com.f2h.f2h_admin.network.models.WalletTransaction
 import com.f2h.f2h_admin.network.models.WalletTransactionRequest
 import kotlinx.coroutines.*
-import java.lang.Exception
 import java.text.DateFormat
 import java.text.SimpleDateFormat
-import java.time.Instant
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -107,7 +104,9 @@ class GroupWalletViewModel(val database: SessionDatabaseDao, application: Applic
 
 
     private fun createWalletTransactionRequestObject(): WalletTransactionRequest {
-        var today = Calendar.getInstance()
+        val timeZone = TimeZone.getTimeZone("UTC")
+        TimeZone.setDefault(timeZone)
+        var today = Calendar.getInstance(timeZone)
         val formatter: DateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
         var transactionRequest = WalletTransactionRequest (
             wallet.value?.userId,
