@@ -135,7 +135,7 @@
             android:layout_height="0dp"
             android:layout_marginBottom="5dp"
             android:orientation="vertical"
-            app:layout_constraintBottom_toTopOf="@+id/rejectButton"
+            app:layout_constraintBottom_toTopOf="@+id/dDeliverButton"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.9"
             app:layout_constraintStart_toStartOf="parent"
@@ -218,14 +218,15 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <Button
-            android:id="@+id/rejectButton"
+            android:id="@+id/dCashOnDeliveryButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="5dp"
             android:onClick="@{() -> viewModel.onPaidAndDeliveredButtonClicked()}"
-            android:text="Paid + Delivered Orders"
+            android:text="Collected Cash"
             android:textAllCaps="false"
             android:textSize="12sp"
+            android:visibility="gone"
             app:buttonStatus="@{!viewModel.isProgressBarActive().booleanValue()}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/dDeliverButton"
@@ -236,16 +237,15 @@
             android:id="@+id/dDeliverButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
             android:onClick="@{() -> viewModel.onDeliverButtonClicked()}"
             android:text="Delivered Orders"
             android:textAllCaps="false"
             android:textSize="12sp"
             app:buttonStatus="@{!viewModel.isProgressBarActive().booleanValue()}"
-            app:layout_constraintBottom_toBottomOf="@+id/rejectButton"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/rejectButton"
-            app:layout_constraintTop_toTopOf="@+id/rejectButton" />
+            app:layout_constraintStart_toStartOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

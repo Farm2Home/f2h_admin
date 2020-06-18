@@ -401,7 +401,7 @@ class DeliverViewModel(val database: SessionDatabaseDao, application: Applicatio
             var updateRequest = OrderUpdateRequest(
                 orderId = element.orderId,
                 orderStatus = ORDER_STATUS_DELIVERED,
-                paymentStatus = null,
+                paymentStatus = PAYMENT_STATUS_PAID,
                 orderedQuantity = null,
                 confirmedQuantity = null,
                 discountAmount = null,
