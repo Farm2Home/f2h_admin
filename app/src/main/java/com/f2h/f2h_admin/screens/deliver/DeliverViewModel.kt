@@ -8,7 +8,6 @@ import androidx.lifecycle.MutableLiveData
 import com.f2h.f2h_admin.constants.F2HConstants.ORDER_STATUS_CONFIRMED
 import com.f2h.f2h_admin.constants.F2HConstants.ORDER_STATUS_DELIVERED
 import com.f2h.f2h_admin.constants.F2HConstants.ORDER_STATUS_ORDERED
-import com.f2h.f2h_admin.constants.F2HConstants.ORDER_STATUS_REJECTED
 import com.f2h.f2h_admin.constants.F2HConstants.PAYMENT_STATUS_PAID
 import com.f2h.f2h_admin.constants.F2HConstants.PAYMENT_STATUS_PENDING
 import com.f2h.f2h_admin.database.SessionDatabaseDao
@@ -16,6 +15,7 @@ import com.f2h.f2h_admin.database.SessionEntity
 import com.f2h.f2h_admin.network.ItemAvailabilityApi
 import com.f2h.f2h_admin.network.OrderApi
 import com.f2h.f2h_admin.network.UserApi
+import com.f2h.f2h_admin.network.WalletApi
 import com.f2h.f2h_admin.network.models.*
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
@@ -146,7 +146,9 @@ class DeliverViewModel(val database: SessionDatabaseDao, application: Applicatio
             uiElement.paymentStatus = order.paymentStatus ?: ""
             uiElement.deliveryComment = order.deliveryComment ?: ""
             uiElement.buyerName = userDetailsList.filter { x -> x.userId?.equals(order.buyerUserId) ?: false }.single().userName ?: ""
+            uiElement.buyerUserId = order.buyerUserId ?: -1
             uiElement.sellerName = userDetailsList.filter { x -> x.userId?.equals(order.sellerUserId) ?: false }.single().userName ?: ""
+            uiElement.sellerUserId = order.sellerUserId ?: -1
             uiElement.deliveryAddress = order.deliveryLocation ?: ""
             uiElement.displayQuantity = getDisplayQuantity(uiElement.orderStatus, uiElement.orderedQuantity, uiElement.confirmedQuantity)
             allUiData.add(uiElement)
@@ -180,30 +182,37 @@ class DeliverViewModel(val database: SessionDatabaseDao, application: Applicatio
 
 
     private fun createAllUiFilters() {
-        _reportUiFilterModel.value?.itemList = arrayListOf("ALL").plus(allUiData.sortedBy { uiElement -> uiElement.itemName }
+        _reportUiFilterModel.value?.itemList = arrayListOf("ALL").plus(allUiData
             .filter { uiElement -> !uiElement.itemName.isBlank() }
-            .map { uiElement -> uiElement.itemName }.distinct().sorted())
+            .distinctBy { it.itemId }
+            .map { uiElement -> generateUniqueFilterName(uiElement.itemName, uiElement.itemId) }.sorted())
 
         _reportUiFilterModel.value?.orderStatusList = arrayListOf("ALL", "Open Orders", "Delivered Orders", "Payment Pending")
 
-        _reportUiFilterModel.value?.paymentStatusList = arrayListOf("ALL").plus(allUiData.sortedBy { uiElement -> uiElement.paymentStatus }
+        _reportUiFilterModel.value?.paymentStatusList = arrayListOf("ALL").plus(allUiData
             .filter { uiElement -> !uiElement.paymentStatus.isBlank() }
             .map { uiElement -> uiElement.paymentStatus }.distinct().sorted())
 
-        _reportUiFilterModel.value?.buyerNameList = arrayListOf("ALL").plus(allUiData.sortedBy { uiElement -> uiElement.buyerName }
+        _reportUiFilterModel.value?.buyerNameList = arrayListOf("ALL").plus(allUiData
             .filter { uiElement -> !uiElement.buyerName.isBlank() }
-            .map { uiElement -> uiElement.buyerName }.distinct().sorted())
+            .distinctBy { it.buyerUserId }
+            .map { uiElement -> generateUniqueFilterName(uiElement.buyerName,uiElement.buyerUserId) }.sorted())
 
-        _reportUiFilterModel.value?.farmerNameList = arrayListOf("ALL").plus(allUiData.sortedBy { uiElement -> uiElement.sellerName }
+        _reportUiFilterModel.value?.farmerNameList = arrayListOf("ALL").plus(allUiData
             .filter { uiElement -> !uiElement.sellerName.isBlank() }
-            .map { uiElement -> uiElement.sellerName }.distinct().sorted())
+            .distinctBy { it.sellerUserId }
+            .map { uiElement -> generateUniqueFilterName(uiElement.sellerName,uiElement.sellerUserId)  }.sorted())
 
-        _reportUiFilterModel.value?.timeFilterList = arrayListOf("Today", "Tomorrow", "Next 7 days")
+        _reportUiFilterModel.value?.timeFilterList = arrayListOf("Today", "Tomorrow", "Next 7 days", "Last 15 days")
 
         //Refresh filter
         _reportUiFilterModel.value = _reportUiFilterModel.value
     }
 
+
+    private fun generateUniqueFilterName(name: String, id: Long): String{
+        return String.format("%s (%s)",name, id.toString())
+    }
 
     private fun filterVisibleItems() {
         val elements = allUiData
@@ -218,11 +227,11 @@ class DeliverViewModel(val database: SessionDatabaseDao, application: Applicatio
         val selectedFarmer = reportUiFilterModel.value?.selectedFarmer ?: ""
 
         elements.forEach { element ->
-            if ((selectedItem == "ALL" || element.itemName.equals(selectedItem)) &&
+            if ((selectedItem == "ALL" || generateUniqueFilterName(element.itemName, element.itemId).equals(selectedItem)) &&
                 (selectedOrderStatus == "ALL" || selectedOrderStatus.split(",").contains(element.orderStatus)) &&
                 (selectedPaymentStatus == "ALL" || element.paymentStatus.equals(selectedPaymentStatus))  &&
-                (selectedBuyer == "ALL" || element.buyerName.equals(selectedBuyer)) &&
-                (selectedFarmer == "ALL" || element.sellerName.equals(selectedFarmer)) &&
+                (selectedBuyer == "ALL" || generateUniqueFilterName(element.buyerName, element.buyerUserId).equals(selectedBuyer)) &&
+                (selectedFarmer == "ALL" || generateUniqueFilterName(element.sellerName, element.sellerUserId).equals(selectedFarmer)) &&
                 (isInSelectedDateRange(element, selectedStartDate, selectedEndDate))) {
 
                 //TODO - add date range not just one date
@@ -299,6 +308,7 @@ class DeliverViewModel(val database: SessionDatabaseDao, application: Applicatio
         if (position.equals(0)) setTimeFilterRange(0,0) //Today
         if (position.equals(1)) setTimeFilterRange(1,1) //Tomorrow
         if (position.equals(2)) setTimeFilterRange(0,7) //Next 7 Days
+        if (position.equals(3)) setTimeFilterRange(-15,0)  //Last 15 days
         filterVisibleItems()
     }
 
@@ -345,47 +355,63 @@ class DeliverViewModel(val database: SessionDatabaseDao, application: Applicatio
     }
 
 
-    fun onPaidAndDeliveredButtonClicked() {
-        var orderUpdateRequests = createPaidAndDeliveredOrderRequests(visibleUiData.value)
+    // TODO Change this API call to call a POST method
+    // that accepts a list of transaction
+    fun onCashCollectedbuttonClicked() {
+        var orderUpdateRequests = createWalletTransactionRequestObject(visibleUiData.value)
         _isProgressBarActive.value = true;
         coroutineScope.launch {
-            var updateOrdersDataDeferred = OrderApi.retrofitService.updateOrders(orderUpdateRequests)
-            try{
-                updateOrdersDataDeferred.await()
-                _toastMessage.value = "Successfully paid and delivered orders"
-                getOrdersReportForGroup()
-            } catch (t:Throwable){
-                _toastMessage.value = "Oops, Something went wrong " + t.message
+            orderUpdateRequests.forEach { request ->
+                val createTransactionDeferred =
+                    WalletApi.retrofitService.createWalletTransaction(request)
+                try {
+                    createTransactionDeferred.await()
+                    getOrdersReportForGroup()
+                } catch (t: Throwable) {
+                    _toastMessage.value = "Oops, Something went wrong " + t.message
+                }
             }
+            onDeliverButtonClicked()
+            _toastMessage.value = "Successfully paid and delivered orders"
         }
     }
 
-    private fun createPaidAndDeliveredOrderRequests(uiDataElements: MutableList<DeliverItemsModel>?): List<OrderUpdateRequest> {
-        var orderUpdateRequestList: ArrayList<OrderUpdateRequest> = arrayListOf()
-        uiDataElements?.filter { it.isItemChecked }?.forEach { element ->
-            var updateRequest = OrderUpdateRequest(
+
+    private fun createWalletTransactionRequestObject(uiDataElements: MutableList<DeliverItemsModel>?): List<WalletTransactionRequest> {
+        var transactionRequestList: ArrayList<WalletTransactionRequest> = arrayListOf()
+        val timeZone = TimeZone.getTimeZone("UTC")
+        TimeZone.setDefault(timeZone)
+        var today = Calendar.getInstance(timeZone)
+        val formatter: DateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+        uiDataElements?.filter { it.isItemChecked &&
+                it.orderStatus.equals(ORDER_STATUS_DELIVERED) &&
+                it.paymentStatus.equals(PAYMENT_STATUS_PENDING) }
+            ?.forEach { element ->
+            var transactionRequest = WalletTransactionRequest (
+                recipientUserId = element.buyerUserId,
+                groupId = sessionData.value?.groupId,
                 orderId = element.orderId,
-                orderStatus = ORDER_STATUS_DELIVERED,
-                paymentStatus = PAYMENT_STATUS_PAID,
-                orderedQuantity = null,
-                confirmedQuantity = null,
-                discountAmount = null,
-                orderedAmount = null,
-                orderComment = null,
-                deliveryComment = element.deliveryComment
+                transactionDate = formatter.format(today.time),
+                transactionDescription = String.format("Cash collected for order# %s, %s, %s", element.orderId, element.itemName, element.deliveryComment),
+                amount = element.orderAmount
             )
-            orderUpdateRequestList.add(updateRequest)
+                transactionRequestList.add(transactionRequest)
         }
-        return orderUpdateRequestList
+
+        return transactionRequestList
     }
 
 
     fun onDeliverButtonClicked() {
-        var orderUpdateRequests = createDeliverOrderRequests(visibleUiData.value)
+        var confirmUnconfirmedOrdersRequest = createConfirmedOrderRequests(visibleUiData.value)
+        var deliveredOrderUpdateRequests = createDeliverOrderRequests(visibleUiData.value)
         _isProgressBarActive.value = true
         coroutineScope.launch {
-            var updateOrdersDataDeferred = OrderApi.retrofitService.updateOrders(orderUpdateRequests)
+            var confirmOrdersDataDeferred = OrderApi.retrofitService.updateOrders(confirmUnconfirmedOrdersRequest)
+            var updateOrdersDataDeferred = OrderApi.retrofitService.updateOrders(deliveredOrderUpdateRequests)
             try{
+                //Confirm orders first then move them to delivered
+                confirmOrdersDataDeferred.await()
                 updateOrdersDataDeferred.await()
                 _toastMessage.value = "Successfully delivered orders"
                 getOrdersReportForGroup()
@@ -394,6 +420,7 @@ class DeliverViewModel(val database: SessionDatabaseDao, application: Applicatio
             }
         }
     }
+
 
     private fun createDeliverOrderRequests(uiDataElements: MutableList<DeliverItemsModel>?): List<OrderUpdateRequest> {
         var orderUpdateRequestList: ArrayList<OrderUpdateRequest> = arrayListOf()
@@ -412,6 +439,30 @@ class DeliverViewModel(val database: SessionDatabaseDao, application: Applicatio
             orderUpdateRequestList.add(updateRequest)
         }
         return orderUpdateRequestList
+    }
+
+
+    private fun createConfirmedOrderRequests(uiDataElements: MutableList<DeliverItemsModel>?): List<OrderUpdateRequest> {
+        var orderUpdateRequestList: ArrayList<OrderUpdateRequest> = arrayListOf()
+        uiDataElements?.filter { it.isItemChecked && it.orderStatus.equals(ORDER_STATUS_ORDERED)}?.forEach { element ->
+            var updateRequest = OrderUpdateRequest(
+                orderId = element.orderId,
+                orderStatus = ORDER_STATUS_CONFIRMED,
+                paymentStatus = "",
+                orderedQuantity = null,
+                confirmedQuantity = element.confirmedQuantity,
+                discountAmount = element.discountAmount,
+                orderedAmount = calculateOrderAmount(element),
+                orderComment = "Successfully confirmed order",
+                deliveryComment = null
+            )
+            orderUpdateRequestList.add(updateRequest)
+        }
+        return orderUpdateRequestList
+    }
+
+    private fun calculateOrderAmount(element: DeliverItemsModel): Double {
+        return element.confirmedQuantity * element.price - element.discountAmount
     }
 
 }

@@ -53,6 +53,7 @@ fun Button.setQuantityChangeButtonState(data: ConfirmRejectItemsModel){
         isEnabled = false
         return
     }
+    isEnabled = true
 }
 
 

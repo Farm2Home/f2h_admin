@@ -15,24 +15,14 @@
         android:layout_height="match_parent"
         tools:context=".screens.report.ReportFragment">
 
-        <View
-            android:id="@+id/view4"
-            android:layout_width="0dp"
-            android:layout_height="0.5dp"
-            android:background="@color/grey"
-            app:layout_constraintBottom_toTopOf="@+id/horizontalScrollView"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
 
         <HorizontalScrollView
             android:id="@+id/horizontalScrollView"
             android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:layout_marginTop="5dp"
+            android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/orderStatusSelector">
+            app:layout_constraintTop_toTopOf="parent">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="wrap_content"
@@ -44,9 +34,57 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
+
+                <Spinner
+                    android:id="@+id/orderStatusSelector"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginBottom="5dp"
+                    android:ellipsize="end"
+                    android:entries="@{viewModel.reportUiFilterModel.orderStatusList}"
+                    android:singleLine="true"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/selectAllCheckBox"
+                    app:layout_constraintTop_toBottomOf="@+id/textView10" />
+
+                <Spinner
+                    android:id="@+id/timeFilterSelector"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:ellipsize="end"
+                    android:entries="@{viewModel.reportUiFilterModel.timeFilterList}"
+                    android:singleLine="true"
+                    android:visibility="visible"
+                    app:layout_constraintBottom_toBottomOf="@+id/orderStatusSelector"
+                    app:layout_constraintStart_toEndOf="@+id/orderStatusSelector"
+                    app:layout_constraintTop_toTopOf="@+id/orderStatusSelector" />
+
+                <TextView
+                    android:id="@+id/textView10"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:text="Order Status"
+                    android:textSize="12sp"
+                    app:layout_constraintStart_toStartOf="@+id/orderStatusSelector"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/textView4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:text="Time Filter"
+                    android:textSize="12sp"
+                    app:layout_constraintStart_toStartOf="@+id/timeFilterSelector"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
                 <Spinner
                     android:id="@+id/buyerNameSelector"
-                    android:layout_width="120dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:layout_marginBottom="5dp"
@@ -59,32 +97,32 @@
                     android:id="@+id/textView20"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
                     android:text="Buyer"
+                    android:textSize="12sp"
                     app:layout_constraintStart_toStartOf="@+id/buyerNameSelector"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="@+id/textView8" />
 
                 <TextView
                     android:id="@+id/textView8"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
                     android:layout_marginTop="5dp"
                     android:text="Select Item"
                     android:textSize="12sp"
-                    app:layout_constraintStart_toEndOf="@+id/selectAllCheckBox"
+                    app:layout_constraintStart_toStartOf="@+id/itemSelector"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <Spinner
                     android:id="@+id/itemSelector"
-                    android:layout_width="120dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
                     android:layout_marginBottom="5dp"
                     android:ellipsize="end"
                     android:entries="@{viewModel.reportUiFilterModel.itemList}"
                     android:singleLine="true"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="@+id/textView8"
+                    app:layout_constraintStart_toEndOf="@+id/timeFilterSelector"
                     app:layout_constraintTop_toBottomOf="@+id/textView8" />
 
                 <Spinner
@@ -95,18 +133,17 @@
                     android:layout_marginBottom="5dp"
                     android:entries="@{viewModel.reportUiFilterModel.farmerNameList}"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/buyerNameSelector" />
+                    app:layout_constraintStart_toEndOf="@+id/buyerNameSelector"
+                    app:layout_constraintTop_toBottomOf="@+id/textView3" />
 
                 <TextView
                     android:id="@+id/textView3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
                     android:text="Farmer"
-                    app:layout_constraintBottom_toTopOf="@+id/farmerNameSelector"
+                    android:textSize="12sp"
                     app:layout_constraintStart_toStartOf="@+id/farmerNameSelector"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="1.0" />
+                    app:layout_constraintTop_toTopOf="@+id/textView20" />
 
                 <CheckBox
                     android:id="@+id/selectAllCheckBox"
@@ -122,12 +159,14 @@
         </HorizontalScrollView>
 
         <View
+            android:id="@+id/view5"
             android:layout_width="0dp"
             android:layout_height="0.5dp"
             android:background="@color/grey"
             app:layout_constraintBottom_toBottomOf="@+id/horizontalScrollView"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/horizontalScrollView" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraintLayout2"
@@ -167,66 +206,16 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-        <Spinner
-            android:id="@+id/orderStatusSelector"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:ellipsize="end"
-            android:entries="@{viewModel.reportUiFilterModel.orderStatusList}"
-            android:singleLine="true"
-            app:layout_constraintEnd_toStartOf="@+id/timeFilterSelector"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView10" />
-
-        <Spinner
-            android:id="@+id/timeFilterSelector"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginBottom="5dp"
-            android:ellipsize="end"
-            android:entries="@{viewModel.reportUiFilterModel.timeFilterList}"
-            android:singleLine="true"
-            android:visibility="visible"
-            app:layout_constraintBottom_toTopOf="@+id/horizontalScrollView"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/orderStatusSelector" />
-
-        <TextView
-            android:id="@+id/textView10"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:text="Order Status"
-            android:textSize="12sp"
-            app:layout_constraintStart_toStartOf="@+id/orderStatusSelector"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/textView4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:text="Time Filter"
-            android:textSize="12sp"
-            app:layout_constraintBottom_toTopOf="@+id/timeFilterSelector"
-            app:layout_constraintStart_toStartOf="@+id/timeFilterSelector"
-            app:layout_constraintTop_toTopOf="parent" />
-
         <Button
             android:id="@+id/dCashOnDeliveryButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="5dp"
-            android:onClick="@{() -> viewModel.onPaidAndDeliveredButtonClicked()}"
-            android:text="Collected Cash"
+            android:onClick="@{() -> viewModel.onCashCollectedbuttonClicked()}"
+            android:text="Collect Cash"
             android:textAllCaps="false"
             android:textSize="12sp"
-            android:visibility="gone"
+            android:visibility="visible"
             app:buttonStatus="@{!viewModel.isProgressBarActive().booleanValue()}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/dDeliverButton"
@@ -239,13 +228,14 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="5dp"
             android:onClick="@{() -> viewModel.onDeliverButtonClicked()}"
-            android:text="Delivered Orders"
+            android:text="@string/deliver_orders"
             android:textAllCaps="false"
             android:textSize="12sp"
             app:buttonStatus="@{!viewModel.isProgressBarActive().booleanValue()}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/dCashOnDeliveryButton" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

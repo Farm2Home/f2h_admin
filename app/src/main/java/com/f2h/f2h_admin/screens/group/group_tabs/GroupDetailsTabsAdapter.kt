@@ -10,7 +10,7 @@ import com.f2h.f2h_admin.screens.group.group_wallet.GroupWalletFragment
 
 class GroupDetailsTabsAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
 
-    override fun getItemCount(): Int = 3
+    override fun getItemCount(): Int = 2
     override fun createFragment(position: Int): Fragment {
         when(position) {
             0 -> {
@@ -20,11 +20,6 @@ class GroupDetailsTabsAdapter(fragment: Fragment) : FragmentStateAdapter(fragmen
 
             1 -> {
                 val fragment = AllItemsFragment()
-                return fragment
-            }
-
-            2 -> {
-                val fragment = ConfirmRejectFragment()
                 return fragment
             }
         }

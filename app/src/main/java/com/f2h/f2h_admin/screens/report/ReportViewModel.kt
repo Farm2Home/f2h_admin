@@ -132,6 +132,8 @@ class ReportViewModel(val database: SessionDatabaseDao, application: Application
             uiElement.orderStatus = order.orderStatus ?: ""
             uiElement.paymentStatus = order.paymentStatus ?: ""
             uiElement.orderComment = order.orderComment ?: ""
+            uiElement.buyerUserId = order.buyerUserId ?: -1
+            uiElement.sellerUserId = order.sellerUserId ?: -1
             uiElement.buyerName = userDetailsList.filter { x -> x.userId?.equals(order.buyerUserId) ?: false }.single().userName ?: ""
             uiElement.sellerName = userDetailsList.filter { x -> x.userId?.equals(order.sellerUserId) ?: false }.single().userName ?: ""
             uiElement.deliveryAddress = order.deliveryLocation ?: ""
@@ -152,23 +154,26 @@ class ReportViewModel(val database: SessionDatabaseDao, application: Application
     private fun createAllUiFilters(): ReportUiModel {
         var filters = ReportUiModel()
 
-        filters.itemList = arrayListOf("ALL").plus(allUiData.sortedBy { uiElement -> uiElement.itemName }
+        filters.itemList = arrayListOf("ALL").plus(allUiData
             .filter { uiElement -> !uiElement.itemName.isNullOrBlank() }
-            .map { uiElement -> uiElement.itemName }.distinct().sorted())
+            .distinctBy { it.itemId }
+            .map { uiElement -> generateUniqueFilterName(uiElement.itemName, uiElement.itemId) }.sorted())
 
         filters.orderStatusList = arrayListOf("ALL", "Open Orders", "Delivered Orders", "Payment Pending")
 
-        filters.paymentStatusList = arrayListOf("ALL").plus(allUiData.sortedBy { uiElement -> uiElement.paymentStatus }
+        filters.paymentStatusList = arrayListOf("ALL").plus(allUiData
             .filter { uiElement -> !uiElement.paymentStatus.isNullOrBlank() }
-            .map { uiElement -> uiElement.paymentStatus }.distinct().sorted())
+            .map { uiElement -> uiElement.paymentStatus }.sorted())
 
-        filters.buyerNameList = arrayListOf("ALL").plus(allUiData.sortedBy { uiElement -> uiElement.buyerName }
+        filters.buyerNameList = arrayListOf("ALL").plus(allUiData
             .filter { uiElement -> !uiElement.buyerName.isNullOrBlank() }
-            .map { uiElement -> uiElement.buyerName }.distinct().sorted())
+            .distinctBy { it.buyerUserId }
+            .map { uiElement -> generateUniqueFilterName(uiElement.buyerName,uiElement.buyerUserId) }.sorted())
 
-        filters.farmerNameList = arrayListOf("ALL").plus(allUiData.sortedBy { uiElement -> uiElement.sellerName }
+        filters.farmerNameList = arrayListOf("ALL").plus(allUiData
             .filter { uiElement -> !uiElement.sellerName.isNullOrBlank() }
-            .map { uiElement -> uiElement.sellerName }.distinct().sorted())
+            .distinctBy { it.sellerUserId }
+            .map { uiElement -> generateUniqueFilterName(uiElement.sellerName,uiElement.sellerUserId) }.sorted())
 
         filters.timeFilterList = arrayListOf("Today", "Tomorrow", "Next 7 days", "Last 7 days", "Last 15 days", "Last 30 days")
 
@@ -182,6 +187,9 @@ class ReportViewModel(val database: SessionDatabaseDao, application: Application
         return filters
     }
 
+    private fun generateUniqueFilterName(name: String, id: Long): String{
+        return String.format("%s (%s)",name, id.toString())
+    }
 
     private fun filterVisibleItems() {
         val elements = allUiData
@@ -196,11 +204,11 @@ class ReportViewModel(val database: SessionDatabaseDao, application: Application
         var selectedFarmer = reportUiFilterModel.value?.selectedFarmer ?: ""
 
         elements.forEach { element ->
-            if ((selectedItem == "ALL" || element.itemName.equals(selectedItem)) &&
+            if ((selectedItem == "ALL" || generateUniqueFilterName(element.itemName, element.itemId).equals(selectedItem)) &&
                 (selectedOrderStatus == "ALL" || selectedOrderStatus.split(",").contains(element.orderStatus)) &&
                 (selectedPaymentStatus == "ALL" || element.paymentStatus.equals(selectedPaymentStatus))  &&
-                (selectedBuyer == "ALL" || element.buyerName.equals(selectedBuyer)) &&
-                (selectedFarmer == "ALL" || element.sellerName.equals(selectedFarmer)) &&
+                (selectedBuyer == "ALL" || generateUniqueFilterName(element.buyerName,element.buyerUserId).equals(selectedBuyer)) &&
+                (selectedFarmer == "ALL" || generateUniqueFilterName(element.sellerName,element.sellerUserId).equals(selectedFarmer)) &&
                 (isInSelectedDateRange(element, selectedStartDate, selectedEndDate))) {
 
                 //TODO - add date range not just one date

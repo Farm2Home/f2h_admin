@@ -7,6 +7,8 @@ data class ReportItemsModel (
     var itemDescription: String = "",
     var buyerName: String = "",
     var sellerName: String= "",
+    var buyerUserId: Long = 0,
+    var sellerUserId: Long = 0,
     var price: Double = 0.0,
     var itemUom: String = "",
     var itemImageLink: String = "",

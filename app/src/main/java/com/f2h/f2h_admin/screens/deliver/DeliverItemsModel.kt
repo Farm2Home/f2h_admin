@@ -7,6 +7,8 @@ data class DeliverItemsModel (
     var itemName: String = "",
     var itemDescription: String = "",
     var buyerName: String = "",
+    var buyerUserId: Long = 0,
+    var sellerUserId: Long = 0,
     var sellerName: String= "",
     var price: Double = 0.0,
     var itemUom: String = "",
