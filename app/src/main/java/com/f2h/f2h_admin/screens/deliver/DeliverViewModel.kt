@@ -359,6 +359,8 @@ class DeliverViewModel(val database: SessionDatabaseDao, application: Applicatio
     // that accepts a list of transaction
     fun onCashCollectedbuttonClicked() {
         var orderUpdateRequests = createWalletTransactionRequestObject(visibleUiData.value)
+        var confirmUnconfirmedOrdersRequest = createConfirmedOrderRequests(visibleUiData.value)
+        var deliveredOrderUpdateRequests = createDeliverOrderRequests(visibleUiData.value)
         _isProgressBarActive.value = true;
         coroutineScope.launch {
             orderUpdateRequests.forEach { request ->
@@ -371,8 +373,17 @@ class DeliverViewModel(val database: SessionDatabaseDao, application: Applicatio
                     _toastMessage.value = "Oops, Something went wrong " + t.message
                 }
             }
-            onDeliverButtonClicked()
-            _toastMessage.value = "Successfully paid and delivered orders"
+            var confirmOrdersDataDeferred = OrderApi.retrofitService.updateOrders(confirmUnconfirmedOrdersRequest)
+            var updateOrdersDataDeferred = OrderApi.retrofitService.updateOrders(deliveredOrderUpdateRequests)
+            try{
+                //Confirm orders first then move them to delivered
+                confirmOrdersDataDeferred.await()
+                updateOrdersDataDeferred.await()
+                _toastMessage.value = "Successfully paid and delivered orders"
+                getOrdersReportForGroup()
+            } catch (t:Throwable){
+                _toastMessage.value = "Oops, Something went wrong " + t.message
+            }
         }
     }
 
