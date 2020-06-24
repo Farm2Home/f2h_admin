@@ -40,6 +40,9 @@ interface OrderApiService {
     @PUT("orders/update_all")
     fun updateOrders(@Body orderUpdateRequests: List<OrderUpdateRequest>): Deferred<List<Order>>
 
+    @PUT("orders/cash_collected")
+    fun cashCollectedAndUpdateOrders(@Body orderUpdateRequests: List<OrderUpdateRequest>): Deferred<List<Order>>
+
     @POST("orders/save_all")
     fun createOrders(@Body createOrders: List<OrderCreateRequest>): Deferred<List<Order>>
 

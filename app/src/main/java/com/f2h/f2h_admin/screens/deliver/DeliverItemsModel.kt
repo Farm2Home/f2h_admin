@@ -6,6 +6,8 @@ data class DeliverItemsModel (
     var orderedDate: String = "",
     var itemName: String = "",
     var itemDescription: String = "",
+    var buyerMobile: String = "",
+    var sellerMobile: String = "",
     var buyerName: String = "",
     var buyerUserId: Long = 0,
     var sellerUserId: Long = 0,

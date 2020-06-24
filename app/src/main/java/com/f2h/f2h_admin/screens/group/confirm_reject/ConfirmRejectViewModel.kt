@@ -138,6 +138,14 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
             } else {
                 uiElement.confirmedQuantity = order.confirmedQuantity ?: 0.0
             }
+
+            val buyerUserDetails = userDetailsList.filter { x -> x.userId?.equals(order.buyerUserId) ?: false }.single()
+            val sellerUserDetails = userDetailsList.filter { x -> x.userId?.equals(order.sellerUserId) ?: false }.single()
+            uiElement.buyerName = buyerUserDetails.userName ?: ""
+            uiElement.buyerMobile = buyerUserDetails.mobile ?: ""
+            uiElement.sellerName = sellerUserDetails.userName ?: ""
+            uiElement.sellerMobile = sellerUserDetails.mobile ?: ""
+
             uiElement.orderId = order.orderId ?: -1L
             uiElement.orderAmount = order.orderedAmount ?: 0.0
             uiElement.discountAmount = order.discountAmount ?: 0.0
@@ -146,8 +154,6 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
             uiElement.orderComment = order.orderComment ?: ""
             uiElement.buyerUserId = order.buyerUserId ?: -1
             uiElement.sellerUserId = order.sellerUserId ?: -1
-            uiElement.buyerName = userDetailsList.filter { x -> x.userId?.equals(order.buyerUserId) ?: false }.single().userName ?: ""
-            uiElement.sellerName = userDetailsList.filter { x -> x.userId?.equals(order.sellerUserId) ?: false }.single().userName ?: ""
             uiElement.deliveryAddress = order.deliveryLocation ?: ""
             uiElement.displayQuantity = getDisplayQuantity(uiElement.orderStatus, uiElement.orderedQuantity, uiElement.confirmedQuantity)
             allUiData.add(uiElement)
@@ -183,7 +189,7 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
         _reportUiFilterModel.value?.itemList = arrayListOf("ALL").plus(allUiData
             .filter { uiElement -> !uiElement.itemName.isBlank() }
             .distinctBy { it.itemId }
-            .map { uiElement -> generateUniqueFilterName(uiElement.itemName, uiElement.itemId) }.sorted())
+            .map { uiElement -> generateUniqueFilterName(uiElement.itemName, uiElement.itemId.toString()) }.sorted())
 
         _reportUiFilterModel.value?.orderStatusList = arrayListOf("ALL", "Open Orders", "Delivered Orders", "Payment Pending")
 
@@ -194,21 +200,21 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
         _reportUiFilterModel.value?.buyerNameList = arrayListOf("ALL").plus(allUiData
             .filter { uiElement -> !uiElement.buyerName.isBlank() }
             .distinctBy { it.buyerUserId }
-            .map { uiElement -> generateUniqueFilterName(uiElement.buyerName,uiElement.buyerUserId) }.sorted())
+            .map { uiElement -> generateUniqueFilterName(uiElement.buyerName,uiElement.buyerMobile) }.sorted())
 
         _reportUiFilterModel.value?.farmerNameList = arrayListOf("ALL").plus(allUiData
             .filter { uiElement -> !uiElement.sellerName.isBlank() }
             .distinctBy { it.sellerUserId }
-            .map { uiElement -> generateUniqueFilterName(uiElement.sellerName,uiElement.sellerUserId) }.sorted())
+            .map { uiElement -> generateUniqueFilterName(uiElement.sellerName,uiElement.sellerMobile) }.sorted())
 
-        _reportUiFilterModel.value?.timeFilterList = arrayListOf("Today", "Tomorrow", "Next 7 days", "Last 15 days")
+        _reportUiFilterModel.value?.timeFilterList = arrayListOf("Today", "Tomorrow", "Next 7 days", "Last 15 days", "Last 30 days")
 
         //Refresh filter
         _reportUiFilterModel.value = _reportUiFilterModel.value
     }
 
-    private fun generateUniqueFilterName(name: String, id: Long): String{
-        return String.format("%s (%s)",name, id.toString())
+    private fun generateUniqueFilterName(name: String, mobile: String): String{
+        return String.format("%s (%s)",name, mobile)
     }
 
 
@@ -225,12 +231,11 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
         val selectedFarmer = reportUiFilterModel.value?.selectedFarmer ?: ""
 
         elements.forEach { element ->
-            if ((selectedItem == "ALL" || generateUniqueFilterName(element.itemName, element.itemId).equals(selectedItem)) &&
+            if ((selectedItem == "ALL" || generateUniqueFilterName(element.itemName, element.itemId.toString()).equals(selectedItem)) &&
                 (selectedOrderStatus == "ALL" || selectedOrderStatus.split(",").contains(element.orderStatus)) &&
                 (selectedPaymentStatus == "ALL" || element.paymentStatus.equals(selectedPaymentStatus))  &&
-                (selectedBuyer == "ALL" || generateUniqueFilterName(element.buyerName,element.buyerUserId).equals(selectedBuyer)) &&
-                (selectedFarmer == "ALL" || generateUniqueFilterName(element.sellerName,element.sellerUserId).equals(selectedFarmer)) &&
-                (isInSelectedDateRange(element, selectedStartDate, selectedEndDate))) {
+                (selectedBuyer == "ALL" || generateUniqueFilterName(element.buyerName, element.buyerMobile).equals(selectedBuyer)) &&
+                (selectedFarmer == "ALL" || generateUniqueFilterName(element.sellerName, element.sellerMobile).equals(selectedFarmer)) &&                (isInSelectedDateRange(element, selectedStartDate, selectedEndDate))) {
 
                 //TODO - add date range not just one date
                 filteredItems.add(element)
@@ -307,6 +312,7 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
         if (position.equals(1)) setTimeFilterRange(1,1) //Tomorrow
         if (position.equals(2)) setTimeFilterRange(0,7) //Next 7 Days
         if (position.equals(3)) setTimeFilterRange(-15,0)  //Last 15 days
+        if (position.equals(4)) setTimeFilterRange(-30,0)  //Last 30 days
         filterVisibleItems()
     }
 

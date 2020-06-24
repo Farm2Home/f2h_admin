@@ -8,6 +8,8 @@ data class ConfirmRejectItemsModel (
     var itemDescription: String = "",
     var buyerName: String = "",
     var sellerName: String= "",
+    var buyerMobile: String = "",
+    var sellerMobile: String = "",
     var buyerUserId: Long = 0,
     var sellerUserId: Long = 0,
     var price: Double = 0.0,

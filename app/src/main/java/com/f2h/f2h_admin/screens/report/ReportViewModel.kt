@@ -123,6 +123,14 @@ class ReportViewModel(val database: SessionDatabaseDao, application: Application
                 uiElement.itemImageLink = item.imageLink ?: ""
                 uiElement.price = item.pricePerUnit ?: 0.0
             }
+
+            val buyerUserDetails = userDetailsList.filter { x -> x.userId?.equals(order.buyerUserId) ?: false }.single()
+            val sellerUserDetails = userDetailsList.filter { x -> x.userId?.equals(order.sellerUserId) ?: false }.single()
+            uiElement.buyerName = buyerUserDetails.userName ?: ""
+            uiElement.buyerMobile = buyerUserDetails.mobile ?: ""
+            uiElement.sellerName = sellerUserDetails.userName ?: ""
+            uiElement.sellerMobile = sellerUserDetails.mobile ?: ""
+
             uiElement.orderedDate = formatter.format(df.parse(order.orderedDate))
             uiElement.orderedQuantity = order.orderedQuantity ?: 0.0
             uiElement.confirmedQuantity = order.confirmedQuantity ?: 0.0
@@ -134,8 +142,6 @@ class ReportViewModel(val database: SessionDatabaseDao, application: Application
             uiElement.orderComment = order.orderComment ?: ""
             uiElement.buyerUserId = order.buyerUserId ?: -1
             uiElement.sellerUserId = order.sellerUserId ?: -1
-            uiElement.buyerName = userDetailsList.filter { x -> x.userId?.equals(order.buyerUserId) ?: false }.single().userName ?: ""
-            uiElement.sellerName = userDetailsList.filter { x -> x.userId?.equals(order.sellerUserId) ?: false }.single().userName ?: ""
             uiElement.deliveryAddress = order.deliveryLocation ?: ""
             uiElement.displayQuantity = getDisplayQuantity(uiElement.orderStatus, uiElement.orderedQuantity, uiElement.confirmedQuantity)
             allUiData.add(uiElement)
@@ -157,7 +163,7 @@ class ReportViewModel(val database: SessionDatabaseDao, application: Application
         filters.itemList = arrayListOf("ALL").plus(allUiData
             .filter { uiElement -> !uiElement.itemName.isNullOrBlank() }
             .distinctBy { it.itemId }
-            .map { uiElement -> generateUniqueFilterName(uiElement.itemName, uiElement.itemId) }.sorted())
+            .map { uiElement -> generateUniqueFilterName(uiElement.itemName, uiElement.itemId.toString()) }.sorted())
 
         filters.orderStatusList = arrayListOf("ALL", "Open Orders", "Delivered Orders", "Payment Pending")
 
@@ -168,12 +174,12 @@ class ReportViewModel(val database: SessionDatabaseDao, application: Application
         filters.buyerNameList = arrayListOf("ALL").plus(allUiData
             .filter { uiElement -> !uiElement.buyerName.isNullOrBlank() }
             .distinctBy { it.buyerUserId }
-            .map { uiElement -> generateUniqueFilterName(uiElement.buyerName,uiElement.buyerUserId) }.sorted())
+            .map { uiElement -> generateUniqueFilterName(uiElement.buyerName,uiElement.buyerMobile) }.sorted())
 
         filters.farmerNameList = arrayListOf("ALL").plus(allUiData
             .filter { uiElement -> !uiElement.sellerName.isNullOrBlank() }
             .distinctBy { it.sellerUserId }
-            .map { uiElement -> generateUniqueFilterName(uiElement.sellerName,uiElement.sellerUserId) }.sorted())
+            .map { uiElement -> generateUniqueFilterName(uiElement.sellerName,uiElement.sellerMobile) }.sorted())
 
         filters.timeFilterList = arrayListOf("Today", "Tomorrow", "Next 7 days", "Last 7 days", "Last 15 days", "Last 30 days")
 
@@ -187,8 +193,8 @@ class ReportViewModel(val database: SessionDatabaseDao, application: Application
         return filters
     }
 
-    private fun generateUniqueFilterName(name: String, id: Long): String{
-        return String.format("%s (%s)",name, id.toString())
+    private fun generateUniqueFilterName(name: String, mobile: String): String{
+        return String.format("%s (%s)",name, mobile)
     }
 
     private fun filterVisibleItems() {
@@ -204,11 +210,11 @@ class ReportViewModel(val database: SessionDatabaseDao, application: Application
         var selectedFarmer = reportUiFilterModel.value?.selectedFarmer ?: ""
 
         elements.forEach { element ->
-            if ((selectedItem == "ALL" || generateUniqueFilterName(element.itemName, element.itemId).equals(selectedItem)) &&
+            if ((selectedItem == "ALL" || generateUniqueFilterName(element.itemName, element.itemId.toString()).equals(selectedItem)) &&
                 (selectedOrderStatus == "ALL" || selectedOrderStatus.split(",").contains(element.orderStatus)) &&
                 (selectedPaymentStatus == "ALL" || element.paymentStatus.equals(selectedPaymentStatus))  &&
-                (selectedBuyer == "ALL" || generateUniqueFilterName(element.buyerName,element.buyerUserId).equals(selectedBuyer)) &&
-                (selectedFarmer == "ALL" || generateUniqueFilterName(element.sellerName,element.sellerUserId).equals(selectedFarmer)) &&
+                (selectedBuyer == "ALL" || generateUniqueFilterName(element.buyerName,element.buyerMobile).equals(selectedBuyer)) &&
+                (selectedFarmer == "ALL" || generateUniqueFilterName(element.sellerName,element.sellerMobile).equals(selectedFarmer)) &&
                 (isInSelectedDateRange(element, selectedStartDate, selectedEndDate))) {
 
                 //TODO - add date range not just one date

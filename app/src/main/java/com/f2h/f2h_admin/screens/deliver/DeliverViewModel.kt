@@ -9,13 +9,11 @@ import com.f2h.f2h_admin.constants.F2HConstants.ORDER_STATUS_CONFIRMED
 import com.f2h.f2h_admin.constants.F2HConstants.ORDER_STATUS_DELIVERED
 import com.f2h.f2h_admin.constants.F2HConstants.ORDER_STATUS_ORDERED
 import com.f2h.f2h_admin.constants.F2HConstants.PAYMENT_STATUS_PAID
-import com.f2h.f2h_admin.constants.F2HConstants.PAYMENT_STATUS_PENDING
 import com.f2h.f2h_admin.database.SessionDatabaseDao
 import com.f2h.f2h_admin.database.SessionEntity
 import com.f2h.f2h_admin.network.ItemAvailabilityApi
 import com.f2h.f2h_admin.network.OrderApi
 import com.f2h.f2h_admin.network.UserApi
-import com.f2h.f2h_admin.network.WalletApi
 import com.f2h.f2h_admin.network.models.*
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
@@ -139,15 +137,21 @@ class DeliverViewModel(val database: SessionDatabaseDao, application: Applicatio
             } else {
                 uiElement.confirmedQuantity = order.confirmedQuantity ?: 0.0
             }
+
+            val buyerUserDetails = userDetailsList.filter { x -> x.userId?.equals(order.buyerUserId) ?: false }.single()
+            val sellerUserDetails = userDetailsList.filter { x -> x.userId?.equals(order.sellerUserId) ?: false }.single()
+            uiElement.buyerName = buyerUserDetails.userName ?: ""
+            uiElement.buyerMobile = buyerUserDetails.mobile ?: ""
+            uiElement.sellerName = sellerUserDetails.userName ?: ""
+            uiElement.sellerMobile = sellerUserDetails.mobile ?: ""
+
             uiElement.orderId = order.orderId ?: -1L
             uiElement.orderAmount = order.orderedAmount ?: 0.0
             uiElement.discountAmount = order.discountAmount ?: 0.0
             uiElement.orderStatus = order.orderStatus ?: ""
             uiElement.paymentStatus = order.paymentStatus ?: ""
             uiElement.deliveryComment = order.deliveryComment ?: ""
-            uiElement.buyerName = userDetailsList.filter { x -> x.userId?.equals(order.buyerUserId) ?: false }.single().userName ?: ""
             uiElement.buyerUserId = order.buyerUserId ?: -1
-            uiElement.sellerName = userDetailsList.filter { x -> x.userId?.equals(order.sellerUserId) ?: false }.single().userName ?: ""
             uiElement.sellerUserId = order.sellerUserId ?: -1
             uiElement.deliveryAddress = order.deliveryLocation ?: ""
             uiElement.displayQuantity = getDisplayQuantity(uiElement.orderStatus, uiElement.orderedQuantity, uiElement.confirmedQuantity)
@@ -169,7 +173,7 @@ class DeliverViewModel(val database: SessionDatabaseDao, application: Applicatio
         _reportUiFilterModel.value = DeliverUiModel()
         _reportUiFilterModel.value?.selectedItem = "ALL"
         _reportUiFilterModel.value?.selectedPaymentStatus = "ALL"
-        _reportUiFilterModel.value?.selectedOrderStatus = "ALL"
+        _reportUiFilterModel.value?.selectedOrderStatus = "Open Orders"
         _reportUiFilterModel.value?.selectedFarmer = "ALL"
         _reportUiFilterModel.value?.selectedBuyer = "ALL"
 
@@ -185,33 +189,33 @@ class DeliverViewModel(val database: SessionDatabaseDao, application: Applicatio
         _reportUiFilterModel.value?.itemList = arrayListOf("ALL").plus(allUiData
             .filter { uiElement -> !uiElement.itemName.isBlank() }
             .distinctBy { it.itemId }
-            .map { uiElement -> generateUniqueFilterName(uiElement.itemName, uiElement.itemId) }.sorted())
+            .map { uiElement -> generateUniqueFilterName(uiElement.itemName, uiElement.itemId.toString()) }.sorted())
 
-        _reportUiFilterModel.value?.orderStatusList = arrayListOf("ALL", "Open Orders", "Delivered Orders", "Payment Pending")
+        _reportUiFilterModel.value?.orderStatusList = arrayListOf("Open Orders")
 
         _reportUiFilterModel.value?.paymentStatusList = arrayListOf("ALL").plus(allUiData
             .filter { uiElement -> !uiElement.paymentStatus.isBlank() }
             .map { uiElement -> uiElement.paymentStatus }.distinct().sorted())
 
-        _reportUiFilterModel.value?.buyerNameList = arrayListOf("ALL").plus(allUiData
+        _reportUiFilterModel.value?.buyerNameList = allUiData
             .filter { uiElement -> !uiElement.buyerName.isBlank() }
             .distinctBy { it.buyerUserId }
-            .map { uiElement -> generateUniqueFilterName(uiElement.buyerName,uiElement.buyerUserId) }.sorted())
+            .map { uiElement -> generateUniqueFilterName(uiElement.buyerName,uiElement.buyerMobile) }.sorted()
 
         _reportUiFilterModel.value?.farmerNameList = arrayListOf("ALL").plus(allUiData
             .filter { uiElement -> !uiElement.sellerName.isBlank() }
             .distinctBy { it.sellerUserId }
-            .map { uiElement -> generateUniqueFilterName(uiElement.sellerName,uiElement.sellerUserId)  }.sorted())
+            .map { uiElement -> generateUniqueFilterName(uiElement.sellerName,uiElement.sellerMobile)  }.sorted())
 
-        _reportUiFilterModel.value?.timeFilterList = arrayListOf("Today", "Tomorrow", "Next 7 days", "Last 15 days")
+        _reportUiFilterModel.value?.timeFilterList = arrayListOf("Today", "Tomorrow", "Next 7 days", "Last 7 days", "Last 15 days", "Last 30 days")
 
         //Refresh filter
         _reportUiFilterModel.value = _reportUiFilterModel.value
     }
 
 
-    private fun generateUniqueFilterName(name: String, id: Long): String{
-        return String.format("%s (%s)",name, id.toString())
+    private fun generateUniqueFilterName(name: String, mobile: String): String{
+        return String.format("%s (%s)",name, mobile)
     }
 
     private fun filterVisibleItems() {
@@ -227,11 +231,11 @@ class DeliverViewModel(val database: SessionDatabaseDao, application: Applicatio
         val selectedFarmer = reportUiFilterModel.value?.selectedFarmer ?: ""
 
         elements.forEach { element ->
-            if ((selectedItem == "ALL" || generateUniqueFilterName(element.itemName, element.itemId).equals(selectedItem)) &&
+            if ((selectedItem == "ALL" || generateUniqueFilterName(element.itemName, element.itemId.toString()).equals(selectedItem)) &&
                 (selectedOrderStatus == "ALL" || selectedOrderStatus.split(",").contains(element.orderStatus)) &&
                 (selectedPaymentStatus == "ALL" || element.paymentStatus.equals(selectedPaymentStatus))  &&
-                (selectedBuyer == "ALL" || generateUniqueFilterName(element.buyerName, element.buyerUserId).equals(selectedBuyer)) &&
-                (selectedFarmer == "ALL" || generateUniqueFilterName(element.sellerName, element.sellerUserId).equals(selectedFarmer)) &&
+                (selectedBuyer == "ALL" || generateUniqueFilterName(element.buyerName, element.buyerMobile).equals(selectedBuyer)) &&
+                (selectedFarmer == "ALL" || generateUniqueFilterName(element.sellerName, element.sellerMobile).equals(selectedFarmer)) &&
                 (isInSelectedDateRange(element, selectedStartDate, selectedEndDate))) {
 
                 //TODO - add date range not just one date
@@ -284,21 +288,9 @@ class DeliverViewModel(val database: SessionDatabaseDao, application: Applicatio
 
     fun onOrderStatusSelected(position: Int) {
         if (position == 0) {
-            _reportUiFilterModel.value?.selectedOrderStatus = "ALL"
-            _reportUiFilterModel.value?.selectedPaymentStatus = "ALL"
-        }
-        if (position == 1) {
             _reportUiFilterModel.value?.selectedOrderStatus =
                 String.format("%s,%s", ORDER_STATUS_ORDERED, ORDER_STATUS_CONFIRMED)
             _reportUiFilterModel.value?.selectedPaymentStatus = "ALL"
-        }
-        if (position == 2) {
-            _reportUiFilterModel.value?.selectedOrderStatus = ORDER_STATUS_DELIVERED
-            _reportUiFilterModel.value?.selectedPaymentStatus = "ALL"
-        }
-        if (position == 3) {
-            _reportUiFilterModel.value?.selectedOrderStatus = "ALL"
-            _reportUiFilterModel.value?.selectedPaymentStatus = PAYMENT_STATUS_PENDING
         }
         filterVisibleItems()
     }
@@ -308,7 +300,9 @@ class DeliverViewModel(val database: SessionDatabaseDao, application: Applicatio
         if (position.equals(0)) setTimeFilterRange(0,0) //Today
         if (position.equals(1)) setTimeFilterRange(1,1) //Tomorrow
         if (position.equals(2)) setTimeFilterRange(0,7) //Next 7 Days
-        if (position.equals(3)) setTimeFilterRange(-15,0)  //Last 15 days
+        if (position.equals(3)) setTimeFilterRange(-7,0) //Last week
+        if (position.equals(4)) setTimeFilterRange(-15,0)  //Last 15 days
+        if (position.equals(5)) setTimeFilterRange(-30,0) //Last 30 days
         filterVisibleItems()
     }
 
@@ -355,29 +349,12 @@ class DeliverViewModel(val database: SessionDatabaseDao, application: Applicatio
     }
 
 
-    // TODO Change this API call to call a POST method
-    // that accepts a list of transaction
     fun onCashCollectedbuttonClicked() {
-        var orderUpdateRequests = createWalletTransactionRequestObject(visibleUiData.value)
-        var confirmUnconfirmedOrdersRequest = createConfirmedOrderRequests(visibleUiData.value)
         var deliveredOrderUpdateRequests = createDeliverOrderRequests(visibleUiData.value)
         _isProgressBarActive.value = true;
         coroutineScope.launch {
-            orderUpdateRequests.forEach { request ->
-                val createTransactionDeferred =
-                    WalletApi.retrofitService.createWalletTransaction(request)
-                try {
-                    createTransactionDeferred.await()
-                    getOrdersReportForGroup()
-                } catch (t: Throwable) {
-                    _toastMessage.value = "Oops, Something went wrong " + t.message
-                }
-            }
-            var confirmOrdersDataDeferred = OrderApi.retrofitService.updateOrders(confirmUnconfirmedOrdersRequest)
-            var updateOrdersDataDeferred = OrderApi.retrofitService.updateOrders(deliveredOrderUpdateRequests)
+            var updateOrdersDataDeferred = OrderApi.retrofitService.cashCollectedAndUpdateOrders(deliveredOrderUpdateRequests)
             try{
-                //Confirm orders first then move them to delivered
-                confirmOrdersDataDeferred.await()
                 updateOrdersDataDeferred.await()
                 _toastMessage.value = "Successfully paid and delivered orders"
                 getOrdersReportForGroup()
@@ -388,42 +365,14 @@ class DeliverViewModel(val database: SessionDatabaseDao, application: Applicatio
     }
 
 
-    private fun createWalletTransactionRequestObject(uiDataElements: MutableList<DeliverItemsModel>?): List<WalletTransactionRequest> {
-        var transactionRequestList: ArrayList<WalletTransactionRequest> = arrayListOf()
-        val timeZone = TimeZone.getTimeZone("UTC")
-        TimeZone.setDefault(timeZone)
-        var today = Calendar.getInstance(timeZone)
-        val formatter: DateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
-        uiDataElements?.filter { it.isItemChecked &&
-                it.orderStatus.equals(ORDER_STATUS_DELIVERED) &&
-                it.paymentStatus.equals(PAYMENT_STATUS_PENDING) }
-            ?.forEach { element ->
-            var transactionRequest = WalletTransactionRequest (
-                recipientUserId = element.buyerUserId,
-                groupId = sessionData.value?.groupId,
-                orderId = element.orderId,
-                transactionDate = formatter.format(today.time),
-                transactionDescription = String.format("Cash collected for order# %s, %s, %s", element.orderId, element.itemName, element.deliveryComment),
-                amount = element.orderAmount
-            )
-                transactionRequestList.add(transactionRequest)
-        }
-
-        return transactionRequestList
-    }
-
 
     fun onDeliverButtonClicked() {
-        var confirmUnconfirmedOrdersRequest = createConfirmedOrderRequests(visibleUiData.value)
         var deliveredOrderUpdateRequests = createDeliverOrderRequests(visibleUiData.value)
         _isProgressBarActive.value = true
         coroutineScope.launch {
-            var confirmOrdersDataDeferred = OrderApi.retrofitService.updateOrders(confirmUnconfirmedOrdersRequest)
-            var updateOrdersDataDeferred = OrderApi.retrofitService.updateOrders(deliveredOrderUpdateRequests)
+            var deliverOrdersDataDeferred = OrderApi.retrofitService.updateOrders(deliveredOrderUpdateRequests)
             try{
-                //Confirm orders first then move them to delivered
-                confirmOrdersDataDeferred.await()
-                updateOrdersDataDeferred.await()
+                deliverOrdersDataDeferred.await()
                 _toastMessage.value = "Successfully delivered orders"
                 getOrdersReportForGroup()
             } catch (t:Throwable){
@@ -450,30 +399,6 @@ class DeliverViewModel(val database: SessionDatabaseDao, application: Applicatio
             orderUpdateRequestList.add(updateRequest)
         }
         return orderUpdateRequestList
-    }
-
-
-    private fun createConfirmedOrderRequests(uiDataElements: MutableList<DeliverItemsModel>?): List<OrderUpdateRequest> {
-        var orderUpdateRequestList: ArrayList<OrderUpdateRequest> = arrayListOf()
-        uiDataElements?.filter { it.isItemChecked && it.orderStatus.equals(ORDER_STATUS_ORDERED)}?.forEach { element ->
-            var updateRequest = OrderUpdateRequest(
-                orderId = element.orderId,
-                orderStatus = ORDER_STATUS_CONFIRMED,
-                paymentStatus = "",
-                orderedQuantity = null,
-                confirmedQuantity = element.confirmedQuantity,
-                discountAmount = element.discountAmount,
-                orderedAmount = calculateOrderAmount(element),
-                orderComment = "Successfully confirmed order",
-                deliveryComment = null
-            )
-            orderUpdateRequestList.add(updateRequest)
-        }
-        return orderUpdateRequestList
-    }
-
-    private fun calculateOrderAmount(element: DeliverItemsModel): Double {
-        return element.confirmedQuantity * element.price - element.discountAmount
     }
 
 }
