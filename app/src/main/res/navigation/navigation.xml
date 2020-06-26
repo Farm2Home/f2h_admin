@@ -48,8 +48,14 @@
             android:id="@+id/action_groupDetailsTabsFragment_to_confirmRejectFragment"
             app:destination="@id/confirmRejectFragment" />
         <action
-            android:id="@+id/action_groupDetailsTabsFragment_to_deliverFragment2"
+            android:id="@+id/action_groupDetailsTabsFragment_to_deliverFragment"
             app:destination="@id/deliverFragment" />
+        <action
+            android:id="@+id/action_groupDetailsTabsFragment_to_paymentFragment"
+            app:destination="@id/paymentFragment" />
+        <action
+            android:id="@+id/action_groupDetailsTabsFragment_to_contactUsFragment"
+            app:destination="@id/contactUsFragment" />
     </fragment>
     <fragment
         android:id="@+id/allItemsFragment"
@@ -104,10 +110,11 @@
         android:label="EditProfileFragment" />
     <fragment
         android:id="@+id/confirmRejectFragment"
-        android:name="com.f2h.f2h_admin.screens.group.confirm_reject.ConfirmRejectFragment"
-        android:label="@string/confirm_reject" />
+        android:name="com.f2h.f2h_admin.screens.group.confirm_reject.ConfirmRejectFragment" />
     <fragment
         android:id="@+id/deliverFragment"
-        android:name="com.f2h.f2h_admin.screens.deliver.DeliverFragment"
-        android:label="@string/deliver_orders" />
+        android:name="com.f2h.f2h_admin.screens.deliver.DeliverFragment" />
+    <fragment
+        android:id="@+id/paymentFragment"
+        android:name="com.f2h.f2h_admin.screens.group.payment.PaymentFragment" />
 </navigation>

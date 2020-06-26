@@ -9,6 +9,9 @@
         android:icon="@drawable/report_icon"
         android:title="@string/report" />
     <item
+        android:id="@+id/paymentFragment"
+        android:title="@string/pending_payments" />
+    <item
         android:id="@+id/deliverFragment"
         android:title="@string/deliver_orders" />
     <item

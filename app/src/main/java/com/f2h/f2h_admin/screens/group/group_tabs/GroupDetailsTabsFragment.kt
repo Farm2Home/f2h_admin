@@ -4,11 +4,14 @@ import android.os.Bundle
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.navigation.Navigation
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.ui.NavigationUI
 import androidx.viewpager2.widget.ViewPager2
 import com.f2h.f2h_admin.R
+import com.f2h.f2h_admin.screens.group.payment.PaymentFragment
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 
@@ -24,6 +27,7 @@ class GroupDetailsTabsFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
         return inflater.inflate(R.layout.fragment_group_details_tabs, container, false)
     }
@@ -34,8 +38,35 @@ class GroupDetailsTabsFragment : Fragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return NavigationUI.onNavDestinationSelected(item!!, view!!.findNavController()) ||
-                super.onOptionsItemSelected(item)
+
+        when(item.itemId){
+            R.id.contactUsFragment -> {
+                val action = GroupDetailsTabsFragmentDirections.actionGroupDetailsTabsFragmentToContactUsFragment()
+                view?.let { Navigation.findNavController(it).navigate(action) }
+            }
+
+            R.id.reportFragment -> {
+                val action = GroupDetailsTabsFragmentDirections.actionGroupDetailsTabsFragmentToReportFragment()
+                view?.let { Navigation.findNavController(it).navigate(action) }
+            }
+
+            R.id.paymentFragment -> {
+                val action = GroupDetailsTabsFragmentDirections.actionGroupDetailsTabsFragmentToPaymentFragment()
+                view?.let { Navigation.findNavController(it).navigate(action) }
+            }
+
+            R.id.deliverFragment -> {
+                val action = GroupDetailsTabsFragmentDirections.actionGroupDetailsTabsFragmentToDeliverFragment()
+                view?.let { Navigation.findNavController(it).navigate(action) }
+            }
+
+            R.id.confirmRejectFragment -> {
+                val action = GroupDetailsTabsFragmentDirections.actionGroupDetailsTabsFragmentToConfirmRejectFragment()
+                view?.let { Navigation.findNavController(it).navigate(action) }
+            }
+        }
+
+        return true
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
