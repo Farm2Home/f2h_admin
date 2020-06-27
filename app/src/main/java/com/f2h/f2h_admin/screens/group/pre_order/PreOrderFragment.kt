@@ -42,15 +42,6 @@ class PreOrderFragment : Fragment() {
         //Call the API to fetch item data to populate page
         viewModel.fetchAllData(args.itemId)
 
-        // Progress Bar loader
-        viewModel.isProgressBarActive.observe(viewLifecycleOwner, Observer { isProgressBarActive ->
-            if(isProgressBarActive){
-                binding.progressBar.visibility = View.VISIBLE
-            } else {
-                binding.progressBar.visibility = View.GONE
-            }
-        })
-
 
         // Item list recycler view
         val adapter =

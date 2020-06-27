@@ -4,6 +4,7 @@ data class SearchGroupsItemsModel (
     var groupId: Long = 0,
     var ownerUserId: Long = 0,
     var groupName: String = "",
+    var imageLink: String = "",
     var description: String = "",
     var isAlreadyMember: Boolean = false
 )

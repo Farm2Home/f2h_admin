@@ -11,6 +11,7 @@ import com.f2h.f2h_admin.network.LoginApi
 import com.f2h.f2h_admin.network.models.User
 import kotlinx.coroutines.*
 import retrofit2.await
+import java.nio.charset.Charset
 
 
 class LoginViewModel(val database: SessionDatabaseDao, application: Application) : AndroidViewModel(application) {
@@ -79,7 +80,7 @@ class LoginViewModel(val database: SessionDatabaseDao, application: Application)
         var session = SessionEntity()
         coroutineScope.launch {
             session = retrieveSession()
-            loginPassword.value = Base64.decode(session.password, Base64.DEFAULT).toString()
+            loginPassword.value = String(Base64.decode(session.password, Base64.DEFAULT), Charset.defaultCharset())
             loginMobile.value = session.mobile
             if (session.id != 0L){
                 tryToLogin(session)

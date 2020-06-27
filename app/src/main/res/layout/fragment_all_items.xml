@@ -35,7 +35,7 @@
             android:layout_height="50dp"
             android:layout_marginTop="100dp"
             android:indeterminate="true"
-            android:visibility="visible"
+            app:progressBarVisibility="@{viewModel.isProgressBarActive().booleanValue()}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/itemListRecyclerView" />

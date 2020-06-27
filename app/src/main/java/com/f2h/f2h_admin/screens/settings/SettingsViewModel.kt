@@ -1,6 +1,7 @@
 package com.f2h.f2h_admin.screens.settings
 
 import android.app.Application
+import android.util.Base64
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -33,7 +34,7 @@ class SettingsViewModel(val database: SessionDatabaseDao, application: Applicati
                     userSession.address,
                     userSession.email,
                     userSession.mobile,
-                    userSession.password
+                    Base64.decode(userSession.password, Base64.DEFAULT).toString()
                 )
                 _response.value = userData;
         }

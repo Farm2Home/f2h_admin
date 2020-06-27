@@ -1,6 +1,5 @@
 package com.f2h.f2h_admin.screens.group.all_items
 
-import android.animation.Animator
 import android.app.Application
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -17,7 +16,7 @@ import com.f2h.f2h_admin.database.F2HDatabase
 import com.f2h.f2h_admin.database.SessionDatabaseDao
 import com.f2h.f2h_admin.databinding.FragmentAllItemsBinding
 import com.f2h.f2h_admin.network.models.Item
-import com.f2h.f2h_admin.screens.group.daily_orders.AllItemsViewModelFactory
+import com.f2h.f2h_admin.screens.group.members.AllItemsViewModelFactory
 import com.f2h.f2h_admin.screens.group.group_tabs.GroupDetailsTabsFragmentDirections
 
 
@@ -51,17 +50,6 @@ class AllItemsFragment : Fragment() {
         viewModel.visibleItems.observe(viewLifecycleOwner, Observer {
             it?.let {
                 adapter.submitList(it)
-            }
-        })
-
-
-
-        // Progress Bar loader
-        viewModel.isProgressBarActive.observe(viewLifecycleOwner, Observer { isProgressBarActive ->
-            if(isProgressBarActive){
-                binding.progressBar.visibility = View.VISIBLE
-            } else {
-                binding.progressBar.visibility = View.GONE
             }
         })
 

@@ -12,6 +12,8 @@ import com.f2h.f2h_admin.network.UserApi
 import com.f2h.f2h_admin.network.models.User
 import com.f2h.f2h_admin.network.models.UserCreateRequest
 import kotlinx.coroutines.*
+import java.lang.Double.parseDouble
+import java.lang.Long.parseLong
 
 
 class SignUpViewModel(val database: SessionDatabaseDao, application: Application) : AndroidViewModel(application) {
@@ -76,8 +78,8 @@ class SignUpViewModel(val database: SessionDatabaseDao, application: Application
             _toastText.value = "Please enter a delivery address"
             return true
         }
-        if (mobile.value.isNullOrBlank()) {
-            _toastText.value = "Please enter a mobile number"
+        if (mobile.value.isNullOrBlank() || !isNumeric(mobile.value.toString())) {
+            _toastText.value = "Please enter a valid mobile number"
             return true
         }
         if (email.value.isNullOrBlank()) {
@@ -90,6 +92,15 @@ class SignUpViewModel(val database: SessionDatabaseDao, application: Application
         }
 
         return false
+    }
+
+    protected fun isNumeric(numberString: String): Boolean{
+        try {
+            val num = parseLong(numberString)
+        } catch (e: NumberFormatException) {
+            return false
+        }
+        return true;
     }
 
     private fun createUserRequestObject() : UserCreateRequest{

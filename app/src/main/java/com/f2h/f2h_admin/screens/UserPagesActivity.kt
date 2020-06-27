@@ -39,6 +39,9 @@ class UserPagesActivity : AppCompatActivity() {
 
     }
 
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
 
     override fun onSupportNavigateUp(): Boolean {
         val navController = this.findNavController(R.id.userPagesNavHostFragment)

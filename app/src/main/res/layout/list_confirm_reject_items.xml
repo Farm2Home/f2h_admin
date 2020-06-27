@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="uiModel"
+            type="com.f2h.f2h_admin.screens.group.confirm_reject.ConfirmRejectItemsModel" />
+        <variable
+            name="clickListener"
+            type="com.f2h.f2h_admin.screens.group.confirm_reject.OrderedItemClickListener" />
+        <variable
+            name="checkBoxClickListener"
+            type="com.f2h.f2h_admin.screens.group.confirm_reject.CheckBoxClickListener" />
+        <variable
+            name="increaseButtonClickListener"
+            type="com.f2h.f2h_admin.screens.group.confirm_reject.IncreaseButtonClickListener" />
+        <variable
+            name="decreaseButtonClickListener"
+            type="com.f2h.f2h_admin.screens.group.confirm_reject.DecreaseButtonClickListener" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="@{() -> clickListener.onClick(uiModel)}">
+
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardElevation="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraintLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/confirmItemImage"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginTop="10dp"
+                    android:contentDescription="TODO"
+                    app:layout_constraintStart_toEndOf="@+id/confirmRejectCheckbox"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:loadImage="@{uiModel.itemImageLink}" />
+
+                <TextView
+                    android:id="@+id/confirmItemDetails"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="20dp"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    app:itemDetailsFormatted="@{uiModel}"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/confirmItemImage"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    android:textSize="12sp"
+                    app:layout_constraintStart_toStartOf="@+id/confirmItemDetails"
+                    app:layout_constraintTop_toBottomOf="@+id/confirmItemDetails"
+                    app:orderDateFormatted="@{uiModel}" />
+
+                <TextView
+                    android:id="@+id/confirmedQuantity"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="5dp"
+                    android:textAlignment="center"
+                    android:textSize="16sp"
+                    app:confirmedQuantityFormatted="@{uiModel}"
+                    app:layout_constraintBottom_toBottomOf="@+id/crDecreaseButton"
+                    app:layout_constraintEnd_toStartOf="@+id/crUom"
+                    app:layout_constraintStart_toEndOf="@+id/crDecreaseButton"
+                    app:layout_constraintTop_toTopOf="@+id/crDecreaseButton" />
+
+                <TextView
+                    android:id="@+id/amount"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Rs. "
+                    android:textAlignment="center"
+                    android:textSize="12sp"
+                    app:layout_constraintEnd_toEndOf="@+id/confirmItemImage"
+                    app:layout_constraintStart_toStartOf="@+id/confirmItemImage"
+                    app:layout_constraintTop_toBottomOf="@+id/confirmItemImage"
+                    app:priceFormatted="@{uiModel}" />
+
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0.5dp"
+                    android:background="@color/grey"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/total"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="1dp"
+                    android:gravity="center_vertical"
+                    android:text="Receivable - "
+                    android:textAlignment="gravity"
+                    app:layout_constraintEnd_toEndOf="@+id/crOrderComment"
+                    app:layout_constraintStart_toStartOf="@+id/date"
+                    app:layout_constraintTop_toBottomOf="@+id/crOrderComment"
+                    app:totalPriceFormatted="@{uiModel}" />
+
+                <TextView
+                    android:id="@+id/status"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="center"
+                    android:textSize="12sp"
+                    app:layout_constraintEnd_toEndOf="@+id/amount"
+                    app:layout_constraintStart_toStartOf="@+id/amount"
+                    app:layout_constraintTop_toBottomOf="@+id/amount"
+                    app:statusFormatted="@{uiModel}" />
+
+                <TextView
+                    android:id="@+id/confirmRejectUserName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    android:singleLine="false"
+                    android:text="@{uiModel.buyerName}"
+                    android:textSize="12sp"
+                    app:layout_constraintEnd_toEndOf="@+id/confirmItemDetails"
+                    app:layout_constraintStart_toEndOf="@+id/date"
+                    app:layout_constraintTop_toBottomOf="@+id/confirmItemDetails" />
+
+                <CheckBox
+                    android:id="@+id/confirmRejectCheckbox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:checked="@{uiModel.isItemChecked}"
+                    android:onClick="@{() -> checkBoxClickListener.onClick(uiModel)}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/crUom"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_marginEnd="10dp"
+                    android:gravity="center_vertical"
+                    android:text="@{uiModel.itemUom}"
+                    android:textAlignment="gravity"
+                    app:layout_constraintBottom_toBottomOf="@+id/confirmedQuantity"
+                    app:layout_constraintEnd_toStartOf="@+id/crIncreaseButton"
+                    app:layout_constraintTop_toTopOf="@+id/confirmedQuantity" />
+
+                <Button
+                    android:id="@+id/crDecreaseButton"
+                    android:layout_width="50dp"
+                    android:layout_height="40dp"
+                    android:layout_marginBottom="5dp"
+                    android:onClick="@{() -> decreaseButtonClickListener.onClick(uiModel)}"
+                    android:text="-"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/total"
+                    app:layout_constraintTop_toBottomOf="@+id/total"
+                    app:quantityChangeButtonState="@{uiModel}" />
+
+                <Button
+                    android:id="@+id/crIncreaseButton"
+                    android:layout_width="50dp"
+                    android:layout_height="40dp"
+                    android:onClick="@{() -> increaseButtonClickListener.onClick(uiModel)}"
+                    android:text="+"
+                    app:layout_constraintBottom_toBottomOf="@+id/crDecreaseButton"
+                    app:layout_constraintEnd_toEndOf="@+id/confirmItemDetails"
+                    app:layout_constraintTop_toTopOf="@+id/crDecreaseButton"
+                    app:quantityChangeButtonState="@{uiModel}" />
+
+                <EditText
+                    android:id="@+id/crOrderComment"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="Order comment"
+                    android:inputType="textPersonName"
+                    android:text="@={uiModel.orderComment}"
+                    android:textSize="12sp"
+                    app:layout_constraintEnd_toEndOf="@+id/confirmItemDetails"
+                    app:layout_constraintStart_toStartOf="@+id/date"
+                    app:layout_constraintTop_toBottomOf="@+id/confirmRejectUserName" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.cardview.widget.CardView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

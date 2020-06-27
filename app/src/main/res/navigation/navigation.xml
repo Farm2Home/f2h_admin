@@ -6,8 +6,8 @@
     app:startDestination="@id/groupsFragment">
 
     <fragment
-        android:id="@+id/dailyOrdersFragment"
-        android:name="com.f2h.f2h_admin.screens.group.daily_orders.DailyOrdersFragment" />
+        android:id="@+id/membersFragment"
+        android:name="com.f2h.f2h_admin.screens.group.members.MembersFragment" />
     <fragment
         android:id="@+id/groupsFragment"
         android:name="com.f2h.f2h_admin.screens.group_list.GroupsFragment">
@@ -32,26 +32,46 @@
             app:destination="@id/allItemsFragment"
             app:enterAnim="@android:anim/slide_in_left" />
         <action
-            android:id="@+id/action_groupDetailsTabsFragment_to_groupWalletFragment"
-            app:destination="@id/groupWalletFragment"
-            app:enterAnim="@android:anim/slide_in_left" />
-        <action
             android:id="@+id/action_groupDetailsTabsFragment_to_preOrderFragment"
             app:destination="@id/preOrderFragment"
             app:enterAnim="@android:anim/slide_in_left" />
         <action
-            android:id="@+id/action_groupDetailsTabsFragment_to_dailyOrdersFragment"
-            app:destination="@id/dailyOrdersFragment" />
+            android:id="@+id/action_groupDetailsTabsFragment_to_membersFragment"
+            app:destination="@id/membersFragment" />
         <action
             android:id="@+id/action_groupDetailsTabsFragment_to_reportFragment"
             app:destination="@id/reportFragment" />
+        <action
+            android:id="@+id/action_groupDetailsTabsFragment_to_groupWalletFragment"
+            app:destination="@id/groupWalletFragment" />
+        <action
+            android:id="@+id/action_groupDetailsTabsFragment_to_confirmRejectFragment"
+            app:destination="@id/confirmRejectFragment" />
+        <action
+            android:id="@+id/action_groupDetailsTabsFragment_to_deliverFragment"
+            app:destination="@id/deliverFragment" />
+        <action
+            android:id="@+id/action_groupDetailsTabsFragment_to_paymentFragment"
+            app:destination="@id/paymentFragment" />
+        <action
+            android:id="@+id/action_groupDetailsTabsFragment_to_contactUsFragment"
+            app:destination="@id/contactUsFragment" />
     </fragment>
     <fragment
         android:id="@+id/allItemsFragment"
         android:name="com.f2h.f2h_admin.screens.group.all_items.AllItemsFragment" />
     <fragment
         android:id="@+id/groupWalletFragment"
-        android:name="com.f2h.f2h_admin.screens.group.group_wallet.GroupWalletFragment" />
+        android:name="com.f2h.f2h_admin.screens.group.group_wallet.GroupWalletFragment" >
+        <argument
+            android:name="userId"
+            app:argType="long"
+            android:defaultValue="-1L" />
+        <argument
+            android:name="userName"
+            app:argType="string"
+            android:defaultValue='""' />
+    </fragment>
     <fragment
         android:id="@+id/preOrderFragment"
         android:name="com.f2h.f2h_admin.screens.group.pre_order.PreOrderFragment">
@@ -88,4 +108,13 @@
         android:id="@+id/editProfileFragment"
         android:name="com.f2h.f2h_admin.screens.settings.edit_profile.EditProfileFragment"
         android:label="EditProfileFragment" />
+    <fragment
+        android:id="@+id/confirmRejectFragment"
+        android:name="com.f2h.f2h_admin.screens.group.confirm_reject.ConfirmRejectFragment" />
+    <fragment
+        android:id="@+id/deliverFragment"
+        android:name="com.f2h.f2h_admin.screens.deliver.DeliverFragment" />
+    <fragment
+        android:id="@+id/paymentFragment"
+        android:name="com.f2h.f2h_admin.screens.group.payment.PaymentFragment" />
 </navigation>
