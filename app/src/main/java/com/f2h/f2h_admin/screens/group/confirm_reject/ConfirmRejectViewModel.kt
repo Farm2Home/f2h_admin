@@ -207,7 +207,7 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
             .distinctBy { it.sellerUserId }
             .map { uiElement -> generateUniqueFilterName(uiElement.sellerName,uiElement.sellerMobile) }.sorted())
 
-        _reportUiFilterModel.value?.timeFilterList = arrayListOf("Today", "Tomorrow", "Next 7 days", "Last 15 days", "Last 30 days")
+        _reportUiFilterModel.value?.timeFilterList = arrayListOf("Today", "Tomorrow", "Next 7 days", "Last 7 days", "Last 15 days", "Last 30 days")
 
         //Refresh filter
         _reportUiFilterModel.value = _reportUiFilterModel.value
@@ -311,8 +311,9 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
         if (position.equals(0)) setTimeFilterRange(0,0) //Today
         if (position.equals(1)) setTimeFilterRange(1,1) //Tomorrow
         if (position.equals(2)) setTimeFilterRange(0,7) //Next 7 Days
-        if (position.equals(3)) setTimeFilterRange(-15,0)  //Last 15 days
-        if (position.equals(4)) setTimeFilterRange(-30,0)  //Last 30 days
+        if (position.equals(3)) setTimeFilterRange(-7,0) //Last 7 Days
+        if (position.equals(4)) setTimeFilterRange(-15,0)  //Last 15 days
+        if (position.equals(5)) setTimeFilterRange(-30,0)  //Last 30 days
         filterVisibleItems()
     }
 
