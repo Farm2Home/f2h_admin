@@ -56,6 +56,9 @@
         <action
             android:id="@+id/action_groupDetailsTabsFragment_to_contactUsFragment"
             app:destination="@id/contactUsFragment" />
+        <action
+            android:id="@+id/action_groupDetailsTabsFragment_to_addItemsFragment"
+            app:destination="@id/addItemsFragment" />
     </fragment>
     <fragment
         android:id="@+id/allItemsFragment"
@@ -117,4 +120,7 @@
     <fragment
         android:id="@+id/paymentFragment"
         android:name="com.f2h.f2h_admin.screens.group.payment.PaymentFragment" />
+    <fragment
+        android:id="@+id/addItemsFragment"
+        android:name="com.f2h.f2h_admin.screens.group.add_item.AddItemFragment" />
 </navigation>
