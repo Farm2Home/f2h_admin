@@ -4,6 +4,7 @@ import com.f2h.f2h_admin.constants.F2HConstants
 import com.f2h.f2h_admin.constants.F2HConstants.SERVER_URL
 import com.f2h.f2h_admin.network.models.Item
 import com.f2h.f2h_admin.network.models.ItemCreateRequest
+import com.f2h.f2h_admin.network.models.ItemUpdateRequest
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -28,6 +29,9 @@ interface ItemApiService{
 
     @POST("item")
     fun createItemForGroup(@Body request: ItemCreateRequest): Deferred<Item>
+
+    @PUT("item/{item_id}")
+    fun updateItemForGroup(@Path("item_id") itemId: Long, @Body request: ItemUpdateRequest): Deferred<Item>
 
     @GET("item")
     fun getItemsForGroup(@Query("group_id") groupId: Long):

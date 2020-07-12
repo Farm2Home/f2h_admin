@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+
+    <data>
+        <variable
+            name="viewModel"
+            type="com.f2h.f2h_admin.screens.group.edit_item.EditItemViewModel" />
+    </data>
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="@style/Widget.AppCompat.ProgressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:indeterminate="true"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:progressBarVisibility="@{viewModel.isProgressBarActive().booleanValue()}" />
+
+            <EditText
+                android:id="@+id/editItemName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="Item Name"
+                android:inputType="textPersonName"
+                android:text="@={viewModel.itemName}"
+                app:layout_constraintStart_toStartOf="@+id/textView11"
+                app:layout_constraintTop_toBottomOf="@+id/textView11" />
+
+            <EditText
+                android:id="@+id/editItemPrice"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="Item Price"
+                android:inputType="number|numberDecimal"
+                android:text="@={viewModel.itemPrice}"
+                app:layout_constraintStart_toEndOf="@+id/textView25"
+                app:layout_constraintTop_toBottomOf="@+id/textView22" />
+
+            <Spinner
+                android:id="@+id/editUomSelector"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:entries="@{viewModel.uomStringList}"
+                app:layout_constraintBottom_toBottomOf="@+id/editItemPrice"
+                app:layout_constraintStart_toEndOf="@+id/textView9"
+                app:layout_constraintTop_toTopOf="@+id/editItemPrice" />
+
+            <Spinner
+                android:id="@+id/editFarmerSelector"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="20dp"
+                android:entries="@{viewModel.farmersStringList}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/textView23"
+                app:layout_constraintTop_toBottomOf="@+id/textView23" />
+
+            <TextView
+                android:id="@+id/textView9"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:gravity="center_vertical"
+                android:text="    Per  "
+                android:textAlignment="gravity"
+                app:layout_constraintBottom_toBottomOf="@+id/editUomSelector"
+                app:layout_constraintStart_toEndOf="@+id/editItemPrice"
+                app:layout_constraintTop_toTopOf="@+id/editUomSelector" />
+
+            <TextView
+                android:id="@+id/textView11"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:text="Name of item"
+                android:textSize="12sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/textView22"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="Price per unit"
+                android:textSize="12sp"
+                app:layout_constraintStart_toStartOf="@+id/editItemDescription"
+                app:layout_constraintTop_toBottomOf="@+id/editItemDescription" />
+
+            <TextView
+                android:id="@+id/textView23"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="Select farmer"
+                android:textSize="12sp"
+                app:layout_constraintStart_toStartOf="@+id/textView25"
+                app:layout_constraintTop_toBottomOf="@+id/editMinConfirmedQuantity" />
+
+            <TextView
+                android:id="@+id/textView24"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="Item description"
+                android:textSize="12sp"
+                app:layout_constraintStart_toStartOf="@+id/editItemName"
+                app:layout_constraintTop_toBottomOf="@+id/editItemName" />
+
+            <EditText
+                android:id="@+id/editItemDescription"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="20dp"
+                android:ems="10"
+                android:hint="Description"
+                android:inputType="textMultiLine|text"
+                android:lines="3"
+                android:text="@={viewModel.itemDescription}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/textView24"
+                app:layout_constraintTop_toBottomOf="@+id/textView24" />
+
+            <TextView
+                android:id="@+id/textView25"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:gravity="center_vertical"
+                android:text="Rs  "
+                android:textAlignment="gravity"
+                app:layout_constraintBottom_toBottomOf="@+id/editItemPrice"
+                app:layout_constraintStart_toStartOf="@+id/textView22"
+                app:layout_constraintTop_toTopOf="@+id/editItemPrice" />
+
+            <Button
+                android:id="@+id/editItemButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="25dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="20dp"
+                android:onClick="@{() -> viewModel.onEditItemButtonClicked()}"
+                android:text="Update Item"
+                android:textAllCaps="false"
+                app:buttonStatus="@{!viewModel.isProgressBarActive()}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/editFarmerSelector" />
+
+            <TextView
+                android:id="@+id/textView26"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="Order quantity jump"
+                android:textSize="12sp"
+                app:layout_constraintStart_toStartOf="@+id/editMinOrderedQuantity"
+                app:layout_constraintTop_toBottomOf="@+id/editItemPrice" />
+
+            <EditText
+                android:id="@+id/editMinOrderedQuantity"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:ems="10"
+                android:inputType="number|numberDecimal"
+                android:text="@={viewModel.orderQuantityJump}"
+                app:layout_constraintEnd_toStartOf="@+id/editMinConfirmedQuantity"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView26" />
+
+            <TextView
+                android:id="@+id/textView27"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Confirm quantity jump"
+                android:textSize="12sp"
+                app:layout_constraintStart_toStartOf="@+id/editMinConfirmedQuantity"
+                app:layout_constraintTop_toTopOf="@+id/textView26" />
+
+            <EditText
+                android:id="@+id/editMinConfirmedQuantity"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="20dp"
+                android:ems="10"
+                android:inputType="number|numberDecimal"
+                android:text="@={viewModel.confirmQuantityJump}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/editMinOrderedQuantity"
+                app:layout_constraintTop_toBottomOf="@+id/textView27" />
+
+            <ImageView
+                android:id="@+id/editImageButton"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                app:layout_constraintBottom_toBottomOf="@+id/editItemName"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/editItemName"
+                app:layout_constraintTop_toTopOf="@+id/editItemName"
+                app:srcCompat="@drawable/add_photo_icon" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </ScrollView>
+
+</layout>

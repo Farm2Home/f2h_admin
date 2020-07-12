@@ -133,7 +133,8 @@
                 android:layout_marginEnd="20dp"
                 android:ems="10"
                 android:hint="Description"
-                android:inputType="textPersonName"
+                android:inputType="textMultiLine|text"
+                android:minLines="3"
                 android:text="@={viewModel.itemDescription}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/textView24"
@@ -172,7 +173,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                android:text="Minimum order quantity"
+                android:text="Order quantity jump"
                 android:textSize="12sp"
                 app:layout_constraintStart_toStartOf="@+id/addMinOrderedQuantity"
                 app:layout_constraintTop_toBottomOf="@+id/addItemPrice" />
@@ -195,7 +196,7 @@
                 android:id="@+id/textView27"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Minimum confirm quantity"
+                android:text="Confirm quantity jump"
                 android:textSize="12sp"
                 app:layout_constraintStart_toStartOf="@+id/addMinConfirmedQuantity"
                 app:layout_constraintTop_toTopOf="@+id/textView26" />

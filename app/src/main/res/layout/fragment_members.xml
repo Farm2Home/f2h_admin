@@ -43,13 +43,12 @@
                 style="@style/Widget.AppCompat.ProgressBar"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:layout_marginTop="80dp"
                 android:indeterminate="true"
-                app:progressBarVisibility="@{viewModel.isProgressBarActive().booleanValue()}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/itemListRecyclerView" />
+                app:layout_constraintTop_toTopOf="@+id/itemListRecyclerView"
+                app:progressBarVisibility="@{viewModel.isProgressBarActive().booleanValue()}" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

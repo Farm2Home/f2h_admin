@@ -45,6 +45,8 @@ class AllItemsFragment : Fragment() {
         // Item list recycler view
         val adapter = AllItemsAdapter(AllItemClickListener { item ->
             navigateToPreOrderPage(item)
+        }, EditButtonClickListener { item ->
+            navigateToEditItemPage(item)
         })
         binding.itemListRecyclerView.adapter = adapter
         viewModel.visibleItems.observe(viewLifecycleOwner, Observer {
@@ -73,6 +75,11 @@ class AllItemsFragment : Fragment() {
 
     private fun navigateToAddItemPage() {
         val action = GroupDetailsTabsFragmentDirections.actionGroupDetailsTabsFragmentToAddItemsFragment()
+        view?.let { Navigation.findNavController(it).navigate(action) }
+    }
+
+    private fun navigateToEditItemPage(item: Item) {
+        val action = GroupDetailsTabsFragmentDirections.actionGroupDetailsTabsFragmentToEditItemFragment(item.itemId ?: -1L)
         view?.let { Navigation.findNavController(it).navigate(action) }
     }
 }
