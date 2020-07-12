@@ -1,14 +1,14 @@
 package com.f2h.f2h_admin.utils
 
 import android.view.View
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.ProgressBar
-import android.widget.TextView
+import android.widget.*
 import androidx.databinding.BindingAdapter
+import androidx.databinding.InverseBindingAdapter
+import androidx.databinding.InverseBindingListener
 import com.bumptech.glide.Glide
 import com.f2h.f2h_admin.R
 import com.f2h.f2h_admin.network.models.Item
+import kotlinx.android.synthetic.main.list_all_items.view.*
 
 
 @BindingAdapter("priceFormattedFromItem")
