@@ -6,6 +6,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.findNavController
 import androidx.navigation.ui.NavigationUI
+import com.cloudinary.android.MediaManager
 import com.f2h.f2h_admin.R
 import com.f2h.f2h_admin.database.F2HDatabase
 import com.f2h.f2h_admin.database.SessionEntity
@@ -28,6 +29,8 @@ class UserPagesActivity : AppCompatActivity() {
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_user_pages)
         drawerLayout = binding.drawerLayout
+
+        MediaManager.init(this)
 
         val navController = this.findNavController(R.id.userPagesNavHostFragment)
 

@@ -1,6 +1,9 @@
 package com.f2h.f2h_admin.screens.group.edit_item
 
+import android.app.Activity.RESULT_OK
 import android.app.Application
+import android.content.Intent
+import android.media.Image
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,11 +15,12 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
+import com.bumptech.glide.Glide
 import com.f2h.f2h_admin.R
 import com.f2h.f2h_admin.database.F2HDatabase
 import com.f2h.f2h_admin.database.SessionDatabaseDao
 import com.f2h.f2h_admin.databinding.FragmentEditItemBinding
-import com.f2h.f2h_admin.screens.group.edit_item.EditItemFragmentArgs.Companion.fromBundle
+import com.github.dhaval2404.imagepicker.ImagePicker
 
 
 /**
@@ -79,6 +83,30 @@ class EditItemFragment : Fragment() {
         }
 
 
+        binding.editImageButton?.setOnClickListener {
+            ImagePicker.with(this)
+                .cropSquare()
+                .compress(1024)			//Final image size will be less than 1 MB(Optional)
+                .maxResultSize(720, 720)	//Final image resolution will be less than 720 x 720(Optional)
+                .start()
+
+        }
+
         return binding.root
     }
+
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == RESULT_OK) {
+            val filePath: String? = ImagePicker.getFilePath(data)
+            viewModel.imageFilePath.value = filePath ?: ""
+            context?.let { Glide.with(it).load(filePath).into(binding.editImagePreview) }
+        } else if (resultCode == ImagePicker.RESULT_ERROR) {
+            Toast.makeText(this.context, ImagePicker.getError(data), Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(this.context, "Task Cancelled", Toast.LENGTH_SHORT).show()
+        }
+    }
+
 }

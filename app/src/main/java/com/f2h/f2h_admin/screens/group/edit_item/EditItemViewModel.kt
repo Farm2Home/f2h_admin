@@ -4,22 +4,34 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.cloudinary.android.MediaManager
+import com.cloudinary.android.callback.ErrorInfo
+import com.cloudinary.android.callback.UploadCallback
 import com.f2h.f2h_admin.database.SessionDatabaseDao
 import com.f2h.f2h_admin.database.SessionEntity
-import com.f2h.f2h_admin.network.*
-import com.f2h.f2h_admin.network.models.*
+import com.f2h.f2h_admin.network.GroupMembershipApi
+import com.f2h.f2h_admin.network.ItemApi
+import com.f2h.f2h_admin.network.UomApi
+import com.f2h.f2h_admin.network.UserApi
+import com.f2h.f2h_admin.network.models.Item
+import com.f2h.f2h_admin.network.models.ItemUpdateRequest
+import com.f2h.f2h_admin.network.models.Uom
+import com.f2h.f2h_admin.network.models.UserDetails
 import kotlinx.coroutines.*
-import java.lang.Exception
+import java.util.*
+
 
 class EditItemViewModel(val database: SessionDatabaseDao, application: Application) : AndroidViewModel(application) {
 
     var selectedItemId = -1L
 
     val itemName = MutableLiveData<String>()
+    val itemImageUrl = MutableLiveData<String>()
     val itemDescription = MutableLiveData<String>()
     val itemPrice = MutableLiveData<String>()
     val confirmQuantityJump = MutableLiveData<String>()
     val orderQuantityJump = MutableLiveData<String>()
+    val imageFilePath = MutableLiveData<String>()
 
     val selectedItemUomDetails = MutableLiveData<Uom>()
     val selectedFarmerDetails = MutableLiveData<UserDetails>()
@@ -76,6 +88,7 @@ class EditItemViewModel(val database: SessionDatabaseDao, application: Applicati
         itemName.value = selectedItem.itemName
         itemDescription.value = selectedItem.description
         itemPrice.value = selectedItem.pricePerUnit.toString()
+        itemImageUrl.value = selectedItem.imageLink
         confirmQuantityJump.value = selectedItem.confirmQtyJump.toString()
         orderQuantityJump.value = selectedItem.orderQtyJump.toString()
     }
@@ -128,6 +141,7 @@ class EditItemViewModel(val database: SessionDatabaseDao, application: Applicati
 
 
     private fun isAnyFieldInvalid(): Boolean {
+
         if (itemName.value.isNullOrBlank()) {
             _toastText.value = "Please enter an Item Name"
             return true
@@ -169,12 +183,57 @@ class EditItemViewModel(val database: SessionDatabaseDao, application: Applicati
         return true;
     }
 
-    fun onEditItemButtonClicked() {
+
+
+    fun onUpdateItemButtonClicked() {
 
         if(isAnyFieldInvalid()){
             return
         }
 
+        if (!imageFilePath.value.isNullOrBlank()) {
+            updateImageAndItemData()
+            return
+        }
+
+        updateItemData(null)
+    }
+
+    private fun updateImageAndItemData() {
+        _isProgressBarActive.value = true
+        val requestId = MediaManager.get().upload(imageFilePath.value)
+            .unsigned("unsigned_upload_settings")
+            .option(
+                "public_id",
+                String.format("group_%s_item_%s_%s", _sessionData.value?.groupId, selectedItem.itemId, Calendar.getInstance().time)
+            )
+            .callback(object : UploadCallback {
+                override fun onSuccess(requestId: String, resultData: Map<*, *>?) {
+                    println(resultData)
+                    updateItemData(resultData?.get("url").toString())
+                }
+
+                override fun onProgress(requestId: String?, bytes: Long, totalBytes: Long) {
+                    println(bytes / totalBytes)
+                }
+
+                override fun onReschedule(requestId: String?, error: ErrorInfo?) {
+                    TODO("Not yet implemented")
+                }
+
+                override fun onError(requestId: String, error: ErrorInfo) {
+                    println(error)
+                    _toastText.value = "Unable to upload image"
+                    _isProgressBarActive.value = false
+                }
+
+                override fun onStart(requestId: String?) {
+                }
+            })
+            .dispatch()
+    }
+
+    private fun updateItemData(imageUrl: String?) {
         var requestBody = ItemUpdateRequest(
             itemName = itemName.value,
             groupId = _sessionData.value?.groupId,
@@ -186,26 +245,27 @@ class EditItemViewModel(val database: SessionDatabaseDao, application: Applicati
             confirmQtyJump = confirmQuantityJump.value?.toDouble(),
             orderQtyJump = orderQuantityJump.value?.toDouble(),
             updatedBy = _sessionData.value?.userName,
-            imageLink = null
+            imageLink = imageUrl
         )
 
-        _isProgressBarActive.value = true
         coroutineScope.launch {
-            val updateItemDataDeferred = ItemApi.retrofitService.updateItemForGroup(selectedItemId, requestBody)
+            val updateItemDataDeferred =
+                ItemApi.retrofitService.updateItemForGroup(selectedItemId, requestBody)
             try {
                 updateItemDataDeferred.await()
-                _toastText.value = String.format("Successfully updated item, %s", selectedItem.itemName)
-            } catch (t:Throwable){
+                _toastText.value =
+                    String.format("Successfully updated item, %s", selectedItem.itemName)
+            } catch (t: Throwable) {
                 _toastText.value = "Oops something went wrong, please try again"
             }
             _isProgressBarActive.value = false
         }
-
-        // If successful, go back to products page
     }
+
 
     override fun onCleared() {
         super.onCleared()
         viewModelJob.cancel()
     }
+
 }

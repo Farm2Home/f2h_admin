@@ -94,7 +94,7 @@
                 android:text="Name of item"
                 android:textSize="12sp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@+id/editImagePreview" />
 
             <TextView
                 android:id="@+id/textView22"
@@ -159,7 +159,7 @@
                 android:layout_marginTop="25dp"
                 android:layout_marginEnd="20dp"
                 android:layout_marginBottom="20dp"
-                android:onClick="@{() -> viewModel.onEditItemButtonClicked()}"
+                android:onClick="@{() -> viewModel.onUpdateItemButtonClicked()}"
                 android:text="Update Item"
                 android:textAllCaps="false"
                 app:buttonStatus="@{!viewModel.isProgressBarActive()}"
@@ -215,16 +215,23 @@
                 app:layout_constraintTop_toBottomOf="@+id/textView27" />
 
             <ImageView
-                android:id="@+id/editImageButton"
+                android:id="@+id/editImagePreview"
                 android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                app:layout_constraintBottom_toBottomOf="@+id/editItemName"
+                android:layout_height="250dp"
+                app:loadImage="@{viewModel.itemImageUrl}"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/editItemName"
-                app:layout_constraintTop_toTopOf="@+id/editItemName"
-                app:srcCompat="@drawable/add_photo_icon" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
+                android:id="@+id/editImageButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:src="@drawable/edit_icon"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
