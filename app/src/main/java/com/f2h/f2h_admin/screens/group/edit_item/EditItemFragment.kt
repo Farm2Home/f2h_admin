@@ -89,7 +89,6 @@ class EditItemFragment : Fragment() {
                 .compress(1024)			//Final image size will be less than 1 MB(Optional)
                 .maxResultSize(720, 720)	//Final image resolution will be less than 720 x 720(Optional)
                 .start()
-
         }
 
         return binding.root

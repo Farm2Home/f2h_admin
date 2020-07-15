@@ -203,10 +203,9 @@ class EditItemViewModel(val database: SessionDatabaseDao, application: Applicati
         _isProgressBarActive.value = true
         val requestId = MediaManager.get().upload(imageFilePath.value)
             .unsigned("unsigned_upload_settings")
-            .option(
-                "public_id",
-                String.format("group_%s_item_%s_%s", _sessionData.value?.groupId, selectedItem.itemId, Calendar.getInstance().time)
-            )
+            .option("public_id", String.format("%s__%s", selectedItem.itemName, Calendar.getInstance().time))
+            .option("folder", String.format("item_images/group_%s", _sessionData.value?.groupId))
+            .option("tags", String.format("group_%s,item_%s,uploaderUserId_%s", _sessionData.value?.groupName, selectedItem.itemName,_sessionData.value?.userId))
             .callback(object : UploadCallback {
                 override fun onSuccess(requestId: String, resultData: Map<*, *>?) {
                     println(resultData)

@@ -46,7 +46,7 @@
                     app:layout_constraintBottom_toBottomOf="@+id/amount"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/itemDetails"
-                    app:loadImage="@{item.imageLink}" />
+                    app:loadSquareRoundedImage="@{item.imageLink}" />
 
                 <TextView
                     android:id="@+id/itemDetails"

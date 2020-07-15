@@ -60,6 +60,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:entries="@{viewModel.itemUomStringList}"
+                app:spinnerStatus="@{!viewModel.isProgressBarActive()}"
                 app:layout_constraintBottom_toBottomOf="@+id/addItemPrice"
                 app:layout_constraintStart_toEndOf="@+id/textView9"
                 app:layout_constraintTop_toTopOf="@+id/addItemPrice" />
@@ -70,6 +71,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="20dp"
                 android:entries="@{viewModel.farmersStringList}"
+                app:spinnerStatus="@{!viewModel.isProgressBarActive()}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/textView23"
                 app:layout_constraintTop_toBottomOf="@+id/textView23" />
@@ -90,11 +92,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
-                android:layout_marginTop="20dp"
                 android:text="Name of item"
                 android:textSize="12sp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@+id/addImagePreview" />
 
             <TextView
                 android:id="@+id/textView22"
@@ -215,15 +216,22 @@
                 app:layout_constraintTop_toBottomOf="@+id/textView27" />
 
             <ImageView
-                android:id="@+id/addImageButton"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                app:layout_constraintBottom_toBottomOf="@+id/addItemName"
+                android:id="@+id/addImagePreview"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/addItemName"
-                app:layout_constraintTop_toTopOf="@+id/addItemName"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
+                android:id="@+id/addImageButton"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                app:imageButtonStatus="@{!viewModel.isProgressBarActive()}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/add_photo_icon" />
 
 
