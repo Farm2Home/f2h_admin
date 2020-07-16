@@ -57,7 +57,7 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
         _isProgressBarActive.value = true
         coroutineScope.launch {
             sessionData.value = retrieveSession()
-            var getGroupMembershipsDeferred = GroupMembershipApi.retrofitService.getGroupMembership(sessionData.value!!.groupId)
+            var getGroupMembershipsDeferred = GroupMembershipApi.retrofitService.getGroupMembership(sessionData.value!!.groupId, null)
             try {
                 var memberships = getGroupMembershipsDeferred.await()
                 var userIds = memberships.map { x -> x.userId ?: -1 }.distinct()

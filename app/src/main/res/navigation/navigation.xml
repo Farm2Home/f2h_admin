@@ -64,6 +64,12 @@
         <action
             android:id="@+id/action_groupDetailsTabsFragment_to_membershipRequestFragment"
             app:destination="@id/membershipRequestFragment" />
+        <action
+            android:id="@+id/action_groupDetailsTabsFragment_to_addItemsFragment"
+            app:destination="@id/addItemsFragment" />
+        <action
+            android:id="@+id/action_groupDetailsTabsFragment_to_editItemFragment"
+            app:destination="@id/editItemFragment" />
     </fragment>
     <fragment
         android:id="@+id/allItemsFragment"
@@ -133,5 +139,15 @@
         <argument
             android:name="memberUiModel"
             app:argType="com.f2h.f2h_admin.screens.group.members.MembersUiModel" />
+    </fragment>
+    <fragment
+        android:id="@+id/addItemsFragment"
+        android:name="com.f2h.f2h_admin.screens.group.add_item.AddItemFragment" />
+    <fragment
+        android:id="@+id/editItemFragment"
+        android:name="com.f2h.f2h_admin.screens.group.edit_item.EditItemFragment"
+        android:label="EditItemFragment" >
+        <argument android:name="itemId"
+            app:argType="long" />
     </fragment>
 </navigation>

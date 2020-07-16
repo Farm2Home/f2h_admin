@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+
+    <data>
+        <variable
+            name="viewModel"
+            type="com.f2h.f2h_admin.screens.group.add_item.AddItemViewModel" />
+    </data>
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="@style/Widget.AppCompat.ProgressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:indeterminate="true"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:progressBarVisibility="@{viewModel.isProgressBarActive().booleanValue()}" />
+
+            <EditText
+                android:id="@+id/addItemName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="Item Name"
+                android:inputType="textPersonName"
+                android:text="@={viewModel.itemName}"
+                app:layout_constraintStart_toStartOf="@+id/textView11"
+                app:layout_constraintTop_toBottomOf="@+id/textView11" />
+
+            <EditText
+                android:id="@+id/addItemPrice"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="Item Price"
+                android:inputType="number|numberDecimal"
+                android:text="@={viewModel.itemPrice}"
+                app:layout_constraintStart_toEndOf="@+id/textView25"
+                app:layout_constraintTop_toBottomOf="@+id/textView22" />
+
+            <Spinner
+                android:id="@+id/addUomSelector"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:entries="@{viewModel.itemUomStringList}"
+                app:layout_constraintBottom_toBottomOf="@+id/addItemPrice"
+                app:layout_constraintStart_toEndOf="@+id/textView9"
+                app:layout_constraintTop_toTopOf="@+id/addItemPrice" />
+
+            <Spinner
+                android:id="@+id/addFarmerSelector"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="20dp"
+                android:entries="@{viewModel.farmersStringList}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/textView23"
+                app:layout_constraintTop_toBottomOf="@+id/textView23" />
+
+            <TextView
+                android:id="@+id/textView9"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:gravity="center_vertical"
+                android:text="    Per  "
+                android:textAlignment="gravity"
+                app:layout_constraintBottom_toBottomOf="@+id/addUomSelector"
+                app:layout_constraintStart_toEndOf="@+id/addItemPrice"
+                app:layout_constraintTop_toTopOf="@+id/addUomSelector" />
+
+            <TextView
+                android:id="@+id/textView11"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:text="Name of item"
+                android:textSize="12sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/textView22"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="Price per unit"
+                android:textSize="12sp"
+                app:layout_constraintStart_toStartOf="@+id/addItemDescription"
+                app:layout_constraintTop_toBottomOf="@+id/addItemDescription" />
+
+            <TextView
+                android:id="@+id/textView23"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="Select farmer"
+                android:textSize="12sp"
+                app:layout_constraintStart_toStartOf="@+id/textView25"
+                app:layout_constraintTop_toBottomOf="@+id/addMinConfirmedQuantity" />
+
+            <TextView
+                android:id="@+id/textView24"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="Item description"
+                android:textSize="12sp"
+                app:layout_constraintStart_toStartOf="@+id/addItemName"
+                app:layout_constraintTop_toBottomOf="@+id/addItemName" />
+
+            <EditText
+                android:id="@+id/addItemDescription"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="20dp"
+                android:ems="10"
+                android:hint="Description"
+                android:inputType="textMultiLine|text"
+                android:minLines="3"
+                android:text="@={viewModel.itemDescription}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/textView24"
+                app:layout_constraintTop_toBottomOf="@+id/textView24" />
+
+            <TextView
+                android:id="@+id/textView25"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:gravity="center_vertical"
+                android:text="Rs  "
+                android:textAlignment="gravity"
+                app:layout_constraintBottom_toBottomOf="@+id/addItemPrice"
+                app:layout_constraintStart_toStartOf="@+id/textView22"
+                app:layout_constraintTop_toTopOf="@+id/addItemPrice" />
+
+            <Button
+                android:id="@+id/addItemButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="25dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="20dp"
+                android:onClick="@{() -> viewModel.onAddItemButtonClicked()}"
+                android:text="Save Item"
+                android:textAllCaps="false"
+                app:buttonStatus="@{!viewModel.isProgressBarActive()}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/addFarmerSelector" />
+
+            <TextView
+                android:id="@+id/textView26"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="Order quantity jump"
+                android:textSize="12sp"
+                app:layout_constraintStart_toStartOf="@+id/addMinOrderedQuantity"
+                app:layout_constraintTop_toBottomOf="@+id/addItemPrice" />
+
+            <EditText
+                android:id="@+id/addMinOrderedQuantity"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:ems="10"
+                android:inputType="number|numberDecimal"
+                android:text="@={viewModel.orderQuantityJump}"
+                app:layout_constraintEnd_toStartOf="@+id/addMinConfirmedQuantity"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView26" />
+
+            <TextView
+                android:id="@+id/textView27"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Confirm quantity jump"
+                android:textSize="12sp"
+                app:layout_constraintStart_toStartOf="@+id/addMinConfirmedQuantity"
+                app:layout_constraintTop_toTopOf="@+id/textView26" />
+
+            <EditText
+                android:id="@+id/addMinConfirmedQuantity"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="20dp"
+                android:ems="10"
+                android:inputType="number|numberDecimal"
+                android:text="@={viewModel.confirmQuantityJump}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/addMinOrderedQuantity"
+                app:layout_constraintTop_toBottomOf="@+id/textView27" />
+
+            <ImageView
+                android:id="@+id/addImageButton"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                app:layout_constraintBottom_toBottomOf="@+id/addItemName"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/addItemName"
+                app:layout_constraintTop_toTopOf="@+id/addItemName"
+                app:srcCompat="@drawable/add_photo_icon" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </ScrollView>
+
+</layout>
