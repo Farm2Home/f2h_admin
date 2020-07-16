@@ -125,7 +125,6 @@ class MembershipRequestViewModel (val database: SessionDatabaseDao, application:
 
     // Accept button
     fun onOkButtonClick(){
-//        _toastMessage.value = String.format("Ok button clicked for %s", userName.value)
         acceptBuyerMembership()
     }
 
@@ -147,28 +146,40 @@ class MembershipRequestViewModel (val database: SessionDatabaseDao, application:
             }
         }
 
-        if (!is_change){
-            _isProgressBarActive.value = false
-            _isMembershipActionComplete.value = true
-            return
-        }
-        var membershipRequest = GroupMembershipRequest(
-            null,
-            null,
-            acceptedRoles.joinToString(),
-            null
-        )
-        coroutineScope.launch {
-            var updateGroupMembershipDataDeferred =
-                GroupMembershipApi.retrofitService.updateGroupMembership(groupMembershipId, membershipRequest)
-            try {
-                var updatedMembership = updateGroupMembershipDataDeferred.await()
-                _isMembershipActionComplete.value = true
-            } catch (t:Throwable){
-                println(t.message)
+        if(is_change && acceptedRoles.size == 0){
+            coroutineScope.launch {
+                var deleteGroupMembershipDataDeferred =
+                    GroupMembershipApi.retrofitService.deleteGroupMembership(groupMembershipId)
+                try {
+                    var deleteMembership = deleteGroupMembershipDataDeferred.await()
+                    _isMembershipActionComplete.value = true
+                } catch (t:Throwable){
+                    println(t.message)
+                }
             }
-            _isProgressBarActive.value = false
         }
+        else if(is_change){
+            var membershipRequest = GroupMembershipRequest(
+                null,
+                null,
+                acceptedRoles.joinToString(),
+                null
+            )
+            coroutineScope.launch {
+                var updateGroupMembershipDataDeferred =
+                    GroupMembershipApi.retrofitService.updateGroupMembership(groupMembershipId, membershipRequest)
+                try {
+                    var updatedMembership = updateGroupMembershipDataDeferred.await()
+                    _isMembershipActionComplete.value = true
+                } catch (t:Throwable){
+                    println(t.message)
+                }
+            }
+        }
+        else{
+            _isMembershipActionComplete.value = true
+        }
+        _isProgressBarActive.value = false
 
     }
 
