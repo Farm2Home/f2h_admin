@@ -20,7 +20,6 @@ import com.f2h.f2h_admin.database.SessionDatabaseDao
 import com.f2h.f2h_admin.databinding.FragmentMembersBinding
 import com.f2h.f2h_admin.screens.group.group_tabs.GroupDetailsTabsFragmentDirections
 
-
 /**
  * A simple [Fragment] subclass.
  */
@@ -55,18 +54,18 @@ class MembersFragment : Fragment() {
             viewModel.onCallUserButtonClicked(uiDataElement)
             startPhoneCall()
         }, AcceptUserButtonClickListener { uiDataElement ->
-            viewModel.onAcceptUserButtonClicked(uiDataElement)
+            navigateToMembershipRequest(uiDataElement)
         }, OpenUserWalletButtonClickListener { uiDataElement ->
             openSelectedUserWallet(uiDataElement)
         })
         binding.itemListRecyclerView.adapter = adapter
+
         viewModel.visibleUiData.observe(viewLifecycleOwner, Observer {
             it?.let {
                 adapter.submitList(it)
                 adapter.notifyDataSetChanged()
             }
         })
-
 
         //Toast Message
         viewModel.toastMessage.observe(viewLifecycleOwner, Observer { message ->
@@ -78,6 +77,12 @@ class MembersFragment : Fragment() {
     private fun openSelectedUserWallet(uiDataElement: MembersUiModel) {
         val action = GroupDetailsTabsFragmentDirections
             .actionGroupDetailsTabsFragmentToGroupWalletFragment(uiDataElement.userId, uiDataElement.userName)
+        view?.let { Navigation.findNavController(it).navigate(action) }
+    }
+
+
+    private fun navigateToMembershipRequest(uiDataElement: MembersUiModel) {
+        val action = GroupDetailsTabsFragmentDirections.actionGroupDetailsTabsFragmentToMembershipRequestFragment(uiDataElement)
         view?.let { Navigation.findNavController(it).navigate(action) }
     }
 
