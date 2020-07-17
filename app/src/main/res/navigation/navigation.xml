@@ -7,7 +7,12 @@
 
     <fragment
         android:id="@+id/membersFragment"
-        android:name="com.f2h.f2h_admin.screens.group.members.MembersFragment" />
+        android:name="com.f2h.f2h_admin.screens.group.members.MembersFragment" >
+        <action
+            android:id="@+id/action_membersFragment_to_membershipRequestFragment"
+            app:destination="@id/membershipRequestFragment"
+            app:popUpToInclusive="false" />
+    </fragment>
     <fragment
         android:id="@+id/groupsFragment"
         android:name="com.f2h.f2h_admin.screens.group_list.GroupsFragment">
@@ -56,6 +61,9 @@
         <action
             android:id="@+id/action_groupDetailsTabsFragment_to_contactUsFragment"
             app:destination="@id/contactUsFragment" />
+        <action
+            android:id="@+id/action_groupDetailsTabsFragment_to_membershipRequestFragment"
+            app:destination="@id/membershipRequestFragment" />
         <action
             android:id="@+id/action_groupDetailsTabsFragment_to_addItemsFragment"
             app:destination="@id/addItemsFragment" />
@@ -123,6 +131,15 @@
     <fragment
         android:id="@+id/paymentFragment"
         android:name="com.f2h.f2h_admin.screens.group.payment.PaymentFragment" />
+    <fragment
+        android:id="@+id/membershipRequestFragment"
+        android:name="com.f2h.f2h_admin.screens.group.accept_reject_membership.MembershipRequestFragment"
+        android:label="fragment_membership_request"
+        tools:layout="@layout/fragment_membership_request" >
+        <argument
+            android:name="memberUiModel"
+            app:argType="com.f2h.f2h_admin.screens.group.members.MembersUiModel" />
+    </fragment>
     <fragment
         android:id="@+id/addItemsFragment"
         android:name="com.f2h.f2h_admin.screens.group.add_item.AddItemFragment" />

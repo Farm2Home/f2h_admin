@@ -36,6 +36,9 @@ interface GroupMembershipApiService{
     @POST("group_membership")
     fun requestGroupMembership(@Body createMembership: GroupMembershipRequest): Deferred<GroupMembership>
 
+    @DELETE("group_membership/{group_membership_id}")
+    fun deleteGroupMembership(@Path("group_membership_id") groupMembershipId: Long): Deferred<GroupMembership>
+
 }
 
 object GroupMembershipApi {

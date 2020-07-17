@@ -1,6 +1,10 @@
 package com.f2h.f2h_admin.screens.group.members
 
-data class MembersUiModel (
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
+
+@Parcelize
+data class MembersUiModel(
     var userId: Long = 0,
     var userName: String = "",
     var deliveryAddress: String = "",
@@ -9,4 +13,4 @@ data class MembersUiModel (
     var roles: String = "",
     var groupMembershipId: Long = 0,
     var isBuyerRequested : Boolean = false
-)
+): Parcelable

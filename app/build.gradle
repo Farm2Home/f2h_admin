@@ -64,6 +64,7 @@ dependencies {
     implementation "androidx.room:room-runtime:$room_version"
 
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0'
+    implementation 'androidx.recyclerview:recyclerview:1.1.0'
     kapt "android.arch.persistence.room:compiler:1.1.1"
 
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$version_kotlin_coroutines"
