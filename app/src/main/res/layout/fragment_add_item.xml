@@ -161,7 +161,7 @@
                 android:layout_marginEnd="20dp"
                 android:layout_marginBottom="20dp"
                 android:onClick="@{() -> viewModel.onAddItemButtonClicked()}"
-                android:text="Save Item"
+                android:text="Save Product"
                 android:textAllCaps="false"
                 app:buttonStatus="@{!viewModel.isProgressBarActive()}"
                 app:layout_constraintBottom_toBottomOf="parent"

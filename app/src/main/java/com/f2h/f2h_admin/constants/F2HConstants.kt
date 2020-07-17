@@ -17,4 +17,13 @@ object F2HConstants {
     const val USER_ROLE_BUYER_REQUESTED = "BUYER_REQUESTED"
     const val USER_ROLE_GROUP_ADMIN_REQUESTED = "GROUP_ADMIN_REQUESTED"
     const val USER_ROLE_GROUP_ADMIN = "GROUP_ADMIN"
+    const val ROLE_REQUEST_ACCEPT = "Accept"
+    const val ROLE_REQUEST_REJECT = "Reject"
+    const val ROLE_REQUEST_PENDING = "Pending"
+
+    val ACCEPTED_ROLES = arrayOf("BUYER", "GROUP_ADMIN")
+    val REQUESTED_ROLES = arrayOf("BUYER_REQUESTED", "GROUP_ADMIN_REQUESTED")
+    val REQUESTED_ROLE_TO_ACCEPTED_ROLE:
+            Map<String, String> = REQUESTED_ROLES.zip(ACCEPTED_ROLES).toMap()
+
 }

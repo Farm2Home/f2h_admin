@@ -162,7 +162,7 @@
                 android:layout_marginEnd="20dp"
                 android:layout_marginBottom="20dp"
                 android:onClick="@{() -> viewModel.onUpdateItemButtonClicked()}"
-                android:text="Update Item"
+                android:text="Update Product"
                 android:textAllCaps="false"
                 app:buttonStatus="@{!viewModel.isProgressBarActive()}"
                 app:layout_constraintBottom_toBottomOf="parent"
