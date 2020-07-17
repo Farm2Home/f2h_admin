@@ -4,6 +4,9 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.cloudinary.android.MediaManager
+import com.cloudinary.android.callback.ErrorInfo
+import com.cloudinary.android.callback.UploadCallback
 import com.f2h.f2h_admin.database.SessionDatabaseDao
 import com.f2h.f2h_admin.database.SessionEntity
 import com.f2h.f2h_admin.network.*
@@ -12,6 +15,7 @@ import com.f2h.f2h_admin.network.models.Uom
 import com.f2h.f2h_admin.network.models.UserDetails
 import kotlinx.coroutines.*
 import java.lang.Exception
+import java.util.*
 
 class AddItemViewModel(val database: SessionDatabaseDao, application: Application) : AndroidViewModel(application) {
 
@@ -24,6 +28,7 @@ class AddItemViewModel(val database: SessionDatabaseDao, application: Applicatio
     val selectedFarmerDetails = MutableLiveData<UserDetails>()
     val farmersStringList = MutableLiveData<List<String>>()
     val itemUomStringList = MutableLiveData<List<String>>()
+    val imageFilePath = MutableLiveData<String>()
 
     private val _isProgressBarActive = MutableLiveData<Boolean>()
     val isProgressBarActive: LiveData<Boolean>
@@ -106,6 +111,12 @@ class AddItemViewModel(val database: SessionDatabaseDao, application: Applicatio
 
 
     private fun isAnyFieldInvalid(): Boolean {
+
+        if (imageFilePath.value.isNullOrBlank()) {
+            _toastText.value = "Please select an Image"
+            return true
+        }
+
         if (itemName.value.isNullOrBlank()) {
             _toastText.value = "Please enter an Item Name"
             return true
@@ -148,11 +159,48 @@ class AddItemViewModel(val database: SessionDatabaseDao, application: Applicatio
     }
 
     fun onAddItemButtonClicked() {
-
         if(isAnyFieldInvalid()){
             return
         }
+        uploadImageAndItemData()
+    }
 
+
+    private fun uploadImageAndItemData() {
+        _isProgressBarActive.value = true
+        val requestId = MediaManager.get().upload(imageFilePath.value)
+            .unsigned("unsigned_upload_settings")
+            .option("public_id", String.format("%s__%s", itemName.value, Calendar.getInstance().time))
+            .option("folder", String.format("item_images/group_%s", _sessionData.value?.groupId))
+            .option("tags", String.format("group_%s,item_%s,uploaderUserId_%s", _sessionData.value?.groupName, itemName,_sessionData.value?.userId))
+            .callback(object : UploadCallback {
+                override fun onSuccess(requestId: String, resultData: Map<*, *>?) {
+                    println(resultData)
+                    uploadItemData(resultData?.get("url").toString())
+                }
+
+                override fun onProgress(requestId: String?, bytes: Long, totalBytes: Long) {
+                    println(bytes / totalBytes)
+                }
+
+                override fun onReschedule(requestId: String?, error: ErrorInfo?) {
+                    TODO("Not yet implemented")
+                }
+
+                override fun onError(requestId: String, error: ErrorInfo) {
+                    println(error)
+                    _toastText.value = "Unable to upload image"
+                    _isProgressBarActive.value = false
+                }
+
+                override fun onStart(requestId: String?) {
+                }
+            })
+            .dispatch()
+    }
+
+
+    private fun uploadItemData(imageUrl: String) {
         var requestBody = ItemCreateRequest(
             itemName = itemName.value,
             groupId = _sessionData.value?.groupId,
@@ -165,7 +213,7 @@ class AddItemViewModel(val database: SessionDatabaseDao, application: Applicatio
             orderQtyJump = orderQuantityJump.value?.toDouble(),
             createdBy = _sessionData.value?.userName,
             updatedBy = _sessionData.value?.userName,
-            imageLink = null
+            imageLink = imageUrl
         )
 
         _isProgressBarActive.value = true
@@ -174,13 +222,11 @@ class AddItemViewModel(val database: SessionDatabaseDao, application: Applicatio
             try {
                 createItemDataDeferred.await()
                 _toastText.value = "Successfully created a new item"
-            } catch (t:Throwable){
+            } catch (t: Throwable) {
                 _toastText.value = "Oops something went wrong, please try again"
             }
             _isProgressBarActive.value = false
         }
-
-        // If successful, go back to products page
     }
 
     override fun onCleared() {

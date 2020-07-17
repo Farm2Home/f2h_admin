@@ -46,7 +46,7 @@
                     android:contentDescription="TODO"
                     app:layout_constraintStart_toEndOf="@+id/confirmRejectCheckbox"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:loadImage="@{uiModel.itemImageLink}" />
+                    app:loadSquareRoundedImage="@{uiModel.itemImageLink}" />
 
                 <TextView
                     android:id="@+id/confirmItemDetails"
