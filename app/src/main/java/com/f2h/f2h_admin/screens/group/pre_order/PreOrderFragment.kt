@@ -44,16 +44,9 @@ class PreOrderFragment : Fragment() {
 
 
         // Item list recycler view
-        val adapter =
-            PreOrderItemsAdapter(
-                PreOrderItemClickListener { preOrderUiElement ->
-                }, IncreaseButtonClickListener { preOrderUiElement ->
-                    viewModel.increaseOrderQuantity(preOrderUiElement)
-                }, DecreaseButtonClickListener { preOrderUiElement ->
-                    viewModel.decreaseOrderQuantity(preOrderUiElement)
-                })
+        val adapter = PreOrderItemsAdapter(PreOrderItemClickListener {} )
         binding.preOrderItemRecyclerView.adapter = adapter
-        viewModel.preOrderItems.observe(viewLifecycleOwner, Observer {
+        viewModel.availabilityItems.observe(viewLifecycleOwner, Observer {
             it?.let {
                 adapter.submitList(it)
                 adapter.notifyDataSetChanged()

@@ -3,13 +3,16 @@ package com.f2h.f2h_admin.network
 import com.f2h.f2h_admin.constants.F2HConstants
 import com.f2h.f2h_admin.constants.F2HConstants.SERVER_URL
 import com.f2h.f2h_admin.network.models.ItemAvailability
+import com.f2h.f2h_admin.network.models.ItemAvailabilityUpdateRequest
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import kotlinx.coroutines.Deferred
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
+import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.PUT
 import retrofit2.http.Query
 
 private const val BASE_URL = SERVER_URL
@@ -32,6 +35,10 @@ interface ItemAvailabilityApiService{
 
     @GET("item_availability")
     fun getItemAvailabilitiesByItemId(@Query("item_ids") itemIds: Long):
+            Deferred<List<ItemAvailability>>
+
+    @PUT("item_availabilities")
+    fun updateItemAvailabilities(@Body availabilityUpdateRequests: List<ItemAvailabilityUpdateRequest>):
             Deferred<List<ItemAvailability>>
 }
 
