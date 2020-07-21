@@ -72,13 +72,13 @@ class MembershipRequestViewModel (val database: SessionDatabaseDao, application:
                 var allUiData = ArrayList<MembershipRequestUiModel>()
 
                 modifiedRoles.forEach{ role ->
-                    if (role in F2HConstants.REQUESTED_ROLES) {
+                    if (role.trim() in F2HConstants.REQUESTED_ROLES) {
                         var uiElement = MembershipRequestUiModel()
                         uiElement.role = role
                         uiElement.requestedRole = true
                         allUiData.add(uiElement)
                     }
-                    else if (role in F2HConstants.ACCEPTED_ROLES) {
+                    else if (role.trim() in F2HConstants.ACCEPTED_ROLES) {
                         var uiElement = MembershipRequestUiModel()
                         uiElement.role = role
                         uiElement.requestedRole = false
@@ -135,7 +135,7 @@ class MembershipRequestViewModel (val database: SessionDatabaseDao, application:
         var is_change = false
         _requestedRolesUiData.value!!.forEach { el ->
             if (!el.requestedRole || el.selected?.contains(F2HConstants.ROLE_REQUEST_PENDING)){
-                acceptedRoles.add(el.role)
+                acceptedRoles.add(el.role.trim())
             }
             else if (el.selected?.contains(F2HConstants.ROLE_REQUEST_ACCEPT)) {
                 is_change = true
@@ -162,7 +162,7 @@ class MembershipRequestViewModel (val database: SessionDatabaseDao, application:
             var membershipRequest = GroupMembershipRequest(
                 null,
                 null,
-                acceptedRoles.joinToString(),
+                acceptedRoles.joinToString(","),
                 null
             )
             coroutineScope.launch {
