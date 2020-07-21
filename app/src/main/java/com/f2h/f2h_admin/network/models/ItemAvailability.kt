@@ -14,7 +14,6 @@ data class ItemAvailability (
 
 data class ItemAvailabilityCreateRequest (
     @Json(name = "item_id") val itemId: Long? = -1,
-    @Json(name = "item_availability_id") val itemAvailabilityId: Long?,
     @Json(name = "available_date") val availableDate: String?,
     @Json(name = "available_time_slot") val availableTimeSlot: String?,
     @Json(name = "committed_quantity") val committedQuantity: Double?,

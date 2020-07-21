@@ -5,6 +5,6 @@ data class AvailabilityItemsModel (
     var availableDate: String = "",
     var availableTimeSlot: String = "",
     var itemUom: String = "",
-    var committedQuantity: Double = 0.0,
-    var availableQuantity: Double = 0.0
+    var committedQuantity: String = "0.0",
+    var availableQuantity: String = "0.0"
 )

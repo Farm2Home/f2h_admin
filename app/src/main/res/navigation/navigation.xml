@@ -98,6 +98,9 @@
             android:name="itemId"
             android:defaultValue="0L"
             app:argType="long" />
+        <action
+            android:id="@+id/action_preOrderFragment_to_addAvailabilityFragment"
+            app:destination="@id/addAvailabilityFragment" />
     </fragment>
     <fragment
         android:id="@+id/contactUsFragment"
@@ -160,9 +163,17 @@
     <fragment
         android:id="@+id/editItemFragment"
         android:name="com.f2h.f2h_admin.screens.group.edit_item.EditItemFragment"
-        tools:layout="@layout/fragment_edit_item"
-        android:label="EditItemFragment" >
-        <argument android:name="itemId"
+        tools:layout="@layout/fragment_edit_item">
+        <argument
+            android:name="itemId"
+            app:argType="long" />
+    </fragment>
+    <fragment
+        android:id="@+id/addAvailabilityFragment"
+        android:name="com.f2h.f2h_admin.screens.group.add_availability.AddAvailabilityFragment"
+        tools:layout="@layout/fragment_add_availability" >
+        <argument
+            android:name="itemId"
             app:argType="long" />
     </fragment>
 </navigation>

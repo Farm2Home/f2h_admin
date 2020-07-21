@@ -10,6 +10,7 @@ import com.f2h.f2h_admin.network.ItemApi
 import com.f2h.f2h_admin.network.ItemAvailabilityApi
 import com.f2h.f2h_admin.network.models.*
 import kotlinx.coroutines.*
+import java.lang.Exception
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
@@ -97,8 +98,8 @@ class PreOrderViewModel(val database: SessionDatabaseDao, application: Applicati
                 availabilityItem.itemAvailabilityId = availability.itemAvailabilityId ?: -1L
                 availabilityItem.availableDate = availability.availableDate ?: ""
                 availabilityItem.availableTimeSlot = availability.availableTimeSlot ?: ""
-                availabilityItem.availableQuantity = availability.availableQuantity ?: 0.0
-                availabilityItem.committedQuantity = availability.committedQuantity ?: 0.0
+                availabilityItem.availableQuantity = availability.availableQuantity.toString()
+                availabilityItem.committedQuantity = availability.committedQuantity.toString()
                 availabilityItem.itemUom = item.uom ?: ""
 
                 list.add(availabilityItem)
@@ -168,6 +169,9 @@ class PreOrderViewModel(val database: SessionDatabaseDao, application: Applicati
         _isProgressBarActive.value = true
         var updateRequest: ArrayList<ItemAvailabilityUpdateRequest> = arrayListOf()
         _preOrderItems.value?.forEach { preOrder ->
+            if(isAnyFieldInvalid(preOrder)){
+                return@forEach
+            }
             updateRequest.add(createItemAvailabilityUpdateRequest(preOrder))
         }
 
@@ -187,12 +191,35 @@ class PreOrderViewModel(val database: SessionDatabaseDao, application: Applicati
     }
 
 
+    private fun isAnyFieldInvalid(data: AvailabilityItemsModel): Boolean {
+        // This gets mapped to 0
+        if(data.availableQuantity.isNullOrBlank()){
+            return false
+        }
+        if (!isDecimal(data.availableQuantity)) {
+            _toastMessage.value = "Please enter a valid available stock number"
+            return true
+        }
+        return false
+    }
+
+
+    protected fun isDecimal(numberString: String): Boolean{
+        try {
+            val num = numberString.toDouble()
+        } catch (e: Exception) {
+            return false
+        }
+        return true;
+    }
+
+
     private fun createItemAvailabilityUpdateRequest(availability: AvailabilityItemsModel): ItemAvailabilityUpdateRequest {
         var availabilityUpdateRequest = ItemAvailabilityUpdateRequest(
             itemAvailabilityId = availability.itemAvailabilityId,
             availableDate = null,
             availableTimeSlot = null,
-            availableQuantity = setNullToZero(availability.availableQuantity),
+            availableQuantity = getDoubleValue(availability.availableQuantity),
             committedQuantity = null,
             isFreezed = null,
             repeatDay = null,
@@ -201,8 +228,11 @@ class PreOrderViewModel(val database: SessionDatabaseDao, application: Applicati
         return availabilityUpdateRequest
     }
 
-    private fun setNullToZero(nullValue : Double?) : Double{
-        return nullValue ?: 0.0
+    private fun getDoubleValue(stringQuantity : String?) : Double{
+        if (stringQuantity.isNullOrBlank()){
+            return 0.0
+        }
+        return stringQuantity.toDouble()
     }
 
 }

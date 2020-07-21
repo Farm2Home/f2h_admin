@@ -88,6 +88,12 @@ class AddItemFragment : Fragment() {
                 .start()
         }
 
+        viewModel.isAddItemActionComplete.observe(viewLifecycleOwner, Observer { isAddItemActionComplete ->
+            if (isAddItemActionComplete){
+                navigateBack()
+            }
+        })
+
         return binding.root
     }
 
@@ -103,6 +109,10 @@ class AddItemFragment : Fragment() {
         } else {
             Toast.makeText(this.context, "Task Cancelled", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun navigateBack() {
+        view?.let { Navigation.findNavController(it).popBackStack() }
     }
 
 }
