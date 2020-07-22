@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.f2h.f2h_admin.databinding.ListAllItemsBinding
 import com.f2h.f2h_admin.network.models.Item
-import com.f2h.f2h_admin.screens.group.pre_order.IncreaseButtonClickListener
 
 class AllItemsAdapter(val clickListener: AllItemClickListener,
                       val editButtonClickListener: EditButtonClickListener

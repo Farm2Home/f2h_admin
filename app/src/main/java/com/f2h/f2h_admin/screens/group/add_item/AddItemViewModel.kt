@@ -38,6 +38,10 @@ class AddItemViewModel(val database: SessionDatabaseDao, application: Applicatio
     val toastText: LiveData<String>
         get() = _toastText
 
+    private val _isAddItemActionComplete = MutableLiveData<Boolean>()
+    val isAddItemActionComplete: LiveData<Boolean>
+        get() = _isAddItemActionComplete
+
     private val _sessionData = MutableLiveData<SessionEntity>()
 
     private var farmerDetails = listOf<UserDetails>()
@@ -47,6 +51,7 @@ class AddItemViewModel(val database: SessionDatabaseDao, application: Applicatio
 
 
     init {
+        _isAddItemActionComplete.value = false
         _isProgressBarActive.value = true
         getFarmersAndUoms()
     }
@@ -222,6 +227,7 @@ class AddItemViewModel(val database: SessionDatabaseDao, application: Applicatio
             try {
                 createItemDataDeferred.await()
                 _toastText.value = "Successfully created a new item"
+                _isAddItemActionComplete.value = true
             } catch (t: Throwable) {
                 _toastText.value = "Oops something went wrong, please try again"
             }
