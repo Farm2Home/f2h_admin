@@ -1,8 +1,14 @@
 package com.f2h.f2h_admin.utils
 
 import android.graphics.Color
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
+import com.f2h.f2h_admin.R
+import com.f2h.f2h_admin.constants.F2HConstants.REPEAT_NO_REPEAT
+import com.f2h.f2h_admin.constants.F2HConstants.REPEAT_WEEKLY
 import com.f2h.f2h_admin.screens.group.pre_order.AvailabilityItemsModel
 import com.f2h.f2h_admin.screens.group.pre_order.PreOrderUiModel
 import com.google.android.material.appbar.CollapsingToolbarLayout
@@ -35,3 +41,33 @@ fun TextView.setDateFormattedPreOrderItems(data: AvailabilityItemsModel?){
     }
 }
 
+@BindingAdapter("freezeTextFormatted")
+fun TextView.setFreezeTextFormatted(data: AvailabilityItemsModel?){
+    var freezeText = ""
+    data?.let {
+        if (data.isFreezed) {
+            freezeText = "Freezed"
+        }
+    }
+    val colouredText = SpannableString(freezeText)
+    var color = ContextCompat.getColor(context, R.color.orange_status)
+    colouredText.setSpan(ForegroundColorSpan(color),0, freezeText.length,0)
+    text = colouredText
+}
+
+@BindingAdapter("repeatTextFormatted")
+fun TextView.setRepeatTextFormatted(data: AvailabilityItemsModel?){
+    var repeatText = ""
+    data?.let {
+        if (data.repeatDay.equals(0L)){
+            repeatText = REPEAT_NO_REPEAT
+        }
+        if (data.repeatDay.equals(7L)){
+            repeatText = REPEAT_WEEKLY
+        }
+    }
+    val colouredText = SpannableString(repeatText)
+    var color = ContextCompat.getColor(context, R.color.blue_status)
+    colouredText.setSpan(ForegroundColorSpan(color),0, repeatText.length,0)
+    text = colouredText
+}

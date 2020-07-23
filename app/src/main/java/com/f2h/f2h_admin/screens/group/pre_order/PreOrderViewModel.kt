@@ -101,6 +101,8 @@ class PreOrderViewModel(val database: SessionDatabaseDao, application: Applicati
                 availabilityItem.availableQuantity = availability.availableQuantity.toString()
                 availabilityItem.committedQuantity = availability.committedQuantity.toString()
                 availabilityItem.itemUom = item.uom ?: ""
+                availabilityItem.isFreezed = availability.isFreezed ?: false
+                availabilityItem.repeatDay = availability.repeatDay ?: 0
 
                 list.add(availabilityItem)
             }
@@ -156,7 +158,6 @@ class PreOrderViewModel(val database: SessionDatabaseDao, application: Applicati
         return startDate
     }
 
-
     private fun getEndDate(): String {
         val date: Calendar = Calendar.getInstance()
         date.add(Calendar.DATE, preOrderDaysMax)
@@ -165,74 +166,5 @@ class PreOrderViewModel(val database: SessionDatabaseDao, application: Applicati
     }
 
 
-    fun onClickUpdateAvailabilityButton() {
-        _isProgressBarActive.value = true
-        var updateRequest: ArrayList<ItemAvailabilityUpdateRequest> = arrayListOf()
-        _preOrderItems.value?.forEach { preOrder ->
-            if(isAnyFieldInvalid(preOrder)){
-                return@forEach
-            }
-            updateRequest.add(createItemAvailabilityUpdateRequest(preOrder))
-        }
-
-        coroutineScope.launch {
-            var updateItemAvailabilitiesDataDeferred =
-                ItemAvailabilityApi.retrofitService.updateItemAvailabilities(updateRequest)
-            try{
-                updateItemAvailabilitiesDataDeferred.await()
-            } catch (t:Throwable){
-                println(t.message)
-                _toastMessage.value = "Oops something went wrong!"
-            }
-
-            // Refresh the screen
-            fetchAllData(selectedItemId)
-        }
-    }
-
-
-    private fun isAnyFieldInvalid(data: AvailabilityItemsModel): Boolean {
-        // This gets mapped to 0
-        if(data.availableQuantity.isNullOrBlank()){
-            return false
-        }
-        if (!isDecimal(data.availableQuantity)) {
-            _toastMessage.value = "Please enter a valid available stock number"
-            return true
-        }
-        return false
-    }
-
-
-    protected fun isDecimal(numberString: String): Boolean{
-        try {
-            val num = numberString.toDouble()
-        } catch (e: Exception) {
-            return false
-        }
-        return true;
-    }
-
-
-    private fun createItemAvailabilityUpdateRequest(availability: AvailabilityItemsModel): ItemAvailabilityUpdateRequest {
-        var availabilityUpdateRequest = ItemAvailabilityUpdateRequest(
-            itemAvailabilityId = availability.itemAvailabilityId,
-            availableDate = null,
-            availableTimeSlot = null,
-            availableQuantity = getDoubleValue(availability.availableQuantity),
-            committedQuantity = null,
-            isFreezed = null,
-            repeatDay = null,
-            updatedBy = sessionData.userName
-        )
-        return availabilityUpdateRequest
-    }
-
-    private fun getDoubleValue(stringQuantity : String?) : Double{
-        if (stringQuantity.isNullOrBlank()){
-            return 0.0
-        }
-        return stringQuantity.toDouble()
-    }
 
 }

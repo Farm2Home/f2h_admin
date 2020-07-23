@@ -9,7 +9,8 @@ data class ItemAvailability (
     @Json(name = "available_time_slot") val availableTimeSlot: String? = "",
     @Json(name = "committed_quantity") val committedQuantity: Double? = 0.0,
     @Json(name = "available_quantity") val availableQuantity: Double? = 0.0,
-    @Json(name = "is_freezed") val isFreezed: Boolean? = false
+    @Json(name = "is_freezed") val isFreezed: Boolean? = false,
+    @Json(name = "repeat_day") val repeatDay: Long? = 0
 )
 
 data class ItemAvailabilityCreateRequest (
