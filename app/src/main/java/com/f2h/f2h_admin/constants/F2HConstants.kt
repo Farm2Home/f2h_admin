@@ -21,6 +21,9 @@ object F2HConstants {
     const val ROLE_REQUEST_REJECT = "Reject"
     const val ROLE_REQUEST_PENDING = "Pending"
 
+    const val REPEAT_NO_REPEAT = "No Repeat"
+    const val REPEAT_WEEKLY = "Weekly"
+
     val ACCEPTED_ROLES = arrayOf("BUYER", "GROUP_ADMIN")
     val REQUESTED_ROLES = arrayOf("BUYER_REQUESTED", "GROUP_ADMIN_REQUESTED")
     val REQUESTED_ROLE_TO_ACCEPTED_ROLE:

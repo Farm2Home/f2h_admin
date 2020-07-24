@@ -46,7 +46,10 @@ class PreOrderFragment : Fragment() {
 
 
         // Item list recycler view
-        val adapter = PreOrderItemsAdapter(PreOrderItemClickListener {} )
+        val adapter = PreOrderItemsAdapter(PreOrderItemClickListener {
+        }, EditButtonClickListener { data ->
+            navigateToEditAvailabilityPage(data.itemAvailabilityId)
+        })
         binding.preOrderItemRecyclerView.adapter = adapter
         viewModel.availabilityItems.observe(viewLifecycleOwner, Observer {
             it?.let {
@@ -55,11 +58,9 @@ class PreOrderFragment : Fragment() {
             }
         })
 
-
         binding.addAvailabilityButton.setOnClickListener {
             navigateToAddAvailabilityPage(args.itemId)
         }
-
 
         //Toast Message
         viewModel.toastMessage.observe(viewLifecycleOwner, Observer { message ->
@@ -75,4 +76,8 @@ class PreOrderFragment : Fragment() {
         view?.let { Navigation.findNavController(it).navigate(action) }
     }
 
+    private fun navigateToEditAvailabilityPage(itemAvailabilityId: Long) {
+        val action = PreOrderFragmentDirections.actionPreOrderFragmentToEditAvailabilityFragment(itemAvailabilityId)
+        view?.let { Navigation.findNavController(it).navigate(action) }
+    }
 }
