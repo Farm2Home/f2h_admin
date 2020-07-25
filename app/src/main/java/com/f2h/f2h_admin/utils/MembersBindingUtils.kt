@@ -19,6 +19,9 @@ fun ImageButton.setAcceptButtonColor(data: MembersUiModel){
     if (data.isBuyerRequested){
         backgroundTintList = ContextCompat.getColorStateList(context, R.color.green_status)
     }
+    else{
+        backgroundTintList = ContextCompat.getColorStateList(context, R.color.cardview_shadow_start_color)
+    }
 }
 
 @BindingAdapter("isWalletButtonEnabled")

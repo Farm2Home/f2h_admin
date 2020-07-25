@@ -24,8 +24,8 @@ object F2HConstants {
     const val REPEAT_NO_REPEAT = "No Repeat"
     const val REPEAT_WEEKLY = "Weekly"
 
-    val ACCEPTED_ROLES = arrayOf("BUYER", "GROUP_ADMIN")
-    val REQUESTED_ROLES = arrayOf("BUYER_REQUESTED", "GROUP_ADMIN_REQUESTED")
+    val ACCEPTED_ROLES = arrayOf("BUYER", "GROUP_ADMIN", "FARMER")
+    val REQUESTED_ROLES = arrayOf("BUYER_REQUESTED", "GROUP_ADMIN_REQUESTED", "FARMER_REQUESTED")
     val REQUESTED_ROLE_TO_ACCEPTED_ROLE:
             Map<String, String> = REQUESTED_ROLES.zip(ACCEPTED_ROLES).toMap()
 
