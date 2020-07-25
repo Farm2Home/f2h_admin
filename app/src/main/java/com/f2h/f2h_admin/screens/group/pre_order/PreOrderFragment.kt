@@ -10,11 +10,13 @@ import androidx.databinding.DataBindingUtil.inflate
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.Navigation
 import androidx.navigation.fragment.navArgs
 import com.f2h.f2h_admin.R
 import com.f2h.f2h_admin.database.F2HDatabase
 import com.f2h.f2h_admin.database.SessionDatabaseDao
 import com.f2h.f2h_admin.databinding.FragmentPreOrderBinding
+import com.f2h.f2h_admin.screens.group.group_tabs.GroupDetailsTabsFragmentDirections
 
 
 /**
@@ -44,22 +46,21 @@ class PreOrderFragment : Fragment() {
 
 
         // Item list recycler view
-        val adapter =
-            PreOrderItemsAdapter(
-                PreOrderItemClickListener { preOrderUiElement ->
-                }, IncreaseButtonClickListener { preOrderUiElement ->
-                    viewModel.increaseOrderQuantity(preOrderUiElement)
-                }, DecreaseButtonClickListener { preOrderUiElement ->
-                    viewModel.decreaseOrderQuantity(preOrderUiElement)
-                })
+        val adapter = PreOrderItemsAdapter(PreOrderItemClickListener {
+        }, EditButtonClickListener { data ->
+            navigateToEditAvailabilityPage(data.itemAvailabilityId)
+        })
         binding.preOrderItemRecyclerView.adapter = adapter
-        viewModel.preOrderItems.observe(viewLifecycleOwner, Observer {
+        viewModel.availabilityItems.observe(viewLifecycleOwner, Observer {
             it?.let {
                 adapter.submitList(it)
                 adapter.notifyDataSetChanged()
             }
         })
 
+        binding.addAvailabilityButton.setOnClickListener {
+            navigateToAddAvailabilityPage(args.itemId)
+        }
 
         //Toast Message
         viewModel.toastMessage.observe(viewLifecycleOwner, Observer { message ->
@@ -67,5 +68,16 @@ class PreOrderFragment : Fragment() {
         })
 
         return binding.root
+    }
+
+
+    private fun navigateToAddAvailabilityPage(itemId: Long) {
+        val action = PreOrderFragmentDirections.actionPreOrderFragmentToAddAvailabilityFragment(itemId)
+        view?.let { Navigation.findNavController(it).navigate(action) }
+    }
+
+    private fun navigateToEditAvailabilityPage(itemAvailabilityId: Long) {
+        val action = PreOrderFragmentDirections.actionPreOrderFragmentToEditAvailabilityFragment(itemAvailabilityId)
+        view?.let { Navigation.findNavController(it).navigate(action) }
     }
 }
