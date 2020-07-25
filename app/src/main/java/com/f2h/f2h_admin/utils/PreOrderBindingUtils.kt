@@ -34,7 +34,7 @@ fun CollapsingToolbarLayout.setToolbarTitleFormattedFromPreOrderUiModel(data: Pr
 @BindingAdapter("dateFormattedPreOrderItems")
 fun TextView.setDateFormattedPreOrderItems(data: AvailabilityItemsModel?){
     val df: DateFormat = SimpleDateFormat("yyyy-MM-dd")
-    val df_out: DateFormat = SimpleDateFormat("dd-MMM\nEEEE")
+    val df_out: DateFormat = SimpleDateFormat("dd-MMM, EEEE")
     data?.let {
         var date: String = df_out.format(df.parse(data.availableDate))
         text = String.format("%s", date)
@@ -46,7 +46,7 @@ fun TextView.setFreezeTextFormatted(data: AvailabilityItemsModel?){
     var freezeText = ""
     data?.let {
         if (data.isFreezed) {
-            freezeText = "Freezed"
+            freezeText = "Freeze"
         }
     }
     val colouredText = SpannableString(freezeText)
