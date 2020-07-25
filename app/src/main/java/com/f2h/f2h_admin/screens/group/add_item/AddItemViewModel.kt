@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import com.cloudinary.android.MediaManager
 import com.cloudinary.android.callback.ErrorInfo
 import com.cloudinary.android.callback.UploadCallback
+import com.f2h.f2h_admin.BuildConfig
 import com.f2h.f2h_admin.database.SessionDatabaseDao
 import com.f2h.f2h_admin.database.SessionEntity
 import com.f2h.f2h_admin.network.*
@@ -176,7 +177,7 @@ class AddItemViewModel(val database: SessionDatabaseDao, application: Applicatio
         val requestId = MediaManager.get().upload(imageFilePath.value)
             .unsigned("unsigned_upload_settings")
             .option("public_id", String.format("%s__%s", itemName.value, Calendar.getInstance().time))
-            .option("folder", String.format("item_images/group_%s", _sessionData.value?.groupId))
+            .option("folder", String.format("%s/group_%s/item_images", BuildConfig.ENVIRONMENT, _sessionData.value?.groupId))
             .option("tags", String.format("group_%s,item_%s,uploaderUserId_%s", _sessionData.value?.groupName, itemName,_sessionData.value?.userId))
             .callback(object : UploadCallback {
                 override fun onSuccess(requestId: String, resultData: Map<*, *>?) {

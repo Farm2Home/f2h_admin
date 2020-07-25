@@ -124,12 +124,12 @@ class ReportViewModel(val database: SessionDatabaseDao, application: Application
                 uiElement.price = item.pricePerUnit ?: 0.0
             }
 
-            val buyerUserDetails = userDetailsList.filter { x -> x.userId?.equals(order.buyerUserId) ?: false }.single()
-            val sellerUserDetails = userDetailsList.filter { x -> x.userId?.equals(order.sellerUserId) ?: false }.single()
-            uiElement.buyerName = buyerUserDetails.userName ?: ""
-            uiElement.buyerMobile = buyerUserDetails.mobile ?: ""
-            uiElement.sellerName = sellerUserDetails.userName ?: ""
-            uiElement.sellerMobile = sellerUserDetails.mobile ?: ""
+            val buyerUserDetails = userDetailsList.filter { x -> x.userId?.equals(order.buyerUserId) ?: false }.firstOrNull()
+            val sellerUserDetails = userDetailsList.filter { x -> x.userId?.equals(order.sellerUserId) ?: false }.firstOrNull()
+            uiElement.buyerName = buyerUserDetails?.userName ?: ""
+            uiElement.buyerMobile = buyerUserDetails?.mobile ?: ""
+            uiElement.sellerName = sellerUserDetails?.userName ?: ""
+            uiElement.sellerMobile = sellerUserDetails?.mobile ?: ""
 
             uiElement.orderedDate = formatter.format(df.parse(order.orderedDate))
             uiElement.orderedQuantity = order.orderedQuantity ?: 0.0
