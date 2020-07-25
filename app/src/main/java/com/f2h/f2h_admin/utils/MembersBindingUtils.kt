@@ -14,15 +14,10 @@ fun TextView.setRolesFormatted(data: MembersUiModel){
     text = data.roles
 }
 
-@BindingAdapter("isAcceptButtonEnabled")
-fun ImageButton.setIsAcceptButtonEnabled(data: MembersUiModel){
+@BindingAdapter("acceptButtonColor")
+fun ImageButton.setAcceptButtonColor(data: MembersUiModel){
     if (data.isBuyerRequested){
         backgroundTintList = ContextCompat.getColorStateList(context, R.color.green_status)
-        visibility = View.VISIBLE
-    } else {
-        backgroundTintList = ContextCompat.getColorStateList(context, R.color.grey)
-//        setBackgroundColor(ContextCompat.getColor(context, R.color.grey))
-        visibility = View.VISIBLE
     }
 }
 

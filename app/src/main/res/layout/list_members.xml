@@ -140,9 +140,9 @@
                     android:id="@+id/memberAcceptbutton"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:backgroundTint="@color/green_status"
+                    android:layout_marginEnd="10dp"
                     android:onClick="@{() -> acceptUserButtonClickListener.onClick(uiModel)}"
-                    app:isAcceptButtonEnabled="@{uiModel}"
+                    app:acceptButtonColor="@{uiModel}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/memberUserName"
                     app:srcCompat="@drawable/accept_icon" />
