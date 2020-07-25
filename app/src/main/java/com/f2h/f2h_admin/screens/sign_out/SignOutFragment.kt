@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
+import com.cloudinary.android.MediaManager
 
 import com.f2h.f2h_admin.R
 import com.f2h.f2h_admin.database.F2HDatabase
@@ -42,9 +43,14 @@ class SignOutFragment : Fragment() {
     private fun tryToLogout (){
         coroutineScope.launch {
             clearSession()
+            navigateToLoginPage()
         }
+    }
+
+    private fun navigateToLoginPage() {
         Toast.makeText(this.context, "Sign Out Successful", Toast.LENGTH_SHORT).show()
         val intent = Intent(this.context, MainActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
         startActivity(intent)
     }
 

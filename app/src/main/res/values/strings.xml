@@ -18,7 +18,7 @@
     <string name="confirm_reject">Confirm/Reject Orders</string>
     <string name="search_groups">Join Groups</string>
     <string name="deliver_orders">Deliver Orders</string>
-    <string name="pending_payments">Pending Payments</string>
+    <string name="pending_payments">Payments</string>
 
     <string-array name="time_slots">
         <item>Morning</item>

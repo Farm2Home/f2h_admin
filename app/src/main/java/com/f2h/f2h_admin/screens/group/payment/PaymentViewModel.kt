@@ -139,12 +139,12 @@ class PaymentViewModel(val database: SessionDatabaseDao, application: Applicatio
                 uiElement.confirmedQuantity = order.confirmedQuantity ?: 0.0
             }
 
-            val buyerUserDetails = userDetailsList.filter { x -> x.userId?.equals(order.buyerUserId) ?: false }.single()
-            val sellerUserDetails = userDetailsList.filter { x -> x.userId?.equals(order.sellerUserId) ?: false }.single()
-            uiElement.buyerName = buyerUserDetails.userName ?: ""
-            uiElement.buyerMobile = buyerUserDetails.mobile ?: ""
-            uiElement.sellerName = sellerUserDetails.userName ?: ""
-            uiElement.sellerMobile = sellerUserDetails.mobile ?: ""
+            val buyerUserDetails = userDetailsList.filter { x -> x.userId?.equals(order.buyerUserId) ?: false }.firstOrNull()
+            val sellerUserDetails = userDetailsList.filter { x -> x.userId?.equals(order.sellerUserId) ?: false }.firstOrNull()
+            uiElement.buyerName = buyerUserDetails?.userName ?: ""
+            uiElement.buyerMobile = buyerUserDetails?.mobile ?: ""
+            uiElement.sellerName = sellerUserDetails?.userName ?: ""
+            uiElement.sellerMobile = sellerUserDetails?.mobile ?: ""
 
             uiElement.orderId = order.orderId ?: -1L
             uiElement.orderAmount = order.orderedAmount ?: 0.0
