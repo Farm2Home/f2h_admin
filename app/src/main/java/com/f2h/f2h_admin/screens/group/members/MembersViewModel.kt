@@ -98,9 +98,15 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
 //                    uiElement.isBuyerRequested = true
 //                }
 
-                if(roles?.any(F2HConstants.REQUESTED_ROLES::contains)?: false){
-                    uiElement.isBuyerRequested = true
+                F2HConstants.REQUESTED_ROLES?.forEach {
+                    if (roles!!.contains(it)){
+                        uiElement.isBuyerRequested = true
+                    }
                 }
+
+//                if(roles?.any(F2HConstants.REQUESTED_ROLES::contains)?: false){
+//                    uiElement.isBuyerRequested = true
+//                }
             }
             allUiData.add(uiElement)
         }
@@ -142,38 +148,6 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
     fun onCallUserButtonClicked(uiElement: MembersUiModel){
         _selectedUiElement.value = uiElement
     }
-
-    // Accept button
-//    fun onAcceptUserButtonClicked(uiElement: MembersUiModel){
-//
-////        acceptBuyerMembership(uiElement)
-//    }
-
-
-
-//    fun acceptBuyerMembership(uiElement: MembersUiModel) {
-//        _isProgressBarActive.value = true
-//        var modifiedRoles = uiElement.roles.split(",").filter { !it.equals(USER_ROLE_BUYER_REQUESTED) }
-//        modifiedRoles = modifiedRoles.plus(USER_ROLE_BUYER)
-//        var membershipRequest = GroupMembershipRequest(
-//            null,
-//            null,
-//            modifiedRoles.joinToString(),
-//            null
-//        )
-//        coroutineScope.launch {
-//            var updateGroupMembershipDataDeferred =
-//                GroupMembershipApi.retrofitService.updateGroupMembership(uiElement.groupMembershipId, membershipRequest)
-//            try {
-//                var updatedMembership = updateGroupMembershipDataDeferred.await()
-//                getUserDetailsInGroup()
-//            } catch (t:Throwable){
-//                println(t.message)
-//            }
-//            _isProgressBarActive.value = false
-//        }
-//    }
-
 
     override fun onCleared() {
         super.onCleared()

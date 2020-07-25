@@ -3,7 +3,9 @@ package com.f2h.f2h_admin.utils
 import android.view.View
 import android.widget.ImageButton
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
+import com.f2h.f2h_admin.R
 import com.f2h.f2h_admin.screens.group.members.MembersUiModel
 
 
@@ -12,12 +14,10 @@ fun TextView.setRolesFormatted(data: MembersUiModel){
     text = data.roles
 }
 
-@BindingAdapter("isAcceptButtonEnabled")
-fun ImageButton.setIsAcceptButtonEnabled(data: MembersUiModel){
+@BindingAdapter("acceptButtonColor")
+fun ImageButton.setAcceptButtonColor(data: MembersUiModel){
     if (data.isBuyerRequested){
-        visibility = View.VISIBLE
-    } else {
-        visibility = View.GONE
+        backgroundTintList = ContextCompat.getColorStateList(context, R.color.green_status)
     }
 }
 
