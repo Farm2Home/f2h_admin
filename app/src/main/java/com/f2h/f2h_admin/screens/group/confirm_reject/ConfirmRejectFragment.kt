@@ -1,6 +1,10 @@
 package com.f2h.f2h_admin.screens.group.confirm_reject
 
+import android.Manifest
 import android.app.Application
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -67,6 +71,9 @@ class ConfirmRejectFragment : Fragment() {
             viewModel.increaseConfirmedQuantity(uiModel)
         }, DecreaseButtonClickListener { uiModel ->
             viewModel.decreaseConfirmedQuantity(uiModel)
+        }, CallUserButtonClickListener { uiDataElement ->
+            viewModel.onCallUserButtonClicked(uiDataElement)
+            startPhoneCall()
         })
         binding.reportListRecyclerView.adapter = adapter
         viewModel.visibleUiData.observe(viewLifecycleOwner, Observer {
@@ -153,7 +160,28 @@ class ConfirmRejectFragment : Fragment() {
                 viewModel.onFarmerSelected(position)
             }
         }
-
     }
+
+    fun startPhoneCall() {
+        requestPermissions(arrayOf(Manifest.permission.CALL_PHONE),42)
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        if(grantResults[0] == PackageManager.PERMISSION_DENIED){
+            Toast.makeText(activity, "Please accept permission request to continue", Toast.LENGTH_SHORT).show()
+            return
+        }
+        if(viewModel.selectedUiElement.value?.buyerMobile.isNullOrBlank()){
+            Toast.makeText(activity, "Invalid mobile number", Toast.LENGTH_SHORT).show()
+            return
+        }
+        val intent = Intent(Intent.ACTION_CALL, Uri.parse("tel:" + viewModel.selectedUiElement.value?.buyerMobile))
+        startActivity(intent)
+    }
+
 
 }

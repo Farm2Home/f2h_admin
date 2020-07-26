@@ -13,6 +13,9 @@
         <variable
             name="checkBoxClickListener"
             type="com.f2h.f2h_admin.screens.deliver.CheckBoxClickListener" />
+        <variable
+            name="callUserButtonClickListener"
+            type="com.f2h.f2h_admin.screens.deliver.CallUserButtonClickListener" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -64,10 +67,11 @@
                     android:id="@+id/date"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="20dp"
                     android:ellipsize="end"
                     android:singleLine="true"
                     android:textSize="12sp"
-                    app:layout_constraintEnd_toEndOf="@+id/confirmItemDetails"
+                    app:layout_constraintEnd_toStartOf="@+id/deliverPageCallButton"
                     app:layout_constraintStart_toStartOf="@+id/confirmItemDetails"
                     app:layout_constraintTop_toBottomOf="@+id/confirmItemDetails"
                     app:orderDateFormatted="@{uiModel}" />
@@ -162,7 +166,7 @@
                     android:text="@{uiModel.itemUom}"
                     android:textAlignment="gravity"
                     app:layout_constraintBottom_toBottomOf="@+id/confirmedQuantity"
-                    app:layout_constraintEnd_toEndOf="@+id/total"
+                    app:layout_constraintEnd_toEndOf="@+id/confirmItemDetails"
                     app:layout_constraintTop_toTopOf="@+id/confirmedQuantity" />
 
                 <EditText
@@ -180,6 +184,16 @@
                     app:layout_constraintEnd_toStartOf="@+id/confirmedQuantity"
                     app:layout_constraintStart_toStartOf="@+id/total"
                     app:layout_constraintTop_toBottomOf="@+id/total" />
+
+                <ImageButton
+                    android:id="@+id/deliverPageCallButton"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:onClick="@{() -> callUserButtonClickListener.onClick(uiModel)}"
+                    app:layout_constraintBottom_toBottomOf="@+id/total"
+                    app:layout_constraintEnd_toEndOf="@+id/confirmItemDetails"
+                    app:layout_constraintTop_toTopOf="@+id/date"
+                    app:srcCompat="@drawable/contact_us_icon" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
