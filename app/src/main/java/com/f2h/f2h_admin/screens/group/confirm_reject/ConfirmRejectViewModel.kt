@@ -191,7 +191,8 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
             .distinctBy { it.itemId }
             .map { uiElement -> generateUniqueFilterName(uiElement.itemName, uiElement.itemId.toString()) }.sorted())
 
-        _reportUiFilterModel.value?.orderStatusList = arrayListOf("ALL", "Open Orders", "Delivered Orders", "Payment Pending")
+        _reportUiFilterModel.value?.orderStatusList = arrayListOf("ALL", "Open Orders", "Delivered Orders",
+                                                                    "Payment Pending", "Ordered", "Confirmed")
 
         _reportUiFilterModel.value?.paymentStatusList = arrayListOf("ALL").plus(allUiData
             .filter { uiElement -> !uiElement.paymentStatus.isBlank() }
@@ -302,6 +303,14 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
         if (position == 3) {
             _reportUiFilterModel.value?.selectedOrderStatus = "ALL"
             _reportUiFilterModel.value?.selectedPaymentStatus = PAYMENT_STATUS_PENDING
+        }
+        if (position == 4) {
+            _reportUiFilterModel.value?.selectedOrderStatus = ORDER_STATUS_ORDERED
+            _reportUiFilterModel.value?.selectedPaymentStatus = "ALL"
+        }
+        if (position == 5) {
+            _reportUiFilterModel.value?.selectedOrderStatus = ORDER_STATUS_CONFIRMED
+            _reportUiFilterModel.value?.selectedPaymentStatus = "ALL"
         }
         filterVisibleItems()
     }
