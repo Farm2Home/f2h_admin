@@ -3,6 +3,7 @@ package com.f2h.f2h_admin.screens.group.members
 import android.Manifest
 import android.app.Application
 import android.content.Intent
+import android.content.pm.PackageManager.PERMISSION_DENIED
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -96,7 +97,11 @@ class MembersFragment : Fragment() {
         permissions: Array<out String>,
         grantResults: IntArray
     ) {
-        if(viewModel.selectedUiElement.value?.mobile == null){
+        if(grantResults[0] == PERMISSION_DENIED){
+            Toast.makeText(activity, "Please accept permission request to continue", Toast.LENGTH_SHORT).show()
+            return
+        }
+        if(viewModel.selectedUiElement.value?.mobile.isNullOrBlank()){
             Toast.makeText(activity, "Invalid mobile number", Toast.LENGTH_SHORT).show()
             return
         }

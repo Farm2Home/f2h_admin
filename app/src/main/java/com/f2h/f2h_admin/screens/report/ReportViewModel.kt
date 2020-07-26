@@ -171,15 +171,9 @@ class ReportViewModel(val database: SessionDatabaseDao, application: Application
             .filter { uiElement -> !uiElement.paymentStatus.isNullOrBlank() }
             .map { uiElement -> uiElement.paymentStatus }.sorted())
 
-        filters.buyerNameList = arrayListOf("ALL").plus(allUiData
-            .filter { uiElement -> !uiElement.buyerName.isNullOrBlank() }
-            .distinctBy { it.buyerUserId }
-            .map { uiElement -> generateUniqueFilterName(uiElement.buyerName,uiElement.buyerMobile) }.sorted())
+        filters.buyerNameList = arrayListOf("ALL")
 
-        filters.farmerNameList = arrayListOf("ALL").plus(allUiData
-            .filter { uiElement -> !uiElement.sellerName.isNullOrBlank() }
-            .distinctBy { it.sellerUserId }
-            .map { uiElement -> generateUniqueFilterName(uiElement.sellerName,uiElement.sellerMobile) }.sorted())
+        filters.farmerNameList = arrayListOf("ALL")
 
         filters.timeFilterList = arrayListOf("Today", "Tomorrow", "Next 7 days", "Last 7 days", "Last 15 days", "Last 30 days")
 
@@ -191,6 +185,28 @@ class ReportViewModel(val database: SessionDatabaseDao, application: Application
         setTimeFilterRange(0,0) //Today
 
         return filters
+    }
+
+    private fun reCreateBuyerNameFilterList() {
+        _reportUiFilterModel.value?.buyerNameList = arrayListOf("ALL")
+            .plus(_visibleUiData.value
+                ?.filter { uiElement -> !uiElement.buyerName.isBlank() }
+                ?.distinctBy { it.buyerUserId }
+                ?.map { uiElement -> generateUniqueFilterName(uiElement.buyerName,uiElement.buyerMobile) }
+                ?.sorted() ?: listOf())
+        //Refresh filter
+        _reportUiFilterModel.value = _reportUiFilterModel.value
+    }
+
+    private fun reCreateFarmerNameFilterList() {
+        _reportUiFilterModel.value?.farmerNameList = arrayListOf("ALL")
+            .plus(_visibleUiData.value
+                ?.filter { uiElement -> !uiElement.sellerName.isBlank() }
+                ?.distinctBy { it.sellerUserId }
+                ?.map { uiElement -> generateUniqueFilterName(uiElement.sellerName,uiElement.sellerMobile)  }
+                ?.sorted() ?: listOf())
+        //Refresh filter
+        _reportUiFilterModel.value = _reportUiFilterModel.value
     }
 
     private fun generateUniqueFilterName(name: String, mobile: String): String{
@@ -223,6 +239,8 @@ class ReportViewModel(val database: SessionDatabaseDao, application: Application
         }
         filteredItems.sortByDescending { formatter.parse(it.orderedDate) }
         _visibleUiData.value = filteredItems
+        reCreateBuyerNameFilterList()
+        reCreateFarmerNameFilterList()
     }
 
     private fun isInSelectedDateRange(
