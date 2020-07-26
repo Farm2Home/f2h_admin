@@ -165,7 +165,7 @@ class ReportViewModel(val database: SessionDatabaseDao, application: Application
             .distinctBy { it.itemId }
             .map { uiElement -> generateUniqueFilterName(uiElement.itemName, uiElement.itemId.toString()) }.sorted())
 
-        filters.orderStatusList = arrayListOf("ALL", "Open Orders", "Delivered Orders", "Payment Pending")
+        filters.orderStatusList = arrayListOf("ALL", "Open Orders", "Delivered Orders", "Payment Pending", "Ordered", "Confirmed")
 
         filters.paymentStatusList = arrayListOf("ALL").plus(allUiData
             .filter { uiElement -> !uiElement.paymentStatus.isNullOrBlank() }
@@ -282,6 +282,14 @@ class ReportViewModel(val database: SessionDatabaseDao, application: Application
         if (position == 3) {
             _reportUiFilterModel.value?.selectedOrderStatus = "ALL"
             _reportUiFilterModel.value?.selectedPaymentStatus = PAYMENT_STATUS_PENDING
+        }
+        if (position == 4) {
+            _reportUiFilterModel.value?.selectedOrderStatus = ORDER_STATUS_ORDERED
+            _reportUiFilterModel.value?.selectedPaymentStatus = "ALL"
+        }
+        if (position == 5) {
+            _reportUiFilterModel.value?.selectedOrderStatus = ORDER_STATUS_CONFIRMED
+            _reportUiFilterModel.value?.selectedPaymentStatus = "ALL"
         }
         filterVisibleItems()
     }
