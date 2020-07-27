@@ -18,8 +18,14 @@ android {
         applicationId "com.f2h.f2h_admin"
         minSdkVersion 23
         targetSdkVersion 29
-        versionCode 3
-        versionName "3.0"
+        versionCode 7 //Should be always increasing - every deploy to playstore, add 1
+        versionName "1.1.0"
+        /*
+             versionName Major.Minor.Patch
+             Major - Not Backward compatible, absolutely new
+             Minor - New functionality in backward compatible manner
+             Patch - Bug fixes in backward compatible manner
+        */
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
