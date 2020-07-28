@@ -6,16 +6,13 @@
     <data>
         <variable
             name="uiModel"
-            type="com.f2h.f2h_admin.screens.group.pre_order.PreOrderItemsModel" />
+            type="com.f2h.f2h_admin.screens.group.pre_order.AvailabilityItemsModel" />
         <variable
             name="clickListener"
             type="com.f2h.f2h_admin.screens.group.pre_order.PreOrderItemClickListener" />
         <variable
-            name="increaseButtonClickListener"
-            type="com.f2h.f2h_admin.screens.group.pre_order.IncreaseButtonClickListener" />
-        <variable
-            name="decreaseButtonClickListener"
-            type="com.f2h.f2h_admin.screens.group.pre_order.DecreaseButtonClickListener" />
+            name="editButtonClickListener"
+            type="com.f2h.f2h_admin.screens.group.pre_order.EditButtonClickListener" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -49,71 +46,72 @@
 
                 <TextView
                     android:id="@+id/date"
-                    android:layout_width="90dp"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:layout_marginTop="10dp"
-                    android:paddingEnd="20dp"
+                    android:ellipsize="end"
+                    android:singleLine="true"
                     android:textAlignment="viewStart"
                     android:textSize="12sp"
                     app:dateFormattedPreOrderItems="@{uiModel}"
+                    app:layout_constraintEnd_toStartOf="@+id/editAvailableQuantity"
+                    app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <Button
-                    android:id="@+id/buttonDecrease"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_marginEnd="40dp"
-                    android:onClick="@{() -> decreaseButtonClickListener.onClick(uiModel)}"
-                    android:text="-"
-                    android:textStyle="bold"
-                    app:buttonVisibilityFormatted="@{uiModel}"
-                    app:layout_constraintBottom_toBottomOf="@+id/availableQuantity"
-                    app:layout_constraintEnd_toStartOf="@+id/buttonIncrease"
-                    app:layout_constraintTop_toTopOf="@+id/availableQuantity" />
-
-                <Button
-                    android:id="@+id/buttonIncrease"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_marginEnd="20dp"
-                    android:onClick="@{() -> increaseButtonClickListener.onClick(uiModel)}"
-                    android:text="+"
-                    android:textStyle="bold"
-                    app:buttonVisibilityFormatted="@{uiModel}"
-                    app:layout_constraintBottom_toBottomOf="@+id/buttonDecrease"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/buttonDecrease" />
-
                 <TextView
-                    android:id="@+id/groupDescription"
+                    android:id="@+id/committedQuantity"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:text="@{uiModel.committedQuantity}"
                     android:textAlignment="center"
-                    android:textSize="12sp"
-                    app:layout_constraintBottom_toBottomOf="@+id/buttonIncrease"
-                    app:layout_constraintEnd_toStartOf="@+id/buttonIncrease"
-                    app:layout_constraintStart_toEndOf="@+id/buttonDecrease"
-                    app:layout_constraintTop_toTopOf="@+id/buttonIncrease"
-                    app:orderedQuantityFormattedPreOrder="@{uiModel}" />
+                    android:textSize="16sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/editAvailableQuantity"
+                    app:layout_constraintEnd_toStartOf="@+id/editAvailabilityutton"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/editAvailableQuantity"
+                    app:layout_constraintTop_toTopOf="@+id/editAvailableQuantity" />
 
                 <TextView
-                    android:id="@+id/availableQuantity"
+                    android:id="@+id/editAvailableQuantity"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
                     android:layout_marginEnd="10dp"
+                    android:inputType="number|numberDecimal"
+                    android:text="@{uiModel.availableQuantity}"
                     android:textAlignment="center"
-                    android:textSize="12sp"
-                    app:availableQuantityFormattedPreOrder="@{uiModel}"
-                    app:layout_constraintBottom_toBottomOf="@+id/date"
-                    app:layout_constraintEnd_toStartOf="@+id/buttonDecrease"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toStartOf="@+id/committedQuantity"
+                    app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toEndOf="@+id/date"
                     app:layout_constraintTop_toTopOf="@+id/date" />
 
+                <ImageButton
+                    android:id="@+id/editAvailabilityutton"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginEnd="10dp"
+                    android:onClick="@{() -> editButtonClickListener.onClick(uiModel)}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/edit_icon" />
+
                 <TextView
-                    android:id="@+id/status"
+                    android:id="@+id/freezeText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="center"
+                    android:textSize="10sp"
+                    app:freezeTextFormatted="@{uiModel}"
+                    app:layout_constraintEnd_toEndOf="@+id/editAvailableQuantity"
+                    app:layout_constraintStart_toStartOf="@+id/editAvailableQuantity"
+                    app:layout_constraintTop_toBottomOf="@+id/editAvailableQuantity" />
+
+                <TextView
+                    android:id="@+id/repeatText"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
@@ -123,7 +121,7 @@
                     app:layout_constraintEnd_toEndOf="@+id/date"
                     app:layout_constraintStart_toStartOf="@+id/date"
                     app:layout_constraintTop_toBottomOf="@+id/date"
-                    app:statusFormatted="@{uiModel}" />
+                    app:repeatTextFormatted="@{uiModel}" />
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>

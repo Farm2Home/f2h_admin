@@ -16,6 +16,7 @@ import com.f2h.f2h_admin.network.ItemAvailabilityApi
 import com.f2h.f2h_admin.network.OrderApi
 import com.f2h.f2h_admin.network.UserApi
 import com.f2h.f2h_admin.network.models.*
+import com.f2h.f2h_admin.screens.deliver.DeliverItemsModel
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -46,6 +47,9 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
     val toastMessage: LiveData<String>
         get() = _toastMessage
 
+    private var _selectedUiElement = MutableLiveData<ConfirmRejectItemsModel>()
+    val selectedUiElement: LiveData<ConfirmRejectItemsModel>
+        get() = _selectedUiElement
 
     private val df: DateFormat = SimpleDateFormat("yyyy-MM-dd")
     private val formatter: DateFormat = SimpleDateFormat("dd-MMM-yyyy")
@@ -139,12 +143,12 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
                 uiElement.confirmedQuantity = order.confirmedQuantity ?: 0.0
             }
 
-            val buyerUserDetails = userDetailsList.filter { x -> x.userId?.equals(order.buyerUserId) ?: false }.single()
-            val sellerUserDetails = userDetailsList.filter { x -> x.userId?.equals(order.sellerUserId) ?: false }.single()
-            uiElement.buyerName = buyerUserDetails.userName ?: ""
-            uiElement.buyerMobile = buyerUserDetails.mobile ?: ""
-            uiElement.sellerName = sellerUserDetails.userName ?: ""
-            uiElement.sellerMobile = sellerUserDetails.mobile ?: ""
+            val buyerUserDetails = userDetailsList.filter { x -> x.userId?.equals(order.buyerUserId) ?: false }.firstOrNull()
+            val sellerUserDetails = userDetailsList.filter { x -> x.userId?.equals(order.sellerUserId) ?: false }.firstOrNull()
+            uiElement.buyerName = buyerUserDetails?.userName ?: ""
+            uiElement.buyerMobile = buyerUserDetails?.mobile ?: ""
+            uiElement.sellerName = sellerUserDetails?.userName ?: ""
+            uiElement.sellerMobile = sellerUserDetails?.mobile ?: ""
 
             uiElement.orderId = order.orderId ?: -1L
             uiElement.orderAmount = order.orderedAmount ?: 0.0
@@ -191,27 +195,46 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
             .distinctBy { it.itemId }
             .map { uiElement -> generateUniqueFilterName(uiElement.itemName, uiElement.itemId.toString()) }.sorted())
 
-        _reportUiFilterModel.value?.orderStatusList = arrayListOf("ALL", "Open Orders", "Delivered Orders", "Payment Pending")
+        _reportUiFilterModel.value?.orderStatusList = arrayListOf("ALL", "Open Orders", "Delivered Orders",
+                                                                    "Payment Pending", "Ordered", "Confirmed")
 
         _reportUiFilterModel.value?.paymentStatusList = arrayListOf("ALL").plus(allUiData
             .filter { uiElement -> !uiElement.paymentStatus.isBlank() }
             .map { uiElement -> uiElement.paymentStatus }.distinct().sorted())
 
-        _reportUiFilterModel.value?.buyerNameList = arrayListOf("ALL").plus(allUiData
-            .filter { uiElement -> !uiElement.buyerName.isBlank() }
-            .distinctBy { it.buyerUserId }
-            .map { uiElement -> generateUniqueFilterName(uiElement.buyerName,uiElement.buyerMobile) }.sorted())
+        _reportUiFilterModel.value?.buyerNameList = arrayListOf("ALL")
 
-        _reportUiFilterModel.value?.farmerNameList = arrayListOf("ALL").plus(allUiData
-            .filter { uiElement -> !uiElement.sellerName.isBlank() }
-            .distinctBy { it.sellerUserId }
-            .map { uiElement -> generateUniqueFilterName(uiElement.sellerName,uiElement.sellerMobile) }.sorted())
+        _reportUiFilterModel.value?.farmerNameList = arrayListOf("ALL")
 
         _reportUiFilterModel.value?.timeFilterList = arrayListOf("Today", "Tomorrow", "Next 7 days", "Last 7 days", "Last 15 days", "Last 30 days")
 
         //Refresh filter
         _reportUiFilterModel.value = _reportUiFilterModel.value
     }
+
+
+    private fun reCreateBuyerNameFilterList() {
+        _reportUiFilterModel.value?.buyerNameList = arrayListOf("ALL")
+            .plus(_visibleUiData.value
+                ?.filter { uiElement -> !uiElement.buyerName.isBlank() }
+                ?.distinctBy { it.buyerUserId }
+                ?.map { uiElement -> generateUniqueFilterName(uiElement.buyerName,uiElement.buyerMobile) }
+                ?.sorted() ?: listOf())
+        //Refresh filter
+        _reportUiFilterModel.value = _reportUiFilterModel.value
+    }
+
+    private fun reCreateFarmerNameFilterList() {
+        _reportUiFilterModel.value?.farmerNameList = arrayListOf("ALL")
+            .plus(_visibleUiData.value
+                ?.filter { uiElement -> !uiElement.sellerName.isBlank() }
+                ?.distinctBy { it.sellerUserId }
+                ?.map { uiElement -> generateUniqueFilterName(uiElement.sellerName,uiElement.sellerMobile)  }
+                ?.sorted() ?: listOf())
+        //Refresh filter
+        _reportUiFilterModel.value = _reportUiFilterModel.value
+    }
+
 
     private fun generateUniqueFilterName(name: String, mobile: String): String{
         return String.format("%s (%s)",name, mobile)
@@ -243,6 +266,8 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
         }
         filteredItems.sortByDescending { formatter.parse(it.orderedDate) }
         _visibleUiData.value = filteredItems
+        reCreateBuyerNameFilterList()
+        reCreateFarmerNameFilterList()
     }
 
     private fun isInSelectedDateRange(
@@ -302,6 +327,14 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
         if (position == 3) {
             _reportUiFilterModel.value?.selectedOrderStatus = "ALL"
             _reportUiFilterModel.value?.selectedPaymentStatus = PAYMENT_STATUS_PENDING
+        }
+        if (position == 4) {
+            _reportUiFilterModel.value?.selectedOrderStatus = ORDER_STATUS_ORDERED
+            _reportUiFilterModel.value?.selectedPaymentStatus = "ALL"
+        }
+        if (position == 5) {
+            _reportUiFilterModel.value?.selectedOrderStatus = ORDER_STATUS_CONFIRMED
+            _reportUiFilterModel.value?.selectedPaymentStatus = "ALL"
         }
         filterVisibleItems()
     }
@@ -472,5 +505,11 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
     private fun calculateOrderAmount(element: ConfirmRejectItemsModel): Double {
         return element.confirmedQuantity * element.price - element.discountAmount
     }
+
+    // call button
+    fun onCallUserButtonClicked(uiElement: ConfirmRejectItemsModel){
+        _selectedUiElement.value = uiElement
+    }
+
 
 }

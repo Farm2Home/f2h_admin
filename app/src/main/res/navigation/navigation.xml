@@ -7,10 +7,17 @@
 
     <fragment
         android:id="@+id/membersFragment"
-        android:name="com.f2h.f2h_admin.screens.group.members.MembersFragment" />
+        android:name="com.f2h.f2h_admin.screens.group.members.MembersFragment"
+        tools:layout="@layout/fragment_members">
+        <action
+            android:id="@+id/action_membersFragment_to_membershipRequestFragment"
+            app:destination="@id/membershipRequestFragment"
+            app:popUpToInclusive="false" />
+    </fragment>
     <fragment
         android:id="@+id/groupsFragment"
-        android:name="com.f2h.f2h_admin.screens.group_list.GroupsFragment">
+        android:name="com.f2h.f2h_admin.screens.group_list.GroupsFragment"
+        tools:layout="@layout/fragment_groups">
         <action
             android:id="@+id/action_groupsFragment_to_groupDetailsTabsFragment"
             app:destination="@id/groupDetailsTabsFragment"
@@ -56,13 +63,24 @@
         <action
             android:id="@+id/action_groupDetailsTabsFragment_to_contactUsFragment"
             app:destination="@id/contactUsFragment" />
+        <action
+            android:id="@+id/action_groupDetailsTabsFragment_to_membershipRequestFragment"
+            app:destination="@id/membershipRequestFragment" />
+        <action
+            android:id="@+id/action_groupDetailsTabsFragment_to_addItemsFragment"
+            app:destination="@id/addItemsFragment" />
+        <action
+            android:id="@+id/action_groupDetailsTabsFragment_to_editItemFragment"
+            app:destination="@id/editItemFragment" />
     </fragment>
     <fragment
         android:id="@+id/allItemsFragment"
-        android:name="com.f2h.f2h_admin.screens.group.all_items.AllItemsFragment" />
+        android:name="com.f2h.f2h_admin.screens.group.all_items.AllItemsFragment"
+        tools:layout="@layout/fragment_all_items"/>
     <fragment
         android:id="@+id/groupWalletFragment"
-        android:name="com.f2h.f2h_admin.screens.group.group_wallet.GroupWalletFragment" >
+        android:name="com.f2h.f2h_admin.screens.group.group_wallet.GroupWalletFragment"
+        tools:layout="@layout/fragment_group_wallet">
         <argument
             android:name="userId"
             app:argType="long"
@@ -74,23 +92,33 @@
     </fragment>
     <fragment
         android:id="@+id/preOrderFragment"
-        android:name="com.f2h.f2h_admin.screens.group.pre_order.PreOrderFragment">
+        android:name="com.f2h.f2h_admin.screens.group.pre_order.PreOrderFragment"
+        tools:layout="@layout/fragment_pre_order">
         <argument
             android:name="itemId"
             android:defaultValue="0L"
             app:argType="long" />
+        <action
+            android:id="@+id/action_preOrderFragment_to_addAvailabilityFragment"
+            app:destination="@id/addAvailabilityFragment" />
+        <action
+            android:id="@+id/action_preOrderFragment_to_editAvailabilityFragment"
+            app:destination="@id/editAvailabilityFragment" />
     </fragment>
     <fragment
         android:id="@+id/contactUsFragment"
         android:name="com.f2h.f2h_admin.screens.contact_us.ContactUsFragment"
+        tools:layout="@layout/fragment_contact_us"
         android:label="@string/contact_us" />
     <fragment
         android:id="@+id/signOutFragment"
         android:name="com.f2h.f2h_admin.screens.sign_out.SignOutFragment"
+        tools:layout="@layout/fragment_signout"
         android:label="@string/sign_out" />
     <fragment
         android:id="@+id/settingsFragment"
         android:name="com.f2h.f2h_admin.screens.settings.SettingsFragment"
+        tools:layout="@layout/fragment_settings"
         android:label="@string/my_profile" >
         <action
             android:id="@+id/action_settingsFragment_to_editProfileFragment"
@@ -99,22 +127,65 @@
     <fragment
         android:id="@+id/reportFragment"
         android:name="com.f2h.f2h_admin.screens.report.ReportFragment"
+        tools:layout="@layout/fragment_report"
         />
     <fragment
         android:id="@+id/searchGroupsFragment"
         android:name="com.f2h.f2h_admin.screens.search_group.SearchGroupsFragment"
+        tools:layout="@layout/fragment_search_groups"
         android:label="SearchGroupsFragment" />
     <fragment
         android:id="@+id/editProfileFragment"
         android:name="com.f2h.f2h_admin.screens.settings.edit_profile.EditProfileFragment"
+        tools:layout="@layout/fragment_edit_profile"
         android:label="EditProfileFragment" />
     <fragment
         android:id="@+id/confirmRejectFragment"
-        android:name="com.f2h.f2h_admin.screens.group.confirm_reject.ConfirmRejectFragment" />
+        android:name="com.f2h.f2h_admin.screens.group.confirm_reject.ConfirmRejectFragment"
+        tools:layout="@layout/fragment_confirm_reject"/>
     <fragment
         android:id="@+id/deliverFragment"
-        android:name="com.f2h.f2h_admin.screens.deliver.DeliverFragment" />
+        android:name="com.f2h.f2h_admin.screens.deliver.DeliverFragment"
+        tools:layout="@layout/fragment_deliver"/>
     <fragment
         android:id="@+id/paymentFragment"
-        android:name="com.f2h.f2h_admin.screens.group.payment.PaymentFragment" />
+        android:name="com.f2h.f2h_admin.screens.group.payment.PaymentFragment"
+        tools:layout="@layout/fragment_payment"/>
+    <fragment
+        android:id="@+id/membershipRequestFragment"
+        android:name="com.f2h.f2h_admin.screens.group.accept_reject_membership.MembershipRequestFragment"
+        tools:layout="@layout/fragment_membership_request">
+        <argument
+            android:name="memberUiModel"
+            app:argType="com.f2h.f2h_admin.screens.group.members.MembersUiModel" />
+    </fragment>
+    <fragment
+        android:id="@+id/addItemsFragment"
+        android:name="com.f2h.f2h_admin.screens.group.add_item.AddItemFragment"
+        tools:layout="@layout/fragment_add_item"/>
+    <fragment
+        android:id="@+id/editItemFragment"
+        android:name="com.f2h.f2h_admin.screens.group.edit_item.EditItemFragment"
+        tools:layout="@layout/fragment_edit_item" >
+        <argument
+            android:name="itemId"
+            app:argType="long" />
+    </fragment>
+    <fragment
+        android:id="@+id/addAvailabilityFragment"
+        android:name="com.f2h.f2h_admin.screens.group.add_availability.AddAvailabilityFragment"
+        tools:layout="@layout/fragment_add_availability" >
+        <argument
+            android:name="itemId"
+            app:argType="long" />
+    </fragment>
+    <fragment
+        android:id="@+id/editAvailabilityFragment"
+        android:name="com.f2h.f2h_admin.screens.group.edit_availability.EditAvailabilityFragment"
+        tools:layout="@layout/fragment_edit_availability" >
+        <argument
+            android:name="itemAvailabilityId"
+            app:argType="long"
+            android:defaultValue="-1L" />
+    </fragment>
 </navigation>

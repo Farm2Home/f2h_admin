@@ -66,7 +66,7 @@ class GroupDetailsTabsFragment : Fragment() {
             }
         }
 
-        return true
+        return false
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

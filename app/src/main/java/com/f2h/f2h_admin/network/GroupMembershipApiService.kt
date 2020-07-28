@@ -26,7 +26,7 @@ private val retrofit = Retrofit.Builder()
 interface GroupMembershipApiService{
 
     @GET("group_membership")
-    fun getGroupMembership(@Query("group_id") groupId: Long):
+    fun getGroupMembership(@Query("group_id") groupId: Long, @Query("roles") roles: List<String>?):
             Deferred<List<GroupMembership>>
 
     @PUT("group_membership/{group_membership_id}")
@@ -35,6 +35,9 @@ interface GroupMembershipApiService{
 
     @POST("group_membership")
     fun requestGroupMembership(@Body createMembership: GroupMembershipRequest): Deferred<GroupMembership>
+
+    @DELETE("group_membership/{group_membership_id}")
+    fun deleteGroupMembership(@Path("group_membership_id") groupMembershipId: Long): Deferred<GroupMembership>
 
 }
 

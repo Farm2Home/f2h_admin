@@ -72,7 +72,6 @@ class GroupsFragment : Fragment() {
         return binding.root
     }
 
-
     fun onGroupSelected(group: Group){
         viewModel.updateSessionWithGroupInfo(group)
         val action = GroupsFragmentDirections.actionGroupsFragmentToGroupDetailsTabsFragment(group.groupName ?: "")

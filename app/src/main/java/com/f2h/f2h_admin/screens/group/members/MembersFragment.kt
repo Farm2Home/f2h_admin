@@ -3,6 +3,7 @@ package com.f2h.f2h_admin.screens.group.members
 import android.Manifest
 import android.app.Application
 import android.content.Intent
+import android.content.pm.PackageManager.PERMISSION_DENIED
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -19,7 +20,6 @@ import com.f2h.f2h_admin.database.F2HDatabase
 import com.f2h.f2h_admin.database.SessionDatabaseDao
 import com.f2h.f2h_admin.databinding.FragmentMembersBinding
 import com.f2h.f2h_admin.screens.group.group_tabs.GroupDetailsTabsFragmentDirections
-
 
 /**
  * A simple [Fragment] subclass.
@@ -55,18 +55,18 @@ class MembersFragment : Fragment() {
             viewModel.onCallUserButtonClicked(uiDataElement)
             startPhoneCall()
         }, AcceptUserButtonClickListener { uiDataElement ->
-            viewModel.onAcceptUserButtonClicked(uiDataElement)
+            navigateToMembershipRequest(uiDataElement)
         }, OpenUserWalletButtonClickListener { uiDataElement ->
             openSelectedUserWallet(uiDataElement)
         })
         binding.itemListRecyclerView.adapter = adapter
+
         viewModel.visibleUiData.observe(viewLifecycleOwner, Observer {
             it?.let {
                 adapter.submitList(it)
                 adapter.notifyDataSetChanged()
             }
         })
-
 
         //Toast Message
         viewModel.toastMessage.observe(viewLifecycleOwner, Observer { message ->
@@ -82,6 +82,12 @@ class MembersFragment : Fragment() {
     }
 
 
+    private fun navigateToMembershipRequest(uiDataElement: MembersUiModel) {
+        val action = GroupDetailsTabsFragmentDirections.actionGroupDetailsTabsFragmentToMembershipRequestFragment(uiDataElement)
+        view?.let { Navigation.findNavController(it).navigate(action) }
+    }
+
+
     fun startPhoneCall(){
         requestPermissions(arrayOf(Manifest.permission.CALL_PHONE),42)
     }
@@ -91,7 +97,11 @@ class MembersFragment : Fragment() {
         permissions: Array<out String>,
         grantResults: IntArray
     ) {
-        if(viewModel.selectedUiElement.value?.mobile == null){
+        if(grantResults[0] == PERMISSION_DENIED){
+            Toast.makeText(activity, "Please accept permission request to continue", Toast.LENGTH_SHORT).show()
+            return
+        }
+        if(viewModel.selectedUiElement.value?.mobile.isNullOrBlank()){
             Toast.makeText(activity, "Invalid mobile number", Toast.LENGTH_SHORT).show()
             return
         }

@@ -10,6 +10,9 @@
         <variable
             name="clickListener"
             type="com.f2h.f2h_admin.screens.group.all_items.AllItemClickListener" />
+        <variable
+            name="editButtonClickListener"
+            type="com.f2h.f2h_admin.screens.group.all_items.EditButtonClickListener" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -36,16 +39,14 @@
 
                 <ImageView
                     android:id="@+id/itemImage"
-                    android:layout_width="70dp"
-                    android:layout_height="70dp"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
                     android:layout_marginStart="20dp"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginBottom="5dp"
                     android:contentDescription="TODO"
                     app:layout_constraintBottom_toBottomOf="@+id/amount"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/itemDetails"
-                    app:loadImage="@{item.imageLink}" />
+                    app:loadSquareRoundedImage="@{item.imageLink}" />
 
                 <TextView
                     android:id="@+id/itemDetails"
@@ -56,7 +57,7 @@
                     android:layout_marginEnd="20dp"
                     android:text="@{item.itemName}"
                     android:textSize="15sp"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/editButton"
                     app:layout_constraintStart_toEndOf="@+id/itemImage"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -76,14 +77,14 @@
                     android:id="@+id/amount"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="5dp"
                     android:layout_marginBottom="15dp"
                     android:text="Rs. "
-                    app:priceFormattedFromItem="@{item}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="@+id/nextAvailable"
                     app:layout_constraintStart_toStartOf="@+id/nextAvailable"
-                    app:layout_constraintTop_toBottomOf="@+id/nextAvailable" />
+                    app:layout_constraintTop_toBottomOf="@+id/nextAvailable"
+                    app:priceFormattedFromItem="@{item}" />
 
                 <TextView
                     android:id="@+id/groupDescription"
@@ -99,9 +100,10 @@
                     android:id="@+id/nextAvailable"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="20dp"
                     android:textSize="12sp"
                     app:availableDateFormatted="@{item}"
-                    app:layout_constraintEnd_toEndOf="@+id/groupDescription"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="@+id/groupDescription"
                     app:layout_constraintTop_toBottomOf="@+id/groupDescription" />
 
@@ -113,6 +115,16 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageButton
+                    android:id="@+id/editButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    android:onClick="@{() -> editButtonClickListener.onClick(item)}"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/itemDetails"
+                    app:srcCompat="@drawable/edit_icon" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

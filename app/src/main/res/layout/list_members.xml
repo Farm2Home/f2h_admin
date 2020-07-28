@@ -75,9 +75,9 @@
                     android:textAlignment="center"
                     android:textSize="12sp"
                     app:layout_constraintBottom_toBottomOf="@+id/email"
-                    app:layout_constraintEnd_toEndOf="@+id/removeUserButton"
+                    app:layout_constraintEnd_toEndOf="@+id/memberAcceptbutton"
                     app:layout_constraintStart_toEndOf="@+id/email"
-                    app:layout_constraintTop_toBottomOf="@+id/removeUserButton"
+                    app:layout_constraintTop_toBottomOf="@+id/memberAcceptbutton"
                     app:rolesFormatted="@{uiModel}" />
 
                 <TextView
@@ -116,36 +116,37 @@
                     app:layout_constraintStart_toStartOf="@+id/mobile"
                     app:layout_constraintTop_toBottomOf="@+id/mobile" />
 
-                <ImageButton
-                    android:id="@+id/removeUserButton"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_marginEnd="10dp"
-                    android:onClick="@{() -> deleteUserButtonClickListener.onClick(uiModel)}"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/memberUserName"
-                    app:srcCompat="@drawable/delete_icon" />
+<!--                <ImageButton-->
+<!--                    android:id="@+id/removeUserButton"-->
+<!--                    android:layout_width="40dp"-->
+<!--                    android:layout_height="40dp"-->
+<!--                    android:layout_marginEnd="10dp"-->
+<!--                    android:onClick="@{() -> deleteUserButtonClickListener.onClick(uiModel)}"-->
+<!--                    app:layout_constraintEnd_toEndOf="parent"-->
+<!--                    app:layout_constraintTop_toTopOf="@+id/memberUserName"-->
+<!--                    app:srcCompat="@drawable/delete_icon" />-->
 
                 <ImageButton
                     android:id="@+id/memberMobileButton"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:onClick="@{() -> callUserButtonClickListener.onClick(uiModel)}"
-                    app:layout_constraintBottom_toBottomOf="@+id/removeUserButton"
-                    app:layout_constraintEnd_toStartOf="@+id/removeUserButton"
-                    app:layout_constraintTop_toTopOf="@+id/removeUserButton"
+                    android:tint="@color/cardview_shadow_start_color"
+                    app:layout_constraintBottom_toBottomOf="@+id/memberAcceptbutton"
+                    app:layout_constraintEnd_toStartOf="@+id/memberAcceptbutton"
+                    app:layout_constraintTop_toTopOf="@+id/memberAcceptbutton"
                     app:srcCompat="@drawable/contact_us_icon" />
 
                 <ImageButton
                     android:id="@+id/memberAcceptbutton"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:backgroundTint="@color/green_status"
+                    android:layout_marginEnd="10dp"
                     android:onClick="@{() -> acceptUserButtonClickListener.onClick(uiModel)}"
-                    app:isAcceptButtonEnabled="@{uiModel}"
-                    app:layout_constraintBottom_toBottomOf="@+id/memberMobileButton"
-                    app:layout_constraintEnd_toStartOf="@+id/memberMobileButton"
-                    app:layout_constraintTop_toTopOf="@+id/memberMobileButton"
+                    android:tint="@color/cardview_shadow_start_color"
+                    app:acceptButtonColor="@{uiModel}"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/memberUserName"
                     app:srcCompat="@drawable/accept_icon" />
 
                 <ImageButton
@@ -153,6 +154,7 @@
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:onClick="@{() -> openUserWalletButtonClickListener.onClick(uiModel)}"
+                    android:tint="@color/cardview_shadow_start_color"
                     app:isWalletButtonEnabled="@{uiModel}"
                     app:layout_constraintBottom_toTopOf="@+id/roles"
                     app:layout_constraintEnd_toStartOf="@+id/memberMobileButton"

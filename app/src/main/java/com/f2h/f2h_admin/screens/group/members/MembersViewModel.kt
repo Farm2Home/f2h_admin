@@ -4,12 +4,16 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.f2h.f2h_admin.constants.F2HConstants.USER_ROLE_BUYER
-import com.f2h.f2h_admin.constants.F2HConstants.USER_ROLE_BUYER_REQUESTED
+import androidx.navigation.Navigation
+import com.f2h.f2h_admin.constants.F2HConstants
+//import com.f2h.f2h_admin.constants.F2HConstants.USER_ROLE_BUYER
+//import com.f2h.f2h_admin.constants.F2HConstants.USER_ROLE_BUYER_REQUESTED
+//import com.f2h.f2h_admin.constants.F2HConstants.USER_ROLE_GROUP_ADMIN_REQUESTED
 import com.f2h.f2h_admin.database.SessionDatabaseDao
 import com.f2h.f2h_admin.database.SessionEntity
 import com.f2h.f2h_admin.network.*
 import com.f2h.f2h_admin.network.models.*
+//import com.f2h.f2h_admin.screens.group..MembershipRequestFragmentDirections
 import kotlinx.coroutines.*
 import java.text.DateFormat
 import java.text.SimpleDateFormat
@@ -53,7 +57,7 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
         _isProgressBarActive.value = true
         coroutineScope.launch {
             sessionData.value = retrieveSession()
-            var getGroupMembershipsDeferred = GroupMembershipApi.retrofitService.getGroupMembership(sessionData.value!!.groupId)
+            var getGroupMembershipsDeferred = GroupMembershipApi.retrofitService.getGroupMembership(sessionData.value!!.groupId, null)
             try {
                 var memberships = getGroupMembershipsDeferred.await()
                 var userIds = memberships.map { x -> x.userId ?: -1 }.distinct()
@@ -85,16 +89,29 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
                 uiElement.email = membershipUserDetail.email ?: ""
                 uiElement.roles = membership.roles ?: ""
                 uiElement.groupMembershipId = membership.groupMembershipId ?: -1
-                if(membership.roles?.split(",")?.contains(USER_ROLE_BUYER_REQUESTED) ?: false){
-                    uiElement.isBuyerRequested = true
+                var roles = membership.roles?.split(",")
+
+
+
+//                if(roles?.contains(USER_ROLE_BUYER_REQUESTED) ?: false || roles?.contains(
+//                        USER_ROLE_GROUP_ADMIN_REQUESTED) ?: false){
+//                    uiElement.isBuyerRequested = true
+//                }
+
+                F2HConstants.REQUESTED_ROLES?.forEach {
+                    if (roles!!.contains(it)){
+                        uiElement.isBuyerRequested = true
+                    }
                 }
+
+//                if(roles?.any(F2HConstants.REQUESTED_ROLES::contains)?: false){
+//                    uiElement.isBuyerRequested = true
+//                }
             }
             allUiData.add(uiElement)
         }
-
         return allUiData
     }
-
 
 
     private fun filterVisibleItems(elements: List<MembersUiModel>): ArrayList<MembersUiModel> {
@@ -131,36 +148,6 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
     fun onCallUserButtonClicked(uiElement: MembersUiModel){
         _selectedUiElement.value = uiElement
     }
-
-    // Accept button
-    fun onAcceptUserButtonClicked(uiElement: MembersUiModel){
-        acceptBuyerMembership(uiElement)
-    }
-
-
-    fun acceptBuyerMembership(uiElement: MembersUiModel) {
-        _isProgressBarActive.value = true
-        var modifiedRoles = uiElement.roles.split(",").filter { !it.equals(USER_ROLE_BUYER_REQUESTED) }
-        modifiedRoles = modifiedRoles.plus(USER_ROLE_BUYER)
-        var membershipRequest = GroupMembershipRequest(
-            null,
-            null,
-            modifiedRoles.joinToString(),
-            null
-        )
-        coroutineScope.launch {
-            var updateGroupMembershipDataDeferred =
-                GroupMembershipApi.retrofitService.updateGroupMembership(uiElement.groupMembershipId, membershipRequest)
-            try {
-                var updatedMembership = updateGroupMembershipDataDeferred.await()
-                getUserDetailsInGroup()
-            } catch (t:Throwable){
-                println(t.message)
-            }
-            _isProgressBarActive.value = false
-        }
-    }
-
 
     override fun onCleared() {
         super.onCleared()

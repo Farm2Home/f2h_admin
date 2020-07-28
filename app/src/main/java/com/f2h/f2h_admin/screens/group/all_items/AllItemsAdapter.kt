@@ -8,10 +8,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.f2h.f2h_admin.databinding.ListAllItemsBinding
 import com.f2h.f2h_admin.network.models.Item
 
-class AllItemsAdapter(val clickListener: AllItemClickListener): ListAdapter<Item, AllItemsAdapter.ViewHolder>(AllItemDiffCallback()) {
+class AllItemsAdapter(val clickListener: AllItemClickListener,
+                      val editButtonClickListener: EditButtonClickListener
+): ListAdapter<Item, AllItemsAdapter.ViewHolder>(AllItemDiffCallback()) {
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(getItem(position)!!, clickListener)
+        holder.bind(getItem(position)!!, clickListener, editButtonClickListener)
     }
 
 
@@ -24,10 +26,12 @@ class AllItemsAdapter(val clickListener: AllItemClickListener): ListAdapter<Item
 
         fun bind(
             item: Item,
-            clickListener: AllItemClickListener
+            clickListener: AllItemClickListener,
+            editButtonClickListener: EditButtonClickListener
         ) {
             binding.item = item
             binding.clickListener = clickListener
+            binding.editButtonClickListener = editButtonClickListener
             binding.executePendingBindings()
         }
 
@@ -52,5 +56,9 @@ class AllItemDiffCallback : DiffUtil.ItemCallback<Item>() {
 }
 
 class AllItemClickListener(val clickListener: (item: Item) -> Unit) {
+    fun onClick(item: Item) = clickListener(item)
+}
+
+class EditButtonClickListener(val clickListener: (item: Item) -> Unit) {
     fun onClick(item: Item) = clickListener(item)
 }

@@ -68,7 +68,7 @@ class GroupWalletViewModel(val database: SessionDatabaseDao, application: Applic
                     var walletItemsModel = WalletItemsModel(
                         transaction.walletLedgerId ?: -1,
                         transaction.transactionDate ?: "",
-                        transaction.transactionDescription ?: "",
+                        transaction.transactionDescription?.trim() ?: "",
                         transaction.amount ?: 0.0
                     )
                     allUiData.add(walletItemsModel)

@@ -6,6 +6,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.findNavController
 import androidx.navigation.ui.NavigationUI
+import com.cloudinary.android.MediaManager
 import com.f2h.f2h_admin.R
 import com.f2h.f2h_admin.database.F2HDatabase
 import com.f2h.f2h_admin.database.SessionEntity
@@ -13,6 +14,7 @@ import com.f2h.f2h_admin.databinding.ActivityUserPagesBinding
 import kotlinx.android.synthetic.main.activity_user_pages.view.*
 import kotlinx.android.synthetic.main.nav_header.view.*
 import kotlinx.coroutines.*
+import java.lang.Exception
 
 
 class UserPagesActivity : AppCompatActivity() {
@@ -29,6 +31,11 @@ class UserPagesActivity : AppCompatActivity() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_user_pages)
         drawerLayout = binding.drawerLayout
 
+        try {
+            MediaManager.init(this)
+        } catch (e: Exception){
+        }
+
         val navController = this.findNavController(R.id.userPagesNavHostFragment)
 
         NavigationUI.setupActionBarWithNavController(this, navController, drawerLayout)
@@ -38,6 +45,7 @@ class UserPagesActivity : AppCompatActivity() {
         updateNavHeader()
 
     }
+
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)

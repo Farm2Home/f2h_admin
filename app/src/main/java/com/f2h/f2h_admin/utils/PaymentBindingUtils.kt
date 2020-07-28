@@ -134,6 +134,27 @@ fun TextView.setStatusFormatted(data: PaymentItemsModel){
     text = colouredText
 }
 
+@BindingAdapter("aggregationFormatted")
+fun TextView.setAggregationFormatted(list: List<PaymentItemsModel>?){
+    if (list != null) {
+        var totalAmount = (0).toDouble()
+        var totalQuantity: Double? = (0).toDouble()
+        var uom = ""
+        list.forEach { element ->
+            totalAmount += (element.orderAmount)
+            totalQuantity = totalQuantity?.plus((element.displayQuantity))
+            uom = element.itemUom
+        }
+
+        //If there are multiple items do not show the UOM/Quantity
+        if (list.map { x -> x.itemName }.distinct().count() == 1){
+            text = String.format("₹%.0f", totalAmount)
+        } else {
+            text = String.format("₹%.0f", totalAmount)
+        }
+
+    }
+}
 
 private fun isOrderFreezed(data: PaymentItemsModel) : Boolean {
     if (data.isFreezed.equals(false) &&

@@ -214,13 +214,13 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="5dp"
             android:onClick="@{() -> viewModel.onCashCollectedbuttonClicked()}"
-            android:text="Delivered And Cash Collected"
+            android:text="Deliver And Collect"
             android:textAllCaps="false"
             android:textSize="12sp"
             android:visibility="visible"
             app:buttonStatus="@{!viewModel.isProgressBarActive().booleanValue()}"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/dDeliverButton"
+            app:layout_constraintEnd_toStartOf="@+id/aggregation"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent" />
 
@@ -230,13 +230,25 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="5dp"
             android:onClick="@{() -> viewModel.onDeliverButtonClicked()}"
-            android:text="Delivered Orders"
+            android:text="Deliver Orders"
             android:textAllCaps="false"
             android:textSize="12sp"
             app:buttonStatus="@{!viewModel.isProgressBarActive().booleanValue()}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/aggregation" />
+
+        <TextView
+            android:id="@+id/aggregation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:textSize="18sp"
+            app:aggregationFormatted="@{viewModel.visibleUiData}"
+            app:layout_constraintBottom_toBottomOf="@+id/dDeliverButton"
+            app:layout_constraintTop_toTopOf="@+id/dDeliverButton"
+            app:layout_constraintEnd_toStartOf="@+id/dDeliverButton"
             app:layout_constraintStart_toEndOf="@+id/dCashOnDeliveryButton" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
