@@ -11,13 +11,11 @@ import com.f2h.f2h_admin.constants.F2HConstants.ORDER_STATUS_ORDERED
 import com.f2h.f2h_admin.constants.F2HConstants.PAYMENT_STATUS_PENDING
 import com.f2h.f2h_admin.database.SessionDatabaseDao
 import com.f2h.f2h_admin.database.SessionEntity
+import com.f2h.f2h_admin.network.CommentApi
 import com.f2h.f2h_admin.network.ItemAvailabilityApi
 import com.f2h.f2h_admin.network.OrderApi
 import com.f2h.f2h_admin.network.UserApi
-import com.f2h.f2h_admin.network.models.Item
-import com.f2h.f2h_admin.network.models.ItemAvailability
-import com.f2h.f2h_admin.network.models.Order
-import com.f2h.f2h_admin.network.models.UserDetails
+import com.f2h.f2h_admin.network.models.*
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -341,5 +339,43 @@ class ReportViewModel(val database: SessionDatabaseDao, application: Application
         _reportUiFilterModel.value?.selectedStartDate = formatter.format(rangeStartDate.time)
         _reportUiFilterModel.value?.selectedEndDate = formatter.format(rangeEndDate.time)
         filterVisibleItems()
+    }
+
+    fun moreDetailsButtonClicked(element: ReportItemsModel) {
+        if(element.isMoreDetailsDisplayed){
+            _visibleUiData.value?.filter { data -> data.orderId.equals(element.orderId) }
+                ?.firstOrNull()?.isMoreDetailsDisplayed = false
+            _visibleUiData.value = _visibleUiData.value
+            return
+        }
+
+        // Do API call to fetch comments
+        fetchCommentsForOrder(element)
+
+        _visibleUiData.value?.filter { data -> data.orderId.equals(element.orderId) }
+            ?.firstOrNull()?.isMoreDetailsDisplayed = true
+        _visibleUiData.value = _visibleUiData.value
+    }
+
+    private fun fetchCommentsForOrder(element: ReportItemsModel) {
+        setCommentProgressBar(true, element)
+        coroutineScope.launch {
+            var getCommentsDataDeferred = CommentApi.retrofitService.getComments(element.orderId)
+            try {
+                val comments: List<Comment> = getCommentsDataDeferred.await()
+                _visibleUiData.value?.filter { data -> data.orderId.equals(element.orderId) }
+                    ?.firstOrNull()?.comments = ArrayList(comments)
+                _visibleUiData.value = _visibleUiData.value
+            } catch (t: Throwable) {
+                println(t.message)
+            }
+            setCommentProgressBar(false, element)
+        }
+    }
+
+    private fun setCommentProgressBar(isProgressActive: Boolean, element: ReportItemsModel){
+        _visibleUiData.value?.filter { data -> data.orderId.equals(element.orderId) }
+            ?.firstOrNull()?.isCommentProgressBarActive = isProgressActive
+        _visibleUiData.value = _visibleUiData.value
     }
 }

@@ -12,6 +12,7 @@ import com.f2h.f2h_admin.constants.F2HConstants.ORDER_STATUS_REJECTED
 import com.f2h.f2h_admin.constants.F2HConstants.PAYMENT_STATUS_PENDING
 import com.f2h.f2h_admin.database.SessionDatabaseDao
 import com.f2h.f2h_admin.database.SessionEntity
+import com.f2h.f2h_admin.network.CommentApi
 import com.f2h.f2h_admin.network.ItemAvailabilityApi
 import com.f2h.f2h_admin.network.OrderApi
 import com.f2h.f2h_admin.network.UserApi
@@ -155,7 +156,6 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
             uiElement.discountAmount = order.discountAmount ?: 0.0
             uiElement.orderStatus = order.orderStatus ?: ""
             uiElement.paymentStatus = order.paymentStatus ?: ""
-            uiElement.orderComment = order.orderComment ?: ""
             uiElement.buyerUserId = order.buyerUserId ?: -1
             uiElement.sellerUserId = order.sellerUserId ?: -1
             uiElement.deliveryAddress = order.deliveryLocation ?: ""
@@ -459,7 +459,7 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
                 confirmedQuantity = 0.0,
                 discountAmount = 0.0,
                 orderedAmount = 0.0,
-                orderComment = element.orderComment,
+                orderComment = null,
                 deliveryComment = null
             )
             orderUpdateRequestList.add(updateRequest)
@@ -494,7 +494,7 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
                 confirmedQuantity = element.confirmedQuantity,
                 discountAmount = element.discountAmount,
                 orderedAmount = calculateOrderAmount(element),
-                orderComment = element.orderComment,
+                orderComment = null,
                 deliveryComment = null
             )
             orderUpdateRequestList.add(updateRequest)
@@ -511,5 +511,79 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
         _selectedUiElement.value = uiElement
     }
 
+    fun moreDetailsButtonClicked(element: ConfirmRejectItemsModel) {
+        if(element.isMoreDetailsDisplayed){
+            _visibleUiData.value?.filter { data -> data.orderId.equals(element.orderId) }
+                ?.firstOrNull()?.isMoreDetailsDisplayed = false
+            _visibleUiData.value = _visibleUiData.value
+            return
+        }
 
+        // Do API call to fetch comments
+        fetchCommentsForOrder(element)
+
+        _visibleUiData.value?.filter { data -> data.orderId.equals(element.orderId) }
+            ?.firstOrNull()?.isMoreDetailsDisplayed = true
+        _visibleUiData.value = _visibleUiData.value
+    }
+
+    private fun fetchCommentsForOrder(element: ConfirmRejectItemsModel) {
+        setCommentProgressBar(true, element)
+        coroutineScope.launch {
+            var getCommentsDataDeferred = CommentApi.retrofitService.getComments(element.orderId)
+            try {
+                val comments: List<Comment> = getCommentsDataDeferred.await()
+                _visibleUiData.value?.filter { data -> data.orderId.equals(element.orderId) }
+                    ?.firstOrNull()?.comments = ArrayList(comments)
+                _visibleUiData.value = _visibleUiData.value
+            } catch (t: Throwable) {
+                println(t.message)
+            }
+            setCommentProgressBar(false, element)
+        }
+    }
+
+
+    fun onSendCommentButtonClicked(element: ConfirmRejectItemsModel){
+        if(element.newComment.isNullOrBlank()){
+            return
+        }
+
+        var request = CommentCreateRequest(
+            comment = element.newComment,
+            commenter = sessionData.value?.userName ?: "",
+            commenterUserId = sessionData.value?.userId ?: -1,
+            orderId = element.orderId,
+            createdBy = sessionData.value?.userName ?: "",
+            updatedBy = sessionData.value?.userName ?: ""
+        )
+
+        setCommentProgressBar(true, element)
+        coroutineScope.launch {
+            var createCommentsDataDeferred = CommentApi.retrofitService.createComment(request)
+            try{
+                createCommentsDataDeferred.await()
+                // Do API call to refresh comments
+                fetchCommentsForOrder(element)
+                clearCommentTypeBox(element)
+            } catch (t:Throwable){
+                println(t.message)
+            }
+            setCommentProgressBar(false, element)
+        }
+
+    }
+
+
+    private fun setCommentProgressBar(isProgressActive: Boolean, element: ConfirmRejectItemsModel){
+        _visibleUiData.value?.filter { data -> data.orderId.equals(element.orderId) }
+            ?.firstOrNull()?.isCommentProgressBarActive = isProgressActive
+        _visibleUiData.value = _visibleUiData.value
+    }
+
+    private fun clearCommentTypeBox(element: ConfirmRejectItemsModel){
+        _visibleUiData.value?.filter { data -> data.orderId.equals(element.orderId) }
+            ?.firstOrNull()?.newComment = ""
+        _visibleUiData.value = _visibleUiData.value
+    }
 }
