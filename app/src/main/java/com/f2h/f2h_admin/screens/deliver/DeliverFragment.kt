@@ -64,12 +64,14 @@ class DeliverFragment : Fragment() {
 
         // Daily Orders List recycler view
         val adapter = DeliverItemsAdapter(OrderedItemClickListener { uiDataElement ->
-            println("Clicked Report Item")
+            viewModel.moreDetailsButtonClicked(uiDataElement)
         }, CheckBoxClickListener {uiModel ->
             viewModel.onCheckBoxClicked(uiModel)
         }, CallUserButtonClickListener { uiDataElement ->
             viewModel.onCallUserButtonClicked(uiDataElement)
             startPhoneCall()
+        }, SendCommentButtonClickListener { uiDataElement ->
+            viewModel.onSendCommentButtonClicked(uiDataElement)
         })
         binding.reportListRecyclerView.adapter = adapter
         viewModel.visibleUiData.observe(viewLifecycleOwner, Observer {

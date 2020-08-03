@@ -1,5 +1,7 @@
 package com.f2h.f2h_admin.screens.report
 
+import com.f2h.f2h_admin.network.models.Comment
+
 data class ReportItemsModel (
     var itemId: Long = 0,
     var orderedDate: String = "",
@@ -25,5 +27,8 @@ data class ReportItemsModel (
     var paymentStatus: String = "",
     var deliveryAddress: String = "",
     var isFreezed: Boolean = false,
-    var discountAmount: Double = 0.0
+    var discountAmount: Double = 0.0,
+    var isMoreDetailsDisplayed: Boolean = false,
+    var comments: ArrayList<Comment> = arrayListOf(),
+    var isCommentProgressBarActive: Boolean = false
 )
