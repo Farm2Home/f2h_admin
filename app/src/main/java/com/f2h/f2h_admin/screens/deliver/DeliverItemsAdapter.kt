@@ -8,11 +8,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.f2h.f2h_admin.databinding.ListDeliverItemsBinding
 
 class DeliverItemsAdapter(val clickListener: OrderedItemClickListener,
-                                val checkBoxClickListener: CheckBoxClickListener
+                          val checkBoxClickListener: CheckBoxClickListener,
+                          val callUserButtonClickListener: CallUserButtonClickListener,
+                          val sendCommentButtonClickListener: SendCommentButtonClickListener
 ): ListAdapter<DeliverItemsModel, DeliverItemsAdapter.ViewHolder>(ListItemDiffCallback()) {
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(getItem(position)!!, clickListener, checkBoxClickListener)
+        holder.bind(getItem(position)!!, clickListener, checkBoxClickListener,
+            callUserButtonClickListener, sendCommentButtonClickListener)
     }
 
 
@@ -26,11 +29,15 @@ class DeliverItemsAdapter(val clickListener: OrderedItemClickListener,
         fun bind(
             item: DeliverItemsModel,
             clickListener: OrderedItemClickListener,
-            checkBoxClickListener: CheckBoxClickListener
+            checkBoxClickListener: CheckBoxClickListener,
+            callUserButtonClickListener: CallUserButtonClickListener,
+            sendCommentButtonClickListener: SendCommentButtonClickListener
         ) {
             binding.uiModel = item
             binding.clickListener = clickListener
             binding.checkBoxClickListener = checkBoxClickListener
+            binding.callUserButtonClickListener = callUserButtonClickListener
+            binding.sendCommentButtonClickListener = sendCommentButtonClickListener
             binding.executePendingBindings()
         }
 
@@ -64,3 +71,10 @@ class CheckBoxClickListener(val clickListener: (uiModel: DeliverItemsModel) -> U
     fun onClick(uiModel: DeliverItemsModel) = clickListener(uiModel)
 }
 
+class CallUserButtonClickListener(val clickListener: (uiModel: DeliverItemsModel) -> Unit) {
+    fun onClick(uiModel: DeliverItemsModel) = clickListener(uiModel)
+}
+
+class SendCommentButtonClickListener(val clickListener: (uiModel: DeliverItemsModel) -> Unit) {
+    fun onClick(uiModel: DeliverItemsModel) = clickListener(uiModel)
+}

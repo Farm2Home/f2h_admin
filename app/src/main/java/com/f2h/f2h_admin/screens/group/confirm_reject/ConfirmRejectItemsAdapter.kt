@@ -10,12 +10,15 @@ import com.f2h.f2h_admin.databinding.ListConfirmRejectItemsBinding
 class ConfirmRejectItemsAdapter(val clickListener: OrderedItemClickListener,
                                 val checkBoxClickListener: CheckBoxClickListener,
                                 val increaseButtonClickListener: IncreaseButtonClickListener,
-                                val decreaseButtonClickListener: DecreaseButtonClickListener
+                                val decreaseButtonClickListener: DecreaseButtonClickListener,
+                                val callUserButtonClickListener: CallUserButtonClickListener,
+                                val sendCommentButtonClickListener: SendCommentButtonClickListener
 ): ListAdapter<ConfirmRejectItemsModel, ConfirmRejectItemsAdapter.ViewHolder>(ListItemDiffCallback()) {
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(getItem(position)!!, clickListener, checkBoxClickListener,
-            increaseButtonClickListener, decreaseButtonClickListener)
+            increaseButtonClickListener, decreaseButtonClickListener,
+            callUserButtonClickListener, sendCommentButtonClickListener)
     }
 
 
@@ -31,13 +34,17 @@ class ConfirmRejectItemsAdapter(val clickListener: OrderedItemClickListener,
             clickListener: OrderedItemClickListener,
             checkBoxClickListener: CheckBoxClickListener,
             increaseButtonClickListener: IncreaseButtonClickListener,
-            decreaseButtonClickListener: DecreaseButtonClickListener
+            decreaseButtonClickListener: DecreaseButtonClickListener,
+            callUserButtonClickListener: CallUserButtonClickListener,
+            sendCommentButtonClickListener: SendCommentButtonClickListener
         ) {
             binding.uiModel = item
             binding.clickListener = clickListener
             binding.checkBoxClickListener = checkBoxClickListener
             binding.increaseButtonClickListener = increaseButtonClickListener
             binding.decreaseButtonClickListener = decreaseButtonClickListener
+            binding.callUserButtonClickListener = callUserButtonClickListener
+            binding.sendCommentButtonClickListener = sendCommentButtonClickListener
             binding.executePendingBindings()
         }
 
@@ -76,5 +83,13 @@ class IncreaseButtonClickListener(val clickListener: (uiModel: ConfirmRejectItem
 }
 
 class DecreaseButtonClickListener(val clickListener: (uiModel: ConfirmRejectItemsModel) -> Unit) {
+    fun onClick(uiModel: ConfirmRejectItemsModel) = clickListener(uiModel)
+}
+
+class CallUserButtonClickListener(val clickListener: (uiModel: ConfirmRejectItemsModel) -> Unit) {
+    fun onClick(uiModel: ConfirmRejectItemsModel) = clickListener(uiModel)
+}
+
+class SendCommentButtonClickListener(val clickListener: (uiModel: ConfirmRejectItemsModel) -> Unit) {
     fun onClick(uiModel: ConfirmRejectItemsModel) = clickListener(uiModel)
 }

@@ -12,10 +12,12 @@ import com.f2h.f2h_admin.constants.F2HConstants.ORDER_STATUS_REJECTED
 import com.f2h.f2h_admin.constants.F2HConstants.PAYMENT_STATUS_PENDING
 import com.f2h.f2h_admin.database.SessionDatabaseDao
 import com.f2h.f2h_admin.database.SessionEntity
+import com.f2h.f2h_admin.network.CommentApi
 import com.f2h.f2h_admin.network.ItemAvailabilityApi
 import com.f2h.f2h_admin.network.OrderApi
 import com.f2h.f2h_admin.network.UserApi
 import com.f2h.f2h_admin.network.models.*
+import com.f2h.f2h_admin.screens.deliver.DeliverItemsModel
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -46,6 +48,9 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
     val toastMessage: LiveData<String>
         get() = _toastMessage
 
+    private var _selectedUiElement = MutableLiveData<ConfirmRejectItemsModel>()
+    val selectedUiElement: LiveData<ConfirmRejectItemsModel>
+        get() = _selectedUiElement
 
     private val df: DateFormat = SimpleDateFormat("yyyy-MM-dd")
     private val formatter: DateFormat = SimpleDateFormat("dd-MMM-yyyy")
@@ -151,7 +156,6 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
             uiElement.discountAmount = order.discountAmount ?: 0.0
             uiElement.orderStatus = order.orderStatus ?: ""
             uiElement.paymentStatus = order.paymentStatus ?: ""
-            uiElement.orderComment = order.orderComment ?: ""
             uiElement.buyerUserId = order.buyerUserId ?: -1
             uiElement.sellerUserId = order.sellerUserId ?: -1
             uiElement.deliveryAddress = order.deliveryLocation ?: ""
@@ -198,21 +202,39 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
             .filter { uiElement -> !uiElement.paymentStatus.isBlank() }
             .map { uiElement -> uiElement.paymentStatus }.distinct().sorted())
 
-        _reportUiFilterModel.value?.buyerNameList = arrayListOf("ALL").plus(allUiData
-            .filter { uiElement -> !uiElement.buyerName.isBlank() }
-            .distinctBy { it.buyerUserId }
-            .map { uiElement -> generateUniqueFilterName(uiElement.buyerName,uiElement.buyerMobile) }.sorted())
+        _reportUiFilterModel.value?.buyerNameList = arrayListOf("ALL")
 
-        _reportUiFilterModel.value?.farmerNameList = arrayListOf("ALL").plus(allUiData
-            .filter { uiElement -> !uiElement.sellerName.isBlank() }
-            .distinctBy { it.sellerUserId }
-            .map { uiElement -> generateUniqueFilterName(uiElement.sellerName,uiElement.sellerMobile) }.sorted())
+        _reportUiFilterModel.value?.farmerNameList = arrayListOf("ALL")
 
         _reportUiFilterModel.value?.timeFilterList = arrayListOf("Today", "Tomorrow", "Next 7 days", "Last 7 days", "Last 15 days", "Last 30 days")
 
         //Refresh filter
         _reportUiFilterModel.value = _reportUiFilterModel.value
     }
+
+
+    private fun reCreateBuyerNameFilterList() {
+        _reportUiFilterModel.value?.buyerNameList = arrayListOf("ALL")
+            .plus(_visibleUiData.value
+                ?.filter { uiElement -> !uiElement.buyerName.isBlank() }
+                ?.distinctBy { it.buyerUserId }
+                ?.map { uiElement -> generateUniqueFilterName(uiElement.buyerName,uiElement.buyerMobile) }
+                ?.sorted() ?: listOf())
+        //Refresh filter
+        _reportUiFilterModel.value = _reportUiFilterModel.value
+    }
+
+    private fun reCreateFarmerNameFilterList() {
+        _reportUiFilterModel.value?.farmerNameList = arrayListOf("ALL")
+            .plus(_visibleUiData.value
+                ?.filter { uiElement -> !uiElement.sellerName.isBlank() }
+                ?.distinctBy { it.sellerUserId }
+                ?.map { uiElement -> generateUniqueFilterName(uiElement.sellerName,uiElement.sellerMobile)  }
+                ?.sorted() ?: listOf())
+        //Refresh filter
+        _reportUiFilterModel.value = _reportUiFilterModel.value
+    }
+
 
     private fun generateUniqueFilterName(name: String, mobile: String): String{
         return String.format("%s (%s)",name, mobile)
@@ -244,6 +266,8 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
         }
         filteredItems.sortByDescending { formatter.parse(it.orderedDate) }
         _visibleUiData.value = filteredItems
+        reCreateBuyerNameFilterList()
+        reCreateFarmerNameFilterList()
     }
 
     private fun isInSelectedDateRange(
@@ -435,7 +459,7 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
                 confirmedQuantity = 0.0,
                 discountAmount = 0.0,
                 orderedAmount = 0.0,
-                orderComment = element.orderComment,
+                orderComment = null,
                 deliveryComment = null
             )
             orderUpdateRequestList.add(updateRequest)
@@ -470,7 +494,7 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
                 confirmedQuantity = element.confirmedQuantity,
                 discountAmount = element.discountAmount,
                 orderedAmount = calculateOrderAmount(element),
-                orderComment = element.orderComment,
+                orderComment = null,
                 deliveryComment = null
             )
             orderUpdateRequestList.add(updateRequest)
@@ -482,4 +506,84 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
         return element.confirmedQuantity * element.price - element.discountAmount
     }
 
+    // call button
+    fun onCallUserButtonClicked(uiElement: ConfirmRejectItemsModel){
+        _selectedUiElement.value = uiElement
+    }
+
+    fun moreDetailsButtonClicked(element: ConfirmRejectItemsModel) {
+        if(element.isMoreDetailsDisplayed){
+            _visibleUiData.value?.filter { data -> data.orderId.equals(element.orderId) }
+                ?.firstOrNull()?.isMoreDetailsDisplayed = false
+            _visibleUiData.value = _visibleUiData.value
+            return
+        }
+
+        // Do API call to fetch comments
+        fetchCommentsForOrder(element)
+
+        _visibleUiData.value?.filter { data -> data.orderId.equals(element.orderId) }
+            ?.firstOrNull()?.isMoreDetailsDisplayed = true
+        _visibleUiData.value = _visibleUiData.value
+    }
+
+    private fun fetchCommentsForOrder(element: ConfirmRejectItemsModel) {
+        setCommentProgressBar(true, element)
+        coroutineScope.launch {
+            var getCommentsDataDeferred = CommentApi.retrofitService.getComments(element.orderId)
+            try {
+                val comments: List<Comment> = getCommentsDataDeferred.await()
+                _visibleUiData.value?.filter { data -> data.orderId.equals(element.orderId) }
+                    ?.firstOrNull()?.comments = ArrayList(comments)
+                _visibleUiData.value = _visibleUiData.value
+            } catch (t: Throwable) {
+                println(t.message)
+            }
+            setCommentProgressBar(false, element)
+        }
+    }
+
+
+    fun onSendCommentButtonClicked(element: ConfirmRejectItemsModel){
+        if(element.newComment.isNullOrBlank()){
+            return
+        }
+
+        var request = CommentCreateRequest(
+            comment = element.newComment,
+            commenter = sessionData.value?.userName ?: "",
+            commenterUserId = sessionData.value?.userId ?: -1,
+            orderId = element.orderId,
+            createdBy = sessionData.value?.userName ?: "",
+            updatedBy = sessionData.value?.userName ?: ""
+        )
+
+        setCommentProgressBar(true, element)
+        coroutineScope.launch {
+            var createCommentsDataDeferred = CommentApi.retrofitService.createComment(request)
+            try{
+                createCommentsDataDeferred.await()
+                // Do API call to refresh comments
+                fetchCommentsForOrder(element)
+                clearCommentTypeBox(element)
+            } catch (t:Throwable){
+                println(t.message)
+            }
+            setCommentProgressBar(false, element)
+        }
+
+    }
+
+
+    private fun setCommentProgressBar(isProgressActive: Boolean, element: ConfirmRejectItemsModel){
+        _visibleUiData.value?.filter { data -> data.orderId.equals(element.orderId) }
+            ?.firstOrNull()?.isCommentProgressBarActive = isProgressActive
+        _visibleUiData.value = _visibleUiData.value
+    }
+
+    private fun clearCommentTypeBox(element: ConfirmRejectItemsModel){
+        _visibleUiData.value?.filter { data -> data.orderId.equals(element.orderId) }
+            ?.firstOrNull()?.newComment = ""
+        _visibleUiData.value = _visibleUiData.value
+    }
 }

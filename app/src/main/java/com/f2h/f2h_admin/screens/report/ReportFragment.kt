@@ -54,7 +54,7 @@ class ReportFragment : Fragment() {
 
         // Daily Orders List recycler view
         val adapter = ReportItemsAdapter(OrderedItemClickListener { uiDataElement ->
-            println("Clicked Report Item")
+            viewModel.moreDetailsButtonClicked(uiDataElement)
         })
         binding.reportListRecyclerView.adapter = adapter
         viewModel.visibleUiData.observe(viewLifecycleOwner, Observer {
