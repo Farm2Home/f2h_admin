@@ -1,7 +1,7 @@
 package com.f2h.f2h_admin.network
 
 import com.f2h.f2h_admin.constants.F2HConstants.SERVER_URL
-import com.f2h.f2h_admin.network.models.Group
+import com.f2h.f2h_admin.network.models.DeliveryArea
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -22,24 +22,16 @@ private val retrofit = Retrofit.Builder()
     .baseUrl(BASE_URL)
     .build()
 
-interface GroupApiService{
+interface DeliveryAreaApiService{
 
-    @GET("group")
-    fun getUserGroups(@Query("user_id") userId: Long, @Query("roles") roles: List<String>):
-            Deferred<List<Group>>
-
-    @GET("group/{group_id}")
-    fun getGroupDetails(@Path("group_id") groupId: Long):
-            Deferred<Group>
-
-    @GET("group/search")
-    fun searchGroupsByLocality(@Query("localities") localities: List<String>):
-            Deferred<List<Group>>
+    @GET("delivery_area")
+    fun getDeliveryAreaDetails(@Query("group_ids") groupId: Long):
+            Deferred<List<DeliveryArea>>
 
 }
 
-object GroupApi {
-    val retrofitService : GroupApiService by lazy {
-        retrofit.create(GroupApiService::class.java)
+object DeliveryAreaApi {
+    val retrofitService : DeliveryAreaApiService by lazy {
+        retrofit.create(DeliveryAreaApiService::class.java)
     }
 }

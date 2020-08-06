@@ -89,6 +89,7 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
                 uiElement.email = membershipUserDetail.email ?: ""
                 uiElement.roles = membership.roles ?: ""
                 uiElement.groupMembershipId = membership.groupMembershipId ?: -1
+                uiElement.deliveryAreaId = membership.deliveryAreaId ?: -1
                 var roles = membership.roles?.split(",")
 
 

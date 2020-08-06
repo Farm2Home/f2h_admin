@@ -8,6 +8,7 @@ import com.f2h.f2h_admin.constants.F2HConstants
 import com.f2h.f2h_admin.database.SessionDatabaseDao
 import com.f2h.f2h_admin.database.SessionEntity
 import com.f2h.f2h_admin.network.GroupMembershipApi
+import com.f2h.f2h_admin.network.DeliveryAreaApi
 import com.f2h.f2h_admin.network.models.GroupMembershipRequest
 import kotlinx.coroutines.*
 
@@ -45,7 +46,19 @@ class MembershipRequestViewModel (val database: SessionDatabaseDao, application:
     val toastMessage: LiveData<String>
         get() = _toastMessage
 
-    private val sessionData = MutableLiveData<SessionEntity>()
+    private var _selectedDeliveryAreaId = MutableLiveData<Long>()
+    val selectedDeliveryAreaId: LiveData<Long>
+        get() = _selectedDeliveryAreaId
+
+    private var _initialDeliveryAreaId = MutableLiveData<Long>()
+    val initialDeliveryAreaId: LiveData<Long>
+        get() = _initialDeliveryAreaId
+
+    private var _deliveryAreaItems = MutableLiveData<DeliveryAreaItem>()
+    val deliveryAreaItems: LiveData<DeliveryAreaItem>
+        get() = _deliveryAreaItems
+
+    private var sessionData = SessionEntity()
     private var viewModelJob = Job()
     private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main)
     private var groupMembershipId : Long = -1
@@ -58,6 +71,7 @@ class MembershipRequestViewModel (val database: SessionDatabaseDao, application:
         _mobile.value = navArgs.memberUiModel.mobile ?: ""
         _email.value = navArgs.memberUiModel.email ?: ""
         groupMembershipId = navArgs.memberUiModel.groupMembershipId ?: -1
+        _selectedDeliveryAreaId.value = null
         getMembershipsRequested(navArgs)
 
     }
@@ -65,9 +79,11 @@ class MembershipRequestViewModel (val database: SessionDatabaseDao, application:
     fun getMembershipsRequested(navArgs: MembershipRequestFragmentArgs){
         _isProgressBarActive.value = true
         coroutineScope.launch {
-            sessionData.value = retrieveSession()
+            sessionData = retrieveSession()
+            var getDeliveryArea =
+                DeliveryAreaApi.retrofitService.getDeliveryAreaDetails(sessionData.groupId)
             try {
-                println(navArgs.memberUiModel.roles)
+
                 var modifiedRoles = navArgs.memberUiModel.roles.split(",")
                 var allUiData = ArrayList<MembershipRequestUiModel>()
 
@@ -85,8 +101,18 @@ class MembershipRequestViewModel (val database: SessionDatabaseDao, application:
                         allUiData.add(uiElement)
                     }
                 }
-
+                var deliveryArea = getDeliveryArea.await()
+                var deliveryAreaNameList = ArrayList<String>()
+                var deliveryAreaIdList = ArrayList<Long>()
+                deliveryAreaNameList.add("Not Assigned")
+                deliveryAreaIdList.add(-1)
+                deliveryArea.forEach{
+                    deliveryAreaIdList.add(it.deliveryAreaId!!)
+                    deliveryAreaNameList.add(it.deliveryArea!!)
+                }
+                _deliveryAreaItems.value = DeliveryAreaItem(deliveryAreaIdList, deliveryAreaNameList)
                 _requestedRolesUiData.value = filterVisibleItems(allUiData)
+                _initialDeliveryAreaId.value = navArgs.memberUiModel.deliveryAreaId
             } catch (t:Throwable){
                 println(t.message)
             }
@@ -123,16 +149,24 @@ class MembershipRequestViewModel (val database: SessionDatabaseDao, application:
         uiElement.selected = uiElement.action?.get(position)
     }
 
+    fun onDeliveryAreaSelected(position: Int, id: Long) {
+        _selectedDeliveryAreaId.value = _deliveryAreaItems.value?.id?.get(position)
+    }
+
+    fun getInitialIndex(): Int{
+        var returnVal = _deliveryAreaItems.value?.id?.indexOf(_initialDeliveryAreaId.value)?:0
+        return returnVal
+    }
+
     // Accept button
     fun onOkButtonClick(){
         acceptBuyerMembership()
     }
 
-
     fun acceptBuyerMembership() {
         _isProgressBarActive.value = true
         var acceptedRoles = ArrayList<String>()
-        var is_change = false
+        var is_change = true
         _requestedRolesUiData.value!!.forEach { el ->
             if (!el.requestedRole || el.selected?.contains(F2HConstants.ROLE_REQUEST_PENDING)){
                 acceptedRoles.add(el.role.trim())
@@ -161,6 +195,7 @@ class MembershipRequestViewModel (val database: SessionDatabaseDao, application:
         else if(is_change){
             var membershipRequest = GroupMembershipRequest(
                 null,
+                selectedDeliveryAreaId.value,
                 null,
                 acceptedRoles.joinToString(","),
                 null
