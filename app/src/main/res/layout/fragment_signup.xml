@@ -43,7 +43,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:layout_marginTop="20dp"
-                    android:text="Create your Farm To Home account"
+                    android:text="Create your Village Veggys account"
                     android:textSize="18sp"
                     app:textViewVisibility="@{viewModel.isMobileVerified()}"
                     app:layout_constraintStart_toStartOf="parent"
@@ -60,6 +60,7 @@
                     android:inputType="textEmailAddress"
                     android:text="@={viewModel.email}"
                     app:editTextVisibility="@{viewModel.isMobileVerified()}"
+                    app:layout_constraintEnd_toEndOf="@+id/pincode"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/pincode" />
 
@@ -69,11 +70,13 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:layout_marginTop="20dp"
+                    android:layout_marginEnd="20dp"
                     android:ems="17"
                     android:hint="Password*"
                     android:inputType="textPassword"
                     android:text="@={viewModel.password}"
                     app:editTextVisibility="@{viewModel.isMobileVerified()}"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/textView7" />
 
@@ -88,6 +91,7 @@
                     android:inputType="textPassword"
                     android:text="@={viewModel.confirmPassword}"
                     app:editTextVisibility="@{viewModel.isMobileVerified()}"
+                    app:layout_constraintEnd_toEndOf="@+id/password"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/password" />
 
@@ -102,6 +106,7 @@
                     android:inputType="textPersonName"
                     android:text="@={viewModel.userName}"
                     app:editTextVisibility="@{viewModel.isMobileVerified()}"
+                    app:layout_constraintEnd_toEndOf="@+id/confirmPassword"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/confirmPassword" />
 
@@ -117,6 +122,7 @@
                     android:lines="2"
                     android:text="@={viewModel.locality}"
                     app:editTextVisibility="@{viewModel.isMobileVerified()}"
+                    app:layout_constraintEnd_toEndOf="@+id/name"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/name" />
 
@@ -131,6 +137,7 @@
                     android:inputType="text"
                     android:text="@={viewModel.city}"
                     app:editTextVisibility="@{viewModel.isMobileVerified()}"
+                    app:layout_constraintEnd_toEndOf="@+id/locality"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/locality" />
 
@@ -145,6 +152,7 @@
                     android:inputType="text"
                     android:text="@={viewModel.state}"
                     app:editTextVisibility="@{viewModel.isMobileVerified()}"
+                    app:layout_constraintEnd_toEndOf="@+id/city"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/city" />
 
@@ -160,6 +168,7 @@
                     android:inputType="phone"
                     android:text="@={viewModel.pincode}"
                     app:editTextVisibility="@{viewModel.isMobileVerified()}"
+                    app:layout_constraintEnd_toEndOf="@+id/state"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/state" />
 
