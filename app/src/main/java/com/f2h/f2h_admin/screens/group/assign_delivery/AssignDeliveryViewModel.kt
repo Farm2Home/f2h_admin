@@ -106,7 +106,7 @@ class AssignDeliveryViewModel(val database: SessionDatabaseDao, application: App
                 var deliverUserNamesList = deliveryUserIdsList.map { x-> userDetailsList.filter { y -> y.userId == x }.first().userName?: "" }
 
                 allUiData = createAllUiData(groupMembershipList, orders, userDetailsList, deliveryAreaList)
-                createAllUiFilters(deliveryAreaList)
+                createAllUiFilters(deliveryAreaList, deliverUserNamesList)
 
                 _reportUiFilterModel.value!!.deliveryBoyNameList = deliverUserNamesList
                 _reportUiFilterModel.value!!.deliveryBoyIdList = deliveryUserIdsList
@@ -155,9 +155,11 @@ class AssignDeliveryViewModel(val database: SessionDatabaseDao, application: App
             }
 
             val buyerUserDetails = userDetailsList.filter { x -> x.userId?.equals(order.buyerUserId) ?: false }.firstOrNull()
+            val sellerUserDetails = userDetailsList.filter { x -> x.userId?.equals(order.sellerUserId) ?: false }.firstOrNull()
+            val deliveryUserDetails = userDetailsList.filter { x -> x.userId?.equals(order.deliveryUserId) ?: false }.firstOrNull()
             val buyerMembershipDetails = groupMemberships.filter { x -> x.userId?.equals(order.buyerUserId) ?: false }.firstOrNull()
             val deliveryArea = deliveryAreaList.filter{ x-> x.deliveryAreaId?.equals(buyerMembershipDetails?.deliveryAreaId)?: false}.firstOrNull()
-            val sellerUserDetails = userDetailsList.filter { x -> x.userId?.equals(order.sellerUserId) ?: false }.firstOrNull()
+
             uiElement.buyerName = buyerUserDetails?.userName ?: ""
             uiElement.buyerMobile = buyerUserDetails?.mobile ?: ""
             uiElement.sellerName = sellerUserDetails?.userName ?: ""
@@ -172,7 +174,8 @@ class AssignDeliveryViewModel(val database: SessionDatabaseDao, application: App
             uiElement.sellerUserId = order.sellerUserId ?: -1
             uiElement.deliveryAddress = order.deliveryLocation ?: ""
             uiElement.deliveryBoyId = order.deliveryUserId ?: -1L
-//            uiElement.displayQuantity = getDisplayQuantity(uiElement.orderStatus, uiElement.orderedQuantity, uiElement.confirmedQuantity)
+            uiElement.deliveryBoyName = deliveryUserDetails?.userName?: ""
+            uiElement.displayQuantity = getDisplayQuantity(uiElement.orderStatus, uiElement.orderedQuantity, uiElement.confirmedQuantity)
             allUiData.add(uiElement)
         }
 
@@ -200,9 +203,10 @@ class AssignDeliveryViewModel(val database: SessionDatabaseDao, application: App
     }
 
 
-    private fun createAllUiFilters(deliveryAreaList: List<DeliveryArea>) {
+    private fun createAllUiFilters(deliveryAreaList: List<DeliveryArea>,
+                                   deliverUserNamesList: List<String>) {
         _reportUiFilterModel.value?.assignStatusList = arrayListOf("ALL", ASSIGN_STATUS_ASSIGNED,
-            ASSIGN_STATUS_NOT_ASSIGNED)
+            ASSIGN_STATUS_NOT_ASSIGNED).plus(deliverUserNamesList)
 
         _reportUiFilterModel.value?.deliveryAreaList = arrayListOf("ALL").plus(deliveryAreaList
             .map{ area -> area.deliveryArea?:""}).plus(arrayListOf(DELIVERY_AREA_NOT_ASSIGNED))
@@ -279,6 +283,9 @@ class AssignDeliveryViewModel(val database: SessionDatabaseDao, application: App
         else if (selectedAssignStatus ==ASSIGN_STATUS_NOT_ASSIGNED && element.deliveryBoyId == -1L){
             return true
         }
+        else if (element.deliveryBoyName.equals(selectedAssignStatus)){
+            return true
+        }
         return false
     }
 
@@ -319,15 +326,16 @@ class AssignDeliveryViewModel(val database: SessionDatabaseDao, application: App
 
 
     fun onAssignStatusSelected(position: Int) {
-        if (position == 0) {
-            _reportUiFilterModel.value?.selectedAssignStatus = "ALL"
-        }
-        if (position == 1) {
-            _reportUiFilterModel.value?.selectedAssignStatus = ASSIGN_STATUS_ASSIGNED
-        }
-        if (position == 2) {
-            _reportUiFilterModel.value?.selectedAssignStatus = ASSIGN_STATUS_NOT_ASSIGNED
-        }
+//        if (position == 0) {
+//            _reportUiFilterModel.value?.selectedAssignStatus = "ALL"
+//        }
+//        if (position == 1) {
+//            _reportUiFilterModel.value?.selectedAssignStatus = ASSIGN_STATUS_ASSIGNED
+//        }
+//        if (position == 2) {
+//            _reportUiFilterModel.value?.selectedAssignStatus = ASSIGN_STATUS_NOT_ASSIGNED
+//        }
+        _reportUiFilterModel.value?.selectedAssignStatus = _reportUiFilterModel.value?.assignStatusList?.get(position) ?: ""
 
         filterVisibleItems()
     }

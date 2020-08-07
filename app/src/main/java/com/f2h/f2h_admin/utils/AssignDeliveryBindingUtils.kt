@@ -116,7 +116,7 @@ fun TextView.setTotalPriceFormatted(data: AssignDeliveryItemsModel){
 
 @BindingAdapter("orderedQuantityFormatted")
 fun TextView.setOrderedQuantityFormatted(data: AssignDeliveryItemsModel){
-    var orderedString = String.format("%s %s", getFormattedQtyNumber(data.confirmedQuantity), data.itemUom)
+    var orderedString = String.format("%s %s", getFormattedQtyNumber(data.displayQuantity), data.itemUom)
     text = orderedString
 }
 
