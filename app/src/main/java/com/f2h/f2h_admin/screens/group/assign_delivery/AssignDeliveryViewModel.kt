@@ -72,13 +72,14 @@ class AssignDeliveryViewModel(val database: SessionDatabaseDao, application: App
 
         coroutineScope.launch {
             sessionData.value = retrieveSession()
-            var startDate = requestFormatter.format(Calendar.getInstance().time)
+            var startDate = Calendar.getInstance()
+            startDate.add(Calendar.DATE, -1)
+            var startDateString = requestFormatter.format(startDate.time)
             var endDate = Calendar.getInstance()
             endDate.add(Calendar.DATE, 3)
             var endDateString = requestFormatter.format(endDate.time)
             var getOrdersDataDeferred =
-                OrderApi.retrofitService.getOrdersForGroup(sessionData.value!!.groupId, startDate, endDateString)
-
+                OrderApi.retrofitService.getOrdersForGroup(sessionData.value!!.groupId, startDateString, endDateString)
             var getDeliveryArea =
                 DeliveryAreaApi.retrofitService.getDeliveryAreaDetails(sessionData.value!!.groupId)
 
@@ -105,7 +106,10 @@ class AssignDeliveryViewModel(val database: SessionDatabaseDao, application: App
                 var userDetailsList = getUserDetailsDataDeferred.await()
                 var deliverUserNamesList = deliveryUserIdsList.map { x-> userDetailsList.filter { y -> y.userId == x }.first().userName?: "" }
 
-                allUiData = createAllUiData(groupMembershipList, orders, userDetailsList, deliveryAreaList)
+                var toDeliverOrders = orders.filter { x -> x.orderStatus!!.contains(ORDER_STATUS_ORDERED)
+                        || x.orderStatus!!.contains(ORDER_STATUS_CONFIRMED)}
+
+                allUiData = createAllUiData(groupMembershipList, toDeliverOrders, userDetailsList, deliveryAreaList)
                 createAllUiFilters(deliveryAreaList, deliverUserNamesList)
 
                 _reportUiFilterModel.value!!.deliveryBoyNameList = deliverUserNamesList
@@ -129,7 +133,6 @@ class AssignDeliveryViewModel(val database: SessionDatabaseDao, application: App
             .build()
         val jsonAdapter: JsonAdapter<Item> = moshi.adapter(Item::class.java)
         orders.forEach { order ->
-
             var uiElement = AssignDeliveryItemsModel()
             var item = Item()
             try {

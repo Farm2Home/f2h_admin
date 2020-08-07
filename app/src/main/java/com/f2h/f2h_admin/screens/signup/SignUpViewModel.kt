@@ -201,7 +201,7 @@ class SignUpViewModel(val database: SessionDatabaseDao, application: Application
                 if (e is FirebaseAuthInvalidCredentialsException) {
                     // Invalid request
                     _toastText.value = "Invalid phone number."
-                    updateUi(STATE_VERIFY_FAILED)
+                    updateUi(STATE_CODE_NOT_SENT)
                 } else if (e is FirebaseTooManyRequestsException) {
                     // The SMS quota for the project has been exceeded
                     _toastText.value = "Unable to Verify"
@@ -209,6 +209,7 @@ class SignUpViewModel(val database: SessionDatabaseDao, application: Application
                 }
                 else{
                     _toastText.value = "Something went wrong."
+                    _isProgressBarActive.value = false
                 }
             }
 
@@ -258,6 +259,7 @@ class SignUpViewModel(val database: SessionDatabaseDao, application: Application
                 _isEnteringMobile.value = true
                 _isVerifyingOtp.value = false
                 _isProgressBarActive.value = false
+                _isSendOtpClicked.value = false
             }
             STATE_VERIFY_SUCCESS -> {
                 _isSignUpComplete.value = false
