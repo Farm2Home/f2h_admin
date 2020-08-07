@@ -4,7 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.navigation.Navigation
+//import androidx.navigation.Navigation
 import com.f2h.f2h_admin.constants.F2HConstants
 //import com.f2h.f2h_admin.constants.F2HConstants.USER_ROLE_BUYER
 //import com.f2h.f2h_admin.constants.F2HConstants.USER_ROLE_BUYER_REQUESTED
@@ -89,6 +89,7 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
                 uiElement.email = membershipUserDetail.email ?: ""
                 uiElement.roles = membership.roles ?: ""
                 uiElement.groupMembershipId = membership.groupMembershipId ?: -1
+                uiElement.deliveryAreaId = membership.deliveryAreaId ?: -1
                 var roles = membership.roles?.split(",")
 
 

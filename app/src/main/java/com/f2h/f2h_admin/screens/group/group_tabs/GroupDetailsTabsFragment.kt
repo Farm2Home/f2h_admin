@@ -64,6 +64,10 @@ class GroupDetailsTabsFragment : Fragment() {
                 val action = GroupDetailsTabsFragmentDirections.actionGroupDetailsTabsFragmentToConfirmRejectFragment()
                 view?.let { Navigation.findNavController(it).navigate(action) }
             }
+            R.id.assignDeliveryFragment -> {
+                val action = GroupDetailsTabsFragmentDirections.actionGroupDetailsTabsFragmentToAssignDeliveryFragment()
+                view?.let { Navigation.findNavController(it).navigate(action) }
+            }
         }
 
         return false

@@ -17,4 +17,7 @@
     <item
         android:id="@+id/confirmRejectFragment"
         android:title="@string/confirm_reject" />
+    <item
+        android:id="@+id/assignDeliveryFragment"
+        android:title="Assign Delivery" />
 </menu>
