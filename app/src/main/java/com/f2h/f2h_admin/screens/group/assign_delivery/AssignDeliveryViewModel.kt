@@ -112,8 +112,8 @@ class AssignDeliveryViewModel(val database: SessionDatabaseDao, application: App
                 allUiData = createAllUiData(groupMembershipList, toDeliverOrders, userDetailsList, deliveryAreaList)
                 createAllUiFilters(deliveryAreaList, deliverUserNamesList)
 
-                _reportUiFilterModel.value!!.deliveryBoyNameList = deliverUserNamesList
-                _reportUiFilterModel.value!!.deliveryBoyIdList = deliveryUserIdsList
+                _reportUiFilterModel.value!!.deliveryBoyNameList = arrayListOf("Remove").plus(deliverUserNamesList)
+                _reportUiFilterModel.value!!.deliveryBoyIdList = arrayListOf(-1L).plus(deliveryUserIdsList)
                 filterVisibleItems()
             } catch (t:Throwable){
                 println(t.message)
@@ -329,15 +329,7 @@ class AssignDeliveryViewModel(val database: SessionDatabaseDao, application: App
 
 
     fun onAssignStatusSelected(position: Int) {
-//        if (position == 0) {
-//            _reportUiFilterModel.value?.selectedAssignStatus = "ALL"
-//        }
-//        if (position == 1) {
-//            _reportUiFilterModel.value?.selectedAssignStatus = ASSIGN_STATUS_ASSIGNED
-//        }
-//        if (position == 2) {
-//            _reportUiFilterModel.value?.selectedAssignStatus = ASSIGN_STATUS_NOT_ASSIGNED
-//        }
+
         _reportUiFilterModel.value?.selectedAssignStatus = _reportUiFilterModel.value?.assignStatusList?.get(position) ?: ""
 
         filterVisibleItems()
