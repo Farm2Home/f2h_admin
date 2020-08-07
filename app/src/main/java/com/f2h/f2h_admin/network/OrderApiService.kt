@@ -2,6 +2,7 @@ package com.f2h.f2h_admin.network
 
 import com.f2h.f2h_admin.constants.F2HConstants.SERVER_URL
 import com.f2h.f2h_admin.network.models.Order
+import com.f2h.f2h_admin.network.models.OrderAssignRequest
 import com.f2h.f2h_admin.network.models.OrderCreateRequest
 import com.f2h.f2h_admin.network.models.OrderUpdateRequest
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
@@ -39,6 +40,9 @@ interface OrderApiService {
 
     @PUT("orders/update_all")
     fun updateOrders(@Body orderUpdateRequests: List<OrderUpdateRequest>): Deferred<List<Order>>
+
+    @PUT("orders/assign_delivery")
+    fun assignOrders(@Body orderAssignRequest: List<OrderAssignRequest>): Deferred<List<Order>>
 
     @PUT("orders/cash_collected")
     fun cashCollectedAndUpdateOrders(@Body orderUpdateRequests: List<OrderUpdateRequest>): Deferred<List<Order>>

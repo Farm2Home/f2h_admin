@@ -23,7 +23,8 @@ data class Order (
     @Json(name = "delivery_time_slot")  val deliveryTimeSlot: String? = "",
     @Json(name = "ordered_date") val orderedDate: String? = "",
     @Json(name = "created_by") val createdBy: String? = "",
-    @Json(name = "updated_by") val updatedBy: String? = ""
+    @Json(name = "updated_by") val updatedBy: String? = "",
+    @Json(name= "delivery_user_id") val deliveryUserId: Long? = -1L
 )
 
 
@@ -52,4 +53,9 @@ data class OrderCreateRequest (
     @Json(name = "payment_status") var paymentStatus: String?,
     @Json(name = "created_by") var createdBy: String?,
     @Json(name = "updated_by") var updatedBy: String?
+)
+
+data class OrderAssignRequest(
+    @Json(name = "order_id") var orderId: Long?,
+    @Json(name = "delivery_user_id") var deliveryUserId: Long?
 )

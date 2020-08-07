@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="uiModel"
+            type="com.f2h.f2h_admin.screens.group.assign_delivery.AssignDeliveryItemsModel" />
+        <variable
+            name="clickListener"
+            type="com.f2h.f2h_admin.screens.group.assign_delivery.OrderedItemClickListener" />
+        <variable
+            name="checkBoxClickListener"
+            type="com.f2h.f2h_admin.screens.group.assign_delivery.CheckBoxClickListener" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="@{() -> clickListener.onClick(uiModel)}">
+
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardElevation="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/constraintLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:id="@+id/confirmItemImage"
+                        android:layout_width="70dp"
+                        android:layout_height="70dp"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginTop="10dp"
+                        android:contentDescription="TODO"
+                        app:layout_constraintStart_toEndOf="@+id/confirmRejectCheckbox"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:loadSquareRoundedImage="@{uiModel.itemImageLink}" />
+
+                    <TextView
+                        android:id="@+id/confirmItemDetails"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginEnd="20dp"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        app:itemDetailsFormatted="@{uiModel}"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/confirmItemImage"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/date"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:singleLine="true"
+                        android:textSize="12sp"
+                        app:layout_constraintStart_toStartOf="@+id/confirmItemDetails"
+                        app:layout_constraintTop_toBottomOf="@+id/confirmItemDetails"
+                        app:orderDateFormatted="@{uiModel}" />
+
+                    <TextView
+                        android:id="@+id/deliveryAddress"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:maxLines="2"
+                        android:singleLine="false"
+                        android:textSize="10sp"
+                        app:addressFormatted="@{uiModel}"
+                        app:layout_constraintEnd_toStartOf="@+id/confirmedQuantity"
+                        app:layout_constraintStart_toStartOf="@+id/date"
+                        app:layout_constraintTop_toBottomOf="@+id/date" />
+
+                    <TextView
+                        android:id="@+id/confirmedQuantity"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="20dp"
+                        android:text="0 Pack"
+                        android:textAlignment="center"
+                        android:textSize="16sp"
+                        app:layout_constraintBottom_toBottomOf="@+id/date"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/date"
+                        app:orderedQuantityFormatted="@{uiModel}" />
+
+                    <TextView
+                        android:id="@+id/status"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:textAlignment="center"
+                        android:textSize="12sp"
+                        app:layout_constraintEnd_toEndOf="@+id/confirmItemImage"
+                        app:layout_constraintStart_toStartOf="@+id/confirmItemImage"
+                        app:layout_constraintTop_toBottomOf="@+id/confirmItemImage"
+                        app:statusFormatted="@{uiModel}" />
+
+                    <TextView
+                        android:id="@+id/confirmRejectUserName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:ellipsize="end"
+                        android:maxLines="2"
+                        android:singleLine="false"
+                        android:text="@{uiModel.sellerName}"
+                        android:textSize="12sp"
+                        app:layout_constraintEnd_toEndOf="@+id/confirmItemDetails"
+                        app:layout_constraintStart_toEndOf="@+id/date"
+                        app:layout_constraintTop_toBottomOf="@+id/confirmItemDetails" />
+
+                    <CheckBox
+                        android:id="@+id/confirmRejectCheckbox"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:checked="@{uiModel.isItemChecked}"
+                        android:onClick="@{() -> checkBoxClickListener.onClick(uiModel)}"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:background="@color/grey" />
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

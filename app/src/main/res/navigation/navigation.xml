@@ -72,6 +72,9 @@
         <action
             android:id="@+id/action_groupDetailsTabsFragment_to_editItemFragment"
             app:destination="@id/editItemFragment" />
+        <action
+            android:id="@+id/action_groupDetailsTabsFragment_to_assignDeliveryFragment"
+            app:destination="@id/assignDeliveryFragment" />
     </fragment>
     <fragment
         android:id="@+id/allItemsFragment"
@@ -188,4 +191,7 @@
             app:argType="long"
             android:defaultValue="-1L" />
     </fragment>
+    <fragment
+        android:id="@+id/assignDeliveryFragment"
+        android:name="com.f2h.f2h_admin.screens.group.assign_delivery.AssignDeliveryFragment" />
 </navigation>
