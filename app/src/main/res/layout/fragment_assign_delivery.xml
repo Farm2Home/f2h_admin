@@ -199,7 +199,6 @@
                 android:layout_width="150dp"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"
-                android:backgroundTint="#00FFFFFF"
                 android:entries="@{viewModel.reportUiFilterModel.deliveryBoyNameList}"
                 android:spinnerMode="dropdown"
                 app:layout_constraintBottom_toBottomOf="parent"
