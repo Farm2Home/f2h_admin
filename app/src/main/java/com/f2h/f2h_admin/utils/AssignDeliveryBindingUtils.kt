@@ -2,18 +2,13 @@ package com.f2h.f2h_admin.utils
 
 import android.graphics.Color
 import android.text.SpannableString
-import android.text.Spanned
 import android.text.style.ForegroundColorSpan
 import android.text.style.RelativeSizeSpan
 import android.text.style.StrikethroughSpan
-import android.view.View
 import android.widget.Button
-import android.widget.EditText
 import android.widget.TextView
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
-import androidx.databinding.InverseBindingAdapter
 import com.f2h.f2h_admin.R
 import com.f2h.f2h_admin.constants.F2HConstants.ORDER_STATUS_CONFIRMED
 import com.f2h.f2h_admin.constants.F2HConstants.ORDER_STATUS_DELIVERED
@@ -22,10 +17,6 @@ import com.f2h.f2h_admin.constants.F2HConstants.ORDER_STATUS_REJECTED
 import com.f2h.f2h_admin.constants.F2HConstants.PAYMENT_STATUS_PAID
 import com.f2h.f2h_admin.constants.F2HConstants.PAYMENT_STATUS_PENDING
 import com.f2h.f2h_admin.screens.group.assign_delivery.AssignDeliveryItemsModel
-import com.f2h.f2h_admin.screens.report.ReportItemsModel
-import java.text.DateFormat
-import java.text.SimpleDateFormat
-import java.util.*
 
 
 @BindingAdapter("priceFormatted")
@@ -53,14 +44,7 @@ fun TextView.setOrderDateFormatted(data: AssignDeliveryItemsModel?){
 }
 
 
-@BindingAdapter("quantityChangeButtonState")
-fun Button.setQuantityChangeButtonState(data: AssignDeliveryItemsModel){
-    if(data.orderStatus.equals(ORDER_STATUS_DELIVERED)){
-        isEnabled = false
-        return
-    }
-    isEnabled = true
-}
+
 
 
 @BindingAdapter("confirmedQuantityFormatted")
@@ -138,7 +122,7 @@ fun TextView.setOrderedQuantityFormatted(data: AssignDeliveryItemsModel){
 
 @BindingAdapter("addressFormatted")
 fun TextView.setNameFormatted(data: AssignDeliveryItemsModel){
-    var address = String.format("%s - %s",data.buyerName, data.deliveryAddress)
+    var address = String.format("%s", data.deliveryAddress)
     text = address
 }
 

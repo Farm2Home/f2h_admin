@@ -9,6 +9,7 @@ import com.f2h.f2h_admin.constants.F2HConstants.ORDER_STATUS_CONFIRMED
 import com.f2h.f2h_admin.constants.F2HConstants.ORDER_STATUS_ORDERED
 import com.f2h.f2h_admin.constants.F2HConstants.ASSIGN_STATUS_ASSIGNED
 import com.f2h.f2h_admin.constants.F2HConstants.ASSIGN_STATUS_NOT_ASSIGNED
+import com.f2h.f2h_admin.constants.F2HConstants.DELIVERY_AREA_NOT_ASSIGNED
 import com.f2h.f2h_admin.constants.F2HConstants.USER_ROLE_DELIVER
 import com.f2h.f2h_admin.database.SessionDatabaseDao
 import com.f2h.f2h_admin.database.SessionEntity
@@ -204,7 +205,7 @@ class AssignDeliveryViewModel(val database: SessionDatabaseDao, application: App
             ASSIGN_STATUS_NOT_ASSIGNED)
 
         _reportUiFilterModel.value?.deliveryAreaList = arrayListOf("ALL").plus(deliveryAreaList
-            .map{ area -> area.deliveryArea?:""})
+            .map{ area -> area.deliveryArea?:""}).plus(arrayListOf(DELIVERY_AREA_NOT_ASSIGNED))
 
         _reportUiFilterModel.value?.buyerNameList = arrayListOf("ALL")
 
@@ -253,16 +254,20 @@ class AssignDeliveryViewModel(val database: SessionDatabaseDao, application: App
         val selectedBuyer = reportUiFilterModel.value?.selectedBuyer ?: ""
 
         elements.forEach { element ->
-            if ((selectedAssignStatus == "ALL" || checkAssignedStatus(selectedAssignStatus, element)) &&
-                (selectedDeliveryArea == "ALL" || element.deliveryArea.equals(selectedDeliveryArea))  &&
-                (selectedBuyer == "ALL" || generateUniqueFilterName(element.buyerName, element.buyerMobile).equals(selectedBuyer)) &&
+            if ((selectedAssignStatus == "ALL"
+                        || checkAssignedStatus(selectedAssignStatus, element)) &&
+                (selectedDeliveryArea == "ALL"
+                        || element.deliveryArea.equals(selectedDeliveryArea)
+                        || (selectedDeliveryArea == DELIVERY_AREA_NOT_ASSIGNED && element.deliveryArea.equals(""))) &&
+                (selectedBuyer == "ALL"
+                        || generateUniqueFilterName(element.buyerName, element.buyerMobile).equals(selectedBuyer)) &&
                 (isInSelectedDateRange(element, selectedStartDate, selectedEndDate))) {
 
                 //TODO - add date range not just one date
                 filteredItems.add(element)
             }
         }
-        filteredItems.sortByDescending { formatter.parse(it.buyerName) }
+        filteredItems.sortBy { it.buyerName }
         _visibleUiData.value = filteredItems
         reCreateBuyerNameFilterList()
     }

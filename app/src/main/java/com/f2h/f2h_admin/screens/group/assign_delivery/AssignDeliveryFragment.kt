@@ -130,7 +130,7 @@ class AssignDeliveryFragment : Fragment() {
             }
         }
 
-        binding.deliveryAreaSelector.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+        binding.deliveryBoySelector.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(parent: AdapterView<*>?) {
                 TODO("Not yet implemented")
             }
@@ -146,7 +146,7 @@ class AssignDeliveryFragment : Fragment() {
 
 
         binding.assignDeliverySwipeRefresh.setOnRefreshListener {
-//            viewModel.refreshFragmentData()
+            viewModel.getOrdersReportForGroup()
             binding.assignDeliverySwipeRefresh.isRefreshing = false
         }
 
