@@ -80,8 +80,22 @@ class MembershipRequestViewModel (val database: SessionDatabaseDao, application:
         _isProgressBarActive.value = true
         coroutineScope.launch {
             sessionData = retrieveSession()
-            var getDeliveryArea =
-                DeliveryAreaApi.retrofitService.getDeliveryAreaDetails(sessionData.groupId)
+            var deliveryAreaNameList = ArrayList<String>()
+            var deliveryAreaIdList = ArrayList<Long>()
+            deliveryAreaNameList.add("Not Assigned")
+            deliveryAreaIdList.add(-1L)
+            try{
+                var getDeliveryArea =
+                    DeliveryAreaApi.retrofitService.getDeliveryAreaDetails(sessionData.groupId)
+                var deliveryArea = getDeliveryArea.await()
+                deliveryArea.forEach{
+                    deliveryAreaIdList.add(it.deliveryAreaId?:-1L)
+                    deliveryAreaNameList.add(it.deliveryArea?:"")
+                }
+            } catch (t:Throwable){
+                println(t.message)
+            }
+            _deliveryAreaItems.value = DeliveryAreaItem(deliveryAreaIdList, deliveryAreaNameList)
             try {
 
                 var modifiedRoles = navArgs.memberUiModel.roles.split(",")
@@ -101,16 +115,6 @@ class MembershipRequestViewModel (val database: SessionDatabaseDao, application:
                         allUiData.add(uiElement)
                     }
                 }
-                var deliveryArea = getDeliveryArea.await()
-                var deliveryAreaNameList = ArrayList<String>()
-                var deliveryAreaIdList = ArrayList<Long>()
-                deliveryAreaNameList.add("Not Assigned")
-                deliveryAreaIdList.add(-1)
-                deliveryArea.forEach{
-                    deliveryAreaIdList.add(it.deliveryAreaId!!)
-                    deliveryAreaNameList.add(it.deliveryArea!!)
-                }
-                _deliveryAreaItems.value = DeliveryAreaItem(deliveryAreaIdList, deliveryAreaNameList)
                 _requestedRolesUiData.value = filterVisibleItems(allUiData)
                 _initialDeliveryAreaId.value = navArgs.memberUiModel.deliveryAreaId
             } catch (t:Throwable){
