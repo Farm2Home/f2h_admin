@@ -17,10 +17,10 @@ android {
 
     defaultConfig {
         applicationId "com.f2h.f2h_admin"
-        minSdkVersion 23
+        minSdkVersion 21
         targetSdkVersion 29
-        versionCode 7 //Should be always increasing - every deploy to playstore, add 1
-        versionName "1.1.0"
+        versionCode 8 //Should be always increasing - every deploy to playstore, add 1
+        versionName "1.2.0"
         /*
              versionName Major.Minor.Patch
              Major - Not Backward compatible, absolutely new
