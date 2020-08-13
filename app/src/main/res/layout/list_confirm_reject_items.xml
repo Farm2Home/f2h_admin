@@ -181,10 +181,8 @@
                         android:id="@+id/crDecreaseButton"
                         android:layout_width="35dp"
                         android:layout_height="40dp"
-                        android:layout_marginBottom="5dp"
                         android:onClick="@{() -> decreaseButtonClickListener.onClick(uiModel)}"
                         android:text="-"
-                        app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="@+id/total"
                         app:layout_constraintTop_toBottomOf="@+id/total"
                         app:quantityChangeButtonState="@{uiModel}" />
@@ -212,12 +210,24 @@
                         app:layout_constraintTop_toTopOf="@+id/crIncreaseButton"
                         app:srcCompat="@drawable/contact_us_icon" />
 
+                    <ImageView
+                        android:id="@+id/imageView3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="5dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="@+id/crIncreaseButton"
+                        app:layout_constraintStart_toStartOf="@+id/crDecreaseButton"
+                        app:layout_constraintTop_toBottomOf="@+id/confirmedQuantity"
+                        app:srcCompat="@drawable/more_icon" />
+
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/crMoreDetailsLayout"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:visibility="visible"
                     app:moreDetailsLayoutFormatted="@{uiModel}">
 
