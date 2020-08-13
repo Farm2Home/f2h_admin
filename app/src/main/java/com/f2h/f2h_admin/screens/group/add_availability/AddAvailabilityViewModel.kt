@@ -68,6 +68,7 @@ class AddAvailabilityViewModel(val database: SessionDatabaseDao, application: Ap
         date.set(Calendar.HOUR, 0)
         date.set(Calendar.MINUTE, 0)
         date.set(Calendar.SECOND, 0)
+        dateList.add(df.format(date.time))
         for (dayOffset in 0..6){
             date.add(Calendar.DATE, 1)
             dateList.add(df.format(date.time))
