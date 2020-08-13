@@ -176,9 +176,9 @@ class AddItemViewModel(val database: SessionDatabaseDao, application: Applicatio
         _isProgressBarActive.value = true
         val requestId = MediaManager.get().upload(imageFilePath.value)
             .unsigned("unsigned_upload_settings")
-            .option("public_id", String.format("%s__%s", itemName.value, Calendar.getInstance().time))
+            .option("public_id", String.format("%s", Calendar.getInstance().time))
             .option("folder", String.format("%s/group_%s/item_images", BuildConfig.ENVIRONMENT, _sessionData.value?.groupId))
-            .option("tags", String.format("group_%s,item_%s,uploaderUserId_%s", _sessionData.value?.groupName, itemName,_sessionData.value?.userId))
+            .option("tags", String.format("group_%s, uploaderUserId_%s", _sessionData.value?.groupId, _sessionData.value?.userId))
             .callback(object : UploadCallback {
                 override fun onSuccess(requestId: String, resultData: Map<*, *>?) {
                     println(resultData)

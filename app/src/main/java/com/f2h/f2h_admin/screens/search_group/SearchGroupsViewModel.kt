@@ -142,6 +142,7 @@ class SearchGroupsViewModel(val database: SessionDatabaseDao, application: Appli
     fun requestMembership(group: SearchGroupsItemsModel) {
         var membershipRequest = GroupMembershipRequest(
             group.groupId,
+            null,
             userSession.userId,
             USER_ROLE_GROUP_ADMIN_REQUESTED,
             userSession.userName

@@ -2,8 +2,6 @@ package com.f2h.f2h_admin.network
 
 import com.f2h.f2h_admin.constants.F2HConstants.SERVER_URL
 import com.f2h.f2h_admin.network.models.Group
-import com.f2h.f2h_admin.network.models.GroupMembership
-import com.f2h.f2h_admin.network.models.GroupMembershipRequest
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory

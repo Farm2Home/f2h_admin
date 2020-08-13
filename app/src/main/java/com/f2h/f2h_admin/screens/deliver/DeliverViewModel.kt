@@ -11,6 +11,7 @@ import com.f2h.f2h_admin.constants.F2HConstants.ORDER_STATUS_ORDERED
 import com.f2h.f2h_admin.constants.F2HConstants.PAYMENT_STATUS_PAID
 import com.f2h.f2h_admin.database.SessionDatabaseDao
 import com.f2h.f2h_admin.database.SessionEntity
+import com.f2h.f2h_admin.network.CommentApi
 import com.f2h.f2h_admin.network.ItemAvailabilityApi
 import com.f2h.f2h_admin.network.OrderApi
 import com.f2h.f2h_admin.network.UserApi
@@ -154,7 +155,6 @@ class DeliverViewModel(val database: SessionDatabaseDao, application: Applicatio
             uiElement.discountAmount = order.discountAmount ?: 0.0
             uiElement.orderStatus = order.orderStatus ?: ""
             uiElement.paymentStatus = order.paymentStatus ?: ""
-            uiElement.deliveryComment = order.deliveryComment ?: ""
             uiElement.buyerUserId = order.buyerUserId ?: -1
             uiElement.sellerUserId = order.sellerUserId ?: -1
             uiElement.deliveryAddress = order.deliveryLocation ?: ""
@@ -415,7 +415,7 @@ class DeliverViewModel(val database: SessionDatabaseDao, application: Applicatio
                 discountAmount = null,
                 orderedAmount = null,
                 orderComment = null,
-                deliveryComment = element.deliveryComment
+                deliveryComment = null
             )
             orderUpdateRequestList.add(updateRequest)
         }
@@ -426,6 +426,83 @@ class DeliverViewModel(val database: SessionDatabaseDao, application: Applicatio
     // call button
     fun onCallUserButtonClicked(uiElement: DeliverItemsModel){
         _selectedUiElement.value = uiElement
+    }
+
+
+    fun moreDetailsButtonClicked(element: DeliverItemsModel) {
+        if(element.isMoreDetailsDisplayed){
+            _visibleUiData.value?.filter { data -> data.orderId.equals(element.orderId) }
+                ?.firstOrNull()?.isMoreDetailsDisplayed = false
+            _visibleUiData.value = _visibleUiData.value
+            return
+        }
+
+        // Do API call to fetch comments
+        fetchCommentsForOrder(element)
+
+        _visibleUiData.value?.filter { data -> data.orderId.equals(element.orderId) }
+            ?.firstOrNull()?.isMoreDetailsDisplayed = true
+        _visibleUiData.value = _visibleUiData.value
+    }
+
+    private fun fetchCommentsForOrder(element: DeliverItemsModel) {
+        setCommentProgressBar(true, element)
+        coroutineScope.launch {
+            var getCommentsDataDeferred = CommentApi.retrofitService.getComments(element.orderId)
+            try {
+                val comments: List<Comment> = getCommentsDataDeferred.await()
+                _visibleUiData.value?.filter { data -> data.orderId.equals(element.orderId) }
+                    ?.firstOrNull()?.comments = ArrayList(comments)
+                _visibleUiData.value = _visibleUiData.value
+            } catch (t: Throwable) {
+                println(t.message)
+            }
+            setCommentProgressBar(false, element)
+        }
+    }
+
+
+    fun onSendCommentButtonClicked(element: DeliverItemsModel){
+        if(element.newComment.isNullOrBlank()){
+            return
+        }
+
+        var request = CommentCreateRequest(
+            comment = element.newComment,
+            commenter = sessionData.value?.userName ?: "",
+            commenterUserId = sessionData.value?.userId ?: -1,
+            orderId = element.orderId,
+            createdBy = sessionData.value?.userName ?: "",
+            updatedBy = sessionData.value?.userName ?: ""
+        )
+
+        setCommentProgressBar(true, element)
+        coroutineScope.launch {
+            var createCommentsDataDeferred = CommentApi.retrofitService.createComment(request)
+            try{
+                createCommentsDataDeferred.await()
+                // Do API call to refresh comments
+                fetchCommentsForOrder(element)
+                clearCommentTypeBox(element)
+            } catch (t:Throwable){
+                println(t.message)
+            }
+            setCommentProgressBar(false, element)
+        }
+
+    }
+
+
+    private fun setCommentProgressBar(isProgressActive: Boolean, element: DeliverItemsModel){
+        _visibleUiData.value?.filter { data -> data.orderId.equals(element.orderId) }
+            ?.firstOrNull()?.isCommentProgressBarActive = isProgressActive
+        _visibleUiData.value = _visibleUiData.value
+    }
+
+    private fun clearCommentTypeBox(element: DeliverItemsModel){
+        _visibleUiData.value?.filter { data -> data.orderId.equals(element.orderId) }
+            ?.firstOrNull()?.newComment = ""
+        _visibleUiData.value = _visibleUiData.value
     }
 
 }

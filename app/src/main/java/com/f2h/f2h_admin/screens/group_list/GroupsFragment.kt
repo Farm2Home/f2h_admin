@@ -67,7 +67,7 @@ class GroupsFragment : Fragment() {
 
 
         //Set app bar title to group name here
-        (context as AppCompatActivity).supportActionBar!!.title = "Farm To Home"
+        (context as AppCompatActivity).supportActionBar!!.title = "Village Veggys"
 
         return binding.root
     }

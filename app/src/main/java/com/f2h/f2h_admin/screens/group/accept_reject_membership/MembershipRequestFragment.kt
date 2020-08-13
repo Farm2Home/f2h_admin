@@ -2,16 +2,18 @@ package com.f2h.f2h_admin.screens.group.accept_reject_membership
 
 import android.app.Application
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
-import androidx.navigation.fragment.navArgs
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.navArgs
 import com.f2h.f2h_admin.R
 import com.f2h.f2h_admin.database.F2HDatabase
 import com.f2h.f2h_admin.database.SessionDatabaseDao
@@ -29,27 +31,6 @@ class MembershipRequestFragment : Fragment() {
         MembershipRequestViewModel::class.java) }
 
 
-
-
-
-//    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-//        return activity?.let {
-//            val builder = AlertDialog.Builder(it)
-//            val inflater = requireActivity().layoutInflater;
-//            builder.setView(inflater.inflate(R.layout.fragment_membership_request, null))
-//                .setPositiveButton("Ok",
-//                    DialogInterface.OnClickListener { dialog, id ->
-//                        // User cancelled the dialog
-//                    })
-//                .setNegativeButton("Cancel",
-//                    DialogInterface.OnClickListener { dialog, id ->
-//                        // Open my orders page
-//                    })
-//            // Create the AlertDialog object and return it
-//            builder.create()
-//        } ?: throw IllegalStateException("Activity cannot be null")
-//    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -57,6 +38,7 @@ class MembershipRequestFragment : Fragment() {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_membership_request, container, false)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
+
         return binding.root
     }
 
@@ -72,19 +54,48 @@ class MembershipRequestFragment : Fragment() {
                 adapter.notifyDataSetChanged()
             }
         })
+
         viewModel.isMembershipActionComplete.observe(viewLifecycleOwner, Observer { isMembershipActionComplete ->
             if (isMembershipActionComplete){
                 onMembershipActionComplete()
             }
         })
 
-//        (context as AppCompatActivity).supportActionBar!!.title =
+        viewModel.deliveryAreaItems.observe(viewLifecycleOwner, Observer { deliveryAreaItems ->
+            val spinnerArrayAdapter: ArrayAdapter<String> = ArrayAdapter(
+                requireContext(), android.R.layout.simple_spinner_item, deliveryAreaItems!!.name
+            )
+            spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            binding.deliveryAreaSelector.adapter = spinnerArrayAdapter
+        })
+
+        viewModel.initialDeliveryAreaId.observe(viewLifecycleOwner, Observer { initialDeliveryAreaId ->
+            var pos = viewModel.getInitialIndex()
+            println(binding.deliveryAreaSelector.getItemAtPosition(pos))
+            binding.deliveryAreaSelector.setSelection(pos)
+        })
+
+        binding.deliveryAreaSelector.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                TODO("Not yet implemented")
+            }
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                viewModel.onDeliveryAreaSelected(position, id)
+            }
+        }
+
         //Toast Message
         viewModel.toastMessage.observe(viewLifecycleOwner, Observer { message ->
             Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
         })
 
     }
+
 
     private fun onMembershipActionComplete() {
         view?.let { Navigation.findNavController(it).popBackStack() }

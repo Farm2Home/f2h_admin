@@ -72,6 +72,9 @@
         <action
             android:id="@+id/action_groupDetailsTabsFragment_to_editItemFragment"
             app:destination="@id/editItemFragment" />
+        <action
+            android:id="@+id/action_groupDetailsTabsFragment_to_assignDeliveryFragment"
+            app:destination="@id/assignDeliveryFragment" />
     </fragment>
     <fragment
         android:id="@+id/allItemsFragment"
@@ -132,8 +135,7 @@
     <fragment
         android:id="@+id/searchGroupsFragment"
         android:name="com.f2h.f2h_admin.screens.search_group.SearchGroupsFragment"
-        tools:layout="@layout/fragment_search_groups"
-        android:label="SearchGroupsFragment" />
+        tools:layout="@layout/fragment_search_groups" />
     <fragment
         android:id="@+id/editProfileFragment"
         android:name="com.f2h.f2h_admin.screens.settings.edit_profile.EditProfileFragment"
@@ -188,4 +190,7 @@
             app:argType="long"
             android:defaultValue="-1L" />
     </fragment>
+    <fragment
+        android:id="@+id/assignDeliveryFragment"
+        android:name="com.f2h.f2h_admin.screens.group.assign_delivery.AssignDeliveryFragment" />
 </navigation>

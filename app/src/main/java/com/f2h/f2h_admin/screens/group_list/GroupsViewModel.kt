@@ -57,6 +57,7 @@ class GroupsViewModel(val database: SessionDatabaseDao, application: Application
                     _groups.value = userGroups
                     _isGroupListEmpty.value = false
                 } else {
+                    _groups.value = userGroups
                     _isGroupListEmpty.value = true
                 }
             } catch (t:Throwable){

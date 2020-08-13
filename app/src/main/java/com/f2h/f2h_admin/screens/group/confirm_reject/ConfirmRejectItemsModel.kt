@@ -1,5 +1,7 @@
 package com.f2h.f2h_admin.screens.group.confirm_reject
 
+import com.f2h.f2h_admin.network.models.Comment
+
 
 data class ConfirmRejectItemsModel (
     var itemId: Long = 0,
@@ -24,12 +26,15 @@ data class ConfirmRejectItemsModel (
     var displayQuantity: Double = 0.0,
     var orderAmount: Double = 0.0,
     var orderStatus: String = "",
-    var orderComment: String = "",
     var paymentStatus: String = "",
     var deliveryAddress: String = "",
     var isFreezed: Boolean = false,
     var discountAmount: Double = 0.0,
-    var isItemChecked: Boolean = false
+    var isItemChecked: Boolean = false,
+    var isMoreDetailsDisplayed: Boolean = false,
+    var comments: ArrayList<Comment> = arrayListOf(),
+    var newComment: String = "",
+    var isCommentProgressBarActive: Boolean = false
 )
 
 
