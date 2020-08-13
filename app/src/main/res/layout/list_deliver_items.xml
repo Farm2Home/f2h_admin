@@ -137,7 +137,7 @@
                         android:id="@+id/confirmRejectUserName"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="20dp"
+                        android:layout_marginEnd="10dp"
                         android:ellipsize="end"
                         android:maxLines="2"
                         android:singleLine="false"
@@ -173,13 +173,25 @@
                         android:id="@+id/deliverPageCallButton"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
-                        android:layout_marginEnd="20dp"
+                        android:layout_marginEnd="10dp"
                         android:onClick="@{() -> callUserButtonClickListener.onClick(uiModel)}"
                         app:layout_constraintBottom_toBottomOf="@+id/crUom"
                         app:layout_constraintEnd_toStartOf="@+id/crUom"
                         app:layout_constraintTop_toTopOf="@+id/confirmedQuantity"
                         app:layout_constraintVertical_bias="0.0"
                         app:srcCompat="@drawable/contact_us_icon" />
+
+                    <ImageView
+                        android:id="@+id/imageView2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginBottom="5dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="@+id/crUom"
+                        app:layout_constraintStart_toStartOf="@+id/total"
+                        app:layout_constraintTop_toBottomOf="@+id/total"
+                        app:srcCompat="@drawable/more_icon" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
