@@ -68,6 +68,10 @@ class GroupDetailsTabsFragment : Fragment() {
                 val action = GroupDetailsTabsFragmentDirections.actionGroupDetailsTabsFragmentToAssignDeliveryFragment()
                 view?.let { Navigation.findNavController(it).navigate(action) }
             }
+            R.id.freezeMultipleFragment -> {
+                val action = GroupDetailsTabsFragmentDirections.actionGroupDetailsTabsFragmentToFreezeMultipleFragment()
+                view?.let { Navigation.findNavController(it).navigate(action) }
+            }
         }
 
         return false
