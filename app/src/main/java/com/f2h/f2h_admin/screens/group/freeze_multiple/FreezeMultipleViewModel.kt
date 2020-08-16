@@ -317,27 +317,38 @@ class FreezeMultipleViewModel(val database: SessionDatabaseDao, application: App
         _visibleUiData.value = _visibleUiData.value
     }
 
-    fun onFreezeButtonClicked() {
-        var availabilityUpdateRequests = createFreezerRequests(visibleUiData.value)
+    fun updateAvailability(availabilityUpdateRequests: List<ItemAvailabilityUpdateRequest>){
         _isProgressBarActive.value = true
         coroutineScope.launch {
             var freezeAvailabilityDataDeferred = ItemAvailabilityApi.retrofitService.updateItemAvailabilities(availabilityUpdateRequests)
             try{
                 freezeAvailabilityDataDeferred.await()
-                _toastMessage.value = "Successfully assigned orders"
+                _toastMessage.value = "Successfull"
                 getAvailabilitiesForGroup()
             } catch (t:Throwable){
                 _toastMessage.value = "Oops, Something went wrong " + t.message
             }
         }
+
     }
 
-    private fun createFreezerRequests(uiDataElements: MutableList<FreezeMultipleItemsModel>?): List<ItemAvailabilityUpdateRequest> {
+    fun onFreezeButtonClicked() {
+        var availabilityUpdateRequests = createFreezeRequests(visibleUiData.value, true)
+        updateAvailability(availabilityUpdateRequests)
+
+    }
+
+    fun onUnFreezeButtonClicked() {
+        var availabilityUpdateRequests = createFreezeRequests(visibleUiData.value, false)
+        updateAvailability(availabilityUpdateRequests)
+    }
+
+    private fun createFreezeRequests(uiDataElements: MutableList<FreezeMultipleItemsModel>?, isFreezed: Boolean): List<ItemAvailabilityUpdateRequest> {
         var availabilityRequestList: ArrayList<ItemAvailabilityUpdateRequest> = arrayListOf()
         uiDataElements?.filter { it.isItemChecked }?.forEach { element ->
             var availabilityRequest = ItemAvailabilityUpdateRequest(
                 itemAvailabilityId = element.availabilityId,
-                isFreezed = true,
+                isFreezed = isFreezed,
                 availableDate = null,
                 availableQuantity = null,
                 updatedBy = sessionData.value?.userName ?: "",
