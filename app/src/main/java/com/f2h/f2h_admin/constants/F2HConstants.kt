@@ -24,6 +24,8 @@ object F2HConstants {
 
     const val REPEAT_NO_REPEAT = "No Repeat"
     const val REPEAT_WEEKLY = "Weekly"
+    const val FREEZED_STATUS = "Freezed"
+    const val AVAILABLE_STATUS = "Available"
 
     val ACCEPTED_ROLES = arrayOf("BUYER", "GROUP_ADMIN", "FARMER", "DELIVER")
     val REQUESTED_ROLES = arrayOf("BUYER_REQUESTED", "GROUP_ADMIN_REQUESTED", "FARMER_REQUESTED", "DELIVER_REQUESTED")

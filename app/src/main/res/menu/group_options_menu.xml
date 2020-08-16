@@ -20,4 +20,7 @@
     <item
         android:id="@+id/assignDeliveryFragment"
         android:title="Assign Delivery" />
+    <item
+        android:id="@+id/freezeMultipleFragment"
+        android:title="Freeze Availabilities" />
 </menu>
