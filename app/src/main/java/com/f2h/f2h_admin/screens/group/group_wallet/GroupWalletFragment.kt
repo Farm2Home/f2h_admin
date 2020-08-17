@@ -61,6 +61,10 @@ class GroupWalletFragment : Fragment() {
                 adapter.notifyDataSetChanged()
             }
         })
+        binding.walletSwipeRefresh.setOnRefreshListener {
+            viewModel.refreshFragmentData()
+            binding.walletSwipeRefresh.isRefreshing = false
+        }
     }
 
 }
