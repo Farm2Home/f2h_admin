@@ -462,6 +462,7 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
                 orderComment = null,
                 deliveryComment = null
             )
+            onSendCommentButtonClicked(element)
             orderUpdateRequestList.add(updateRequest)
         }
         return orderUpdateRequestList
@@ -497,6 +498,7 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
                 orderComment = null,
                 deliveryComment = null
             )
+            onSendCommentButtonClicked(element)
             orderUpdateRequestList.add(updateRequest)
         }
         return orderUpdateRequestList
