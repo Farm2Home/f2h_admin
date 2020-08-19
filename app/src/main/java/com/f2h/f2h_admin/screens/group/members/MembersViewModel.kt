@@ -61,7 +61,7 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
             try {
                 var memberships = getGroupMembershipsDeferred.await()
                 var userIds = memberships.map { x -> x.userId ?: -1 }.distinct()
-                var getUserDetailsDataDeferred = UserApi.retrofitService.getUserDetailsByUserIds(userIds)
+                var getUserDetailsDataDeferred = UserApi.retrofitService.getUserDetailsByUserIds(userIds.joinToString())
                 var userDetails = getUserDetailsDataDeferred.await()
                 allUiData = createAllUiData(memberships, userDetails)
                 if (allUiData.size > 0) {

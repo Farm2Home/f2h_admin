@@ -65,11 +65,11 @@ class EditItemViewModel(val database: SessionDatabaseDao, application: Applicati
         coroutineScope.launch {
             _sessionData.value = retrieveSession()
             val getAllUomsDataDeferred = UomApi.retrofitService.getAllUoms()
-            val getAllFarmersInGroupDataDeferred = GroupMembershipApi.retrofitService.getGroupMembership(_sessionData.value!!.groupId, listOf("FARMER"))
+            val getAllFarmersInGroupDataDeferred = GroupMembershipApi.retrofitService.getGroupMembership(_sessionData.value!!.groupId, "FARMER")
             val getSelectedItemDataDeferred = ItemApi.retrofitService.getItem(selectedItemId)
             try {
                 val farmerUserIds = getAllFarmersInGroupDataDeferred.await().map { it.userId ?: -1}
-                val getFarmerDetailsDataDeferred = UserApi.retrofitService.getUserDetailsByUserIds(farmerUserIds)
+                val getFarmerDetailsDataDeferred = UserApi.retrofitService.getUserDetailsByUserIds(farmerUserIds.joinToString())
 
                 selectedItem = getSelectedItemDataDeferred.await()
                 farmerDetails = getFarmerDetailsDataDeferred.await()

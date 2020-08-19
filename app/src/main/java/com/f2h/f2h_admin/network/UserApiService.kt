@@ -30,7 +30,7 @@ interface UserApiService{
             Deferred<User>
 
     @GET("user")
-    fun getUserDetailsByUserIds(@Query("user_ids") userIds: List<Long>):
+    fun getUserDetailsByUserIds(@Query("user_ids") userIds: String):
             Deferred<List<UserDetails>>
 
     @POST("user")
