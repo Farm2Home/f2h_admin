@@ -63,10 +63,10 @@ class AddItemViewModel(val database: SessionDatabaseDao, application: Applicatio
         coroutineScope.launch {
             _sessionData.value = retrieveSession()
             val getAllUomsDataDeferred = UomApi.retrofitService.getAllUoms()
-            val getAllFarmersInGroupDataDeferred = GroupMembershipApi.retrofitService.getGroupMembership(_sessionData.value!!.groupId, listOf("FARMER"))
+            val getAllFarmersInGroupDataDeferred = GroupMembershipApi.retrofitService.getGroupMembership(_sessionData.value!!.groupId, "FARMER")
             try {
                 val farmerUserIds = getAllFarmersInGroupDataDeferred.await().map { it.userId ?: -1}
-                val getFarmerDetailsDataDeferred = UserApi.retrofitService.getUserDetailsByUserIds(farmerUserIds)
+                val getFarmerDetailsDataDeferred = UserApi.retrofitService.getUserDetailsByUserIds(farmerUserIds.joinToString())
                 farmerDetails = getFarmerDetailsDataDeferred.await()
                 itemUomDetails =  getAllUomsDataDeferred.await()
                 createSpinnerEntries()

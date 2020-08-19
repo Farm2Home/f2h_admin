@@ -25,7 +25,7 @@ private val retrofit = Retrofit.Builder()
 interface GroupApiService{
 
     @GET("group")
-    fun getUserGroups(@Query("user_id") userId: Long, @Query("roles") roles: List<String>):
+    fun getUserGroups(@Query("user_id") userId: Long, @Query("roles") roles: String):
             Deferred<List<Group>>
 
     @GET("group/{group_id}")

@@ -66,7 +66,7 @@ class SearchGroupsViewModel(val database: SessionDatabaseDao, application: Appli
         _isProgressBarActive.value = true
         coroutineScope.launch {
             userSession = retrieveSession()
-            var getMemberGroupsDataDeferred = GroupApi.retrofitService.getUserGroups(userSession.userId, roles)
+            var getMemberGroupsDataDeferred = GroupApi.retrofitService.getUserGroups(userSession.userId, roles.joinToString())
             try {
                 userGroups = getMemberGroupsDataDeferred.await()
                 getGroupsInfoForLocalities()

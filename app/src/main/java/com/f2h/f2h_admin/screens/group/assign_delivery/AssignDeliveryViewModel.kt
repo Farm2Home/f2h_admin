@@ -100,7 +100,7 @@ class AssignDeliveryViewModel(val database: SessionDatabaseDao, application: App
 
 
                 var getUserDetailsDataDeferred =
-                    UserApi.retrofitService.getUserDetailsByUserIds(userIds)
+                    UserApi.retrofitService.getUserDetailsByUserIds(userIds.joinToString())
 
                 var deliveryAreaList = getDeliveryArea.await()
                 var userDetailsList = getUserDetailsDataDeferred.await()

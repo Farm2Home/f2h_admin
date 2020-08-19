@@ -56,7 +56,7 @@ class EditAvailabilityViewModel(val database: SessionDatabaseDao, application: A
         _isProgressBarActive.value = true
         coroutineScope.launch {
             val getItemAvailabilityDataDeferred = ItemAvailabilityApi
-                .retrofitService.getItemAvailabilities(arrayListOf(itemAvailabilityId.value ?: -1))
+                .retrofitService.getItemAvailabilities((itemAvailabilityId.value ?: -1).toString())
             try {
                 existingAvailability = getItemAvailabilityDataDeferred.await().first()
                 availableQuantity.value = existingAvailability.availableQuantity.toString()
