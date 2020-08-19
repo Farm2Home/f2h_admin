@@ -87,7 +87,7 @@ class FreezeMultipleViewModel(val database: SessionDatabaseDao, application: App
                     ItemAvailabilityApi.retrofitService.getItemAvailabilitiesByItemId(itemIdsList)
 
                 var getUserDetailsDataDeferred =
-                    UserApi.retrofitService.getUserDetailsByUserIds(userIds)
+                    UserApi.retrofitService.getUserDetailsByUserIds(userIds.joinToString())
 
                 var userDetailsList = getUserDetailsDataDeferred.await()
                 var availabilities = getAvailabilitiesDeferred.await()

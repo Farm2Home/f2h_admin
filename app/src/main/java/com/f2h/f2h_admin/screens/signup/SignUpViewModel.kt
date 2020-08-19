@@ -296,8 +296,7 @@ class SignUpViewModel(val database: SessionDatabaseDao, application: Application
         userObject.userName = userName.value
         var address = arrayListOf(locality.value?:"", city.value?:"", state.value?:"",
             pincode.value?:"")
-        var filteredAddress = address.filter{x -> !x.isNullOrEmpty()}
-        userObject.address  = filteredAddress.joinToString()
+        userObject.address  = address.filter { x -> !x.isNullOrEmpty() }.joinToString()
         userObject.mobile = mobile.value
         userObject.email = email.value
         userObject.password = Base64.encodeToString(password.value?.toByteArray(), DEFAULT)
