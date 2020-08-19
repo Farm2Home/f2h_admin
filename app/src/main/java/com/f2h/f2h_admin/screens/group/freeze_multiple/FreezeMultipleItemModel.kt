@@ -11,6 +11,7 @@ data class FreezeMultipleItemsModel (
     var sellerUserId: Long = 0,
     var itemImageLink: String = "",
     var itemPrice: Double = 0.0,
+    var itemUom: String = "",
     var isItemChecked: Boolean = false,
     var availableQuantity: Double = 0.0,
     var isFreezed: Boolean = false,

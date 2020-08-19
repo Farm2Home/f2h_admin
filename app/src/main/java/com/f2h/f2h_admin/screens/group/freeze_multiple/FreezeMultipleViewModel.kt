@@ -119,6 +119,7 @@ class FreezeMultipleViewModel(val database: SessionDatabaseDao, application: App
                 uiElement.itemDescription = itemDetail.description ?: ""
                 uiElement.itemImageLink = itemDetail.imageLink ?: ""
                 uiElement.itemPrice = itemDetail.pricePerUnit ?: 0.0
+                uiElement.itemUom = itemDetail.uom ?: ""
             }
             uiElement.sellerUserId = sellerUserDetails?.userId ?: -1
             uiElement.sellerName = sellerUserDetails?.userName ?: ""
@@ -136,10 +137,6 @@ class FreezeMultipleViewModel(val database: SessionDatabaseDao, application: App
         return allUiData
     }
 
-    private fun getDisplayQuantity(displayStatus: String, orderedQuantity: Double, confirmedQuantity: Double): Double {
-        if (displayStatus.equals(ORDER_STATUS_ORDERED)) return orderedQuantity
-        return confirmedQuantity
-    }
 
 
     fun setUpDefaultSelectedFilters() {
@@ -159,16 +156,24 @@ class FreezeMultipleViewModel(val database: SessionDatabaseDao, application: App
         _reportUiFilterModel.value?.freezeStatusList = arrayListOf("ALL", FREEZED_STATUS,
             AVAILABLE_STATUS)
         _reportUiFilterModel.value?.sellerNameList = arrayListOf("ALL")
-        var date_2 = Calendar.getInstance()
-        date_2.add(Calendar.DATE, 2)
-        var dateString2 = formatter.format(date_2.time)
+//        var date_2 = Calendar.getInstance()
+//        date_2.add(Calendar.DATE, 2)
+//        var dateString2 = formatter.format(date_2.time)
+//
+//        var date_3 = Calendar.getInstance()
+//        date_3.add(Calendar.DATE, 3)
+//        var dateString3 = formatter.format(date_3.time)
 
-        var date_3 = Calendar.getInstance()
-        date_3.add(Calendar.DATE, 3)
-        var dateString3 = formatter.format(date_3.time)
+//        _reportUiFilterModel.value?.timeFilterList = arrayListOf("Today", "Tomorrow") //, dateString2, dateString3)
 
-        _reportUiFilterModel.value?.timeFilterList = arrayListOf("Today", "Tomorrow", dateString2, dateString3)
-
+        val dateList = arrayListOf("Today", "Tomorrow")
+        for(i in 2..7){
+            var date = Calendar.getInstance()
+            date.add(Calendar.DATE, i)
+            var dateString = formatter.format(date.time)
+            dateList.add(dateString)
+        }
+        _reportUiFilterModel.value?.timeFilterList = dateList
         //Refresh filter
         _reportUiFilterModel.value = _reportUiFilterModel.value
 
@@ -273,10 +278,15 @@ class FreezeMultipleViewModel(val database: SessionDatabaseDao, application: App
 
 
     fun onTimeFilterSelected(position: Int) {
-        if (position.equals(0)) setTimeFilterRange(0,0) //Today
-        if (position.equals(1)) setTimeFilterRange(1,1) //Tomorrow
-        if (position.equals(2)) setTimeFilterRange(2,2) //3rd day
-        if (position.equals(3)) setTimeFilterRange(3,3) //4th day
+        for(i in 0..7){
+            if (position == i) setTimeFilterRange(i,i)
+        }
+//        if (position.equals(0)) setTimeFilterRange(0,0) //Today
+//        if (position.equals(1)) setTimeFilterRange(1,1) //Tomorrow
+//        if (position.equals(2)) setTimeFilterRange(2,2) //3rd day
+//        if (position.equals(3)) setTimeFilterRange(3,3) //4th day
+//        if (position.equals(4)) setTimeFilterRange(4,4) //5th day
+//        if (position.equals(5)) setTimeFilterRange(5,5) //5th day
         filterVisibleItems()
     }
 
@@ -359,6 +369,17 @@ class FreezeMultipleViewModel(val database: SessionDatabaseDao, application: App
             availabilityRequestList.add(availabilityRequest)
         }
         return availabilityRequestList
+    }
+
+    fun getAvailabilitiesToShare(): String{
+        var itemShareArray: ArrayList<String> = arrayListOf()
+        visibleUiData.value?.filter { it.isItemChecked }?.forEach { element ->
+            element.itemName
+            element.itemPrice.toString()
+            itemShareArray.add(element.itemName + "\t - \t"  + element.itemPrice.toString() + "/" +element.itemUom)
+        }
+        return itemShareArray.joinToString("\n")
+
     }
 
 

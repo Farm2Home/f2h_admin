@@ -1,14 +1,13 @@
 package com.f2h.f2h_admin.screens.group.freeze_multiple
 
 import android.app.Application
+import android.content.Intent
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.AdapterView
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.f2h.f2h_admin.R
@@ -41,13 +40,29 @@ class FreezeMultipleFragment : Fragment() {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_freeze_multiple, container, false)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
-
+        setHasOptionsMenu(true)
         //Toast Message
         viewModel.toastMessage.observe(viewLifecycleOwner, Observer { message ->
             Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
         })
         return binding.root
     }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater?.inflate(R.menu.all_availabilities, menu)
+    }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+
+        when(item.itemId){
+            R.id.shareAvailabilities -> {
+                shareAvailabilities()
+                return true
+            }
+        }
+        return false
+    }
+
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -118,6 +133,14 @@ class FreezeMultipleFragment : Fragment() {
             binding.assignDeliverySwipeRefresh.isRefreshing = false
         }
 
+    }
+
+    private fun shareAvailabilities(){
+        var text = viewModel.getAvailabilitiesToShare()
+        val sendIntent = Intent(Intent.ACTION_SEND)
+        sendIntent.type = "text/plain"
+        sendIntent.putExtra(Intent.EXTRA_TEXT, text)
+        startActivity(sendIntent)
     }
 
 }

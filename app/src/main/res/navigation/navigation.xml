@@ -198,6 +198,5 @@
         android:name="com.f2h.f2h_admin.screens.group.assign_delivery.AssignDeliveryFragment" />
     <fragment
         android:id="@+id/freezeMultipleFragment"
-        android:name="com.f2h.f2h_admin.screens.group.freeze_multiple.FreezeMultipleFragment"
-        android:label="FreezeMultipleFragment" />
+        android:name="com.f2h.f2h_admin.screens.group.freeze_multiple.FreezeMultipleFragment" />
 </navigation>

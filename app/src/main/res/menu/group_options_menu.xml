@@ -19,8 +19,8 @@
         android:title="@string/confirm_reject" />
     <item
         android:id="@+id/assignDeliveryFragment"
-        android:title="Assign Delivery" />
+        android:title="@string/assign_delivery" />
     <item
         android:id="@+id/freezeMultipleFragment"
-        android:title="Freeze Availabilities" />
+        android:title="@string/freeze_availabilities" />
 </menu>
