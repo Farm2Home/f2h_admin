@@ -24,6 +24,7 @@ class EditProfileViewModel(val database: SessionDatabaseDao, application: Applic
     val password = MutableLiveData<String>()
     val address = MutableLiveData<String>()
     val email = MutableLiveData<String>()
+    val confirmPassword = MutableLiveData<String>()
 
     private val _isProgressBarActive = MutableLiveData<Boolean>()
     val isProgressBarActive: LiveData<Boolean>
@@ -41,6 +42,8 @@ class EditProfileViewModel(val database: SessionDatabaseDao, application: Applic
         getProfileInformation()
     }
 
+
+
     private fun getProfileInformation() {
         coroutineScope.launch {
             _isProgressBarActive.value = true
@@ -53,6 +56,7 @@ class EditProfileViewModel(val database: SessionDatabaseDao, application: Applic
                 userName.value = userData.userName
                 mobile.value = userData.mobile
                 password.value = String(Base64.decode(userData.password, Base64.DEFAULT), Charset.defaultCharset())
+                confirmPassword.value = String(Base64.decode(userData.password, Base64.DEFAULT), Charset.defaultCharset())
                 email.value = userData.email
                 address.value = userData.address
             } catch (t:Throwable){
@@ -62,8 +66,32 @@ class EditProfileViewModel(val database: SessionDatabaseDao, application: Applic
         }
     }
 
+    fun isAnyFieldInvalid(): Boolean{
+        if (userName.value.isNullOrBlank()) {
+            _toastText.value = "Please enter a name"
+            return true
+        }
+        if (password.value.isNullOrBlank()) {
+            _toastText.value = "Please enter a password"
+            return true
+        }
+        if (confirmPassword.value.isNullOrBlank()) {
+            _toastText.value = "Please confirm password"
+            return true
+        }
+        if (!confirmPassword.value.equals(password.value)) {
+            _toastText.value = "Passwords do not match"
+            return true
+        }
+        _isProgressBarActive.value = false
+        return false
+    }
+
 
     fun onSaveButtonClicked() {
+        if(isAnyFieldInvalid()){
+            return
+        }
         coroutineScope.launch {
             _isProgressBarActive.value = true
             userSession = retrieveSession()
