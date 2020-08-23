@@ -78,23 +78,26 @@
         <action
             android:id="@+id/action_groupDetailsTabsFragment_to_freezeMultipleFragment"
             app:destination="@id/freezeMultipleFragment" />
+        <action
+            android:id="@+id/action_groupDetailsTabsFragment_to_notificationFragment"
+            app:destination="@id/notificationFragment" />
     </fragment>
     <fragment
         android:id="@+id/allItemsFragment"
         android:name="com.f2h.f2h_admin.screens.group.all_items.AllItemsFragment"
-        tools:layout="@layout/fragment_all_items"/>
+        tools:layout="@layout/fragment_all_items" />
     <fragment
         android:id="@+id/groupWalletFragment"
         android:name="com.f2h.f2h_admin.screens.group.group_wallet.GroupWalletFragment"
         tools:layout="@layout/fragment_group_wallet">
         <argument
             android:name="userId"
-            app:argType="long"
-            android:defaultValue="-1L" />
+            android:defaultValue="-1L"
+            app:argType="long" />
         <argument
             android:name="userName"
-            app:argType="string"
-            android:defaultValue='""' />
+            android:defaultValue='""'
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/preOrderFragment"
@@ -114,18 +117,18 @@
     <fragment
         android:id="@+id/contactUsFragment"
         android:name="com.f2h.f2h_admin.screens.contact_us.ContactUsFragment"
-        tools:layout="@layout/fragment_contact_us"
-        android:label="@string/contact_us" />
+        android:label="@string/contact_us"
+        tools:layout="@layout/fragment_contact_us" />
     <fragment
         android:id="@+id/signOutFragment"
         android:name="com.f2h.f2h_admin.screens.sign_out.SignOutFragment"
-        tools:layout="@layout/fragment_signout"
-        android:label="@string/sign_out" />
+        android:label="@string/sign_out"
+        tools:layout="@layout/fragment_signout" />
     <fragment
         android:id="@+id/settingsFragment"
         android:name="com.f2h.f2h_admin.screens.settings.SettingsFragment"
-        tools:layout="@layout/fragment_settings"
-        android:label="@string/my_profile" >
+        android:label="@string/my_profile"
+        tools:layout="@layout/fragment_settings">
         <action
             android:id="@+id/action_settingsFragment_to_editProfileFragment"
             app:destination="@id/editProfileFragment" />
@@ -133,8 +136,7 @@
     <fragment
         android:id="@+id/reportFragment"
         android:name="com.f2h.f2h_admin.screens.report.ReportFragment"
-        tools:layout="@layout/fragment_report"
-        />
+        tools:layout="@layout/fragment_report" />
     <fragment
         android:id="@+id/searchGroupsFragment"
         android:name="com.f2h.f2h_admin.screens.search_group.SearchGroupsFragment"
@@ -142,20 +144,20 @@
     <fragment
         android:id="@+id/editProfileFragment"
         android:name="com.f2h.f2h_admin.screens.settings.edit_profile.EditProfileFragment"
-        tools:layout="@layout/fragment_edit_profile"
-        android:label="EditProfileFragment" />
+        android:label="EditProfileFragment"
+        tools:layout="@layout/fragment_edit_profile" />
     <fragment
         android:id="@+id/confirmRejectFragment"
         android:name="com.f2h.f2h_admin.screens.group.confirm_reject.ConfirmRejectFragment"
-        tools:layout="@layout/fragment_confirm_reject"/>
+        tools:layout="@layout/fragment_confirm_reject" />
     <fragment
         android:id="@+id/deliverFragment"
         android:name="com.f2h.f2h_admin.screens.deliver.DeliverFragment"
-        tools:layout="@layout/fragment_deliver"/>
+        tools:layout="@layout/fragment_deliver" />
     <fragment
         android:id="@+id/paymentFragment"
         android:name="com.f2h.f2h_admin.screens.group.payment.PaymentFragment"
-        tools:layout="@layout/fragment_payment"/>
+        tools:layout="@layout/fragment_payment" />
     <fragment
         android:id="@+id/membershipRequestFragment"
         android:name="com.f2h.f2h_admin.screens.group.accept_reject_membership.MembershipRequestFragment"
@@ -167,11 +169,11 @@
     <fragment
         android:id="@+id/addItemsFragment"
         android:name="com.f2h.f2h_admin.screens.group.add_item.AddItemFragment"
-        tools:layout="@layout/fragment_add_item"/>
+        tools:layout="@layout/fragment_add_item" />
     <fragment
         android:id="@+id/editItemFragment"
         android:name="com.f2h.f2h_admin.screens.group.edit_item.EditItemFragment"
-        tools:layout="@layout/fragment_edit_item" >
+        tools:layout="@layout/fragment_edit_item">
         <argument
             android:name="itemId"
             app:argType="long" />
@@ -179,7 +181,7 @@
     <fragment
         android:id="@+id/addAvailabilityFragment"
         android:name="com.f2h.f2h_admin.screens.group.add_availability.AddAvailabilityFragment"
-        tools:layout="@layout/fragment_add_availability" >
+        tools:layout="@layout/fragment_add_availability">
         <argument
             android:name="itemId"
             app:argType="long" />
@@ -187,16 +189,21 @@
     <fragment
         android:id="@+id/editAvailabilityFragment"
         android:name="com.f2h.f2h_admin.screens.group.edit_availability.EditAvailabilityFragment"
-        tools:layout="@layout/fragment_edit_availability" >
+        tools:layout="@layout/fragment_edit_availability">
         <argument
             android:name="itemAvailabilityId"
-            app:argType="long"
-            android:defaultValue="-1L" />
+            android:defaultValue="-1L"
+            app:argType="long" />
     </fragment>
     <fragment
         android:id="@+id/assignDeliveryFragment"
         android:name="com.f2h.f2h_admin.screens.group.assign_delivery.AssignDeliveryFragment" />
     <fragment
         android:id="@+id/freezeMultipleFragment"
-        android:name="com.f2h.f2h_admin.screens.group.freeze_multiple.FreezeMultipleFragment" />
+        android:name="com.f2h.f2h_admin.screens.group.freeze_multiple.FreezeMultipleFragment"
+        android:label="FreezeMultipleFragment" />
+    <fragment
+        android:id="@+id/notificationFragment"
+        android:name="com.f2h.f2h_admin.screens.group.notification.NotificationFragment"
+        tools:layout="@layout/fragment_notification" />
 </navigation>

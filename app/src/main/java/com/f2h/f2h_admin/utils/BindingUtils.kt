@@ -24,6 +24,11 @@ fun Button.setButtonStatus(status: Boolean){
     isEnabled = status
 }
 
+@BindingAdapter("radioButtonState")
+fun RadioButton.setButtonStatus(status: Boolean){
+    isChecked = status
+}
+
 @BindingAdapter("imageButtonStatus")
 fun ImageButton.setImageButtonStatus(status: Boolean){
     isEnabled = status
@@ -57,6 +62,9 @@ fun loadSquareRoundedImage(view: ImageView, url: String?) {
 fun loadImage(view: ImageView, url: String?) {
     Glide.with(view)
         .load(url ?: "")
+        .apply(RequestOptions()
+            .placeholder(R.drawable.loading_animation)
+            .error(R.drawable.ic_broken_image))
         .centerCrop()
         .into(view)
 }
@@ -65,8 +73,9 @@ fun loadImage(view: ImageView, url: String?) {
 fun loadGroupImage(view: ImageView, url: String?) {
     Glide.with(view)
         .load(url ?: "")
+        .apply(RequestOptions()
+            .placeholder(R.drawable.loading_animation)
+            .error(R.drawable.ic_broken_image))
         .circleCrop()
-        .fallback(R.drawable.main_logo)
-        .error(R.drawable.main_logo)
         .into(view)
 }
