@@ -390,6 +390,7 @@ class FreezeMultipleViewModel(val database: SessionDatabaseDao, application: App
             return headerString + itemShareArray.joinToString("\n") + "\nPlayStore link:\n" + BUYER_APP_LINK
 
         } else {
+            _toastMessage.value = "Oops, Please select the availabilities to share"
             return ""
         }
     }
