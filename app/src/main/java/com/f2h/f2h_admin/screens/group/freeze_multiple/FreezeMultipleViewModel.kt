@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.f2h.f2h_admin.constants.F2HConstants.ORDER_STATUS_ORDERED
 import com.f2h.f2h_admin.constants.F2HConstants.AVAILABLE_STATUS
+import com.f2h.f2h_admin.constants.F2HConstants.BUYER_APP_LINK
 import com.f2h.f2h_admin.constants.F2HConstants.FREEZED_STATUS
 import com.f2h.f2h_admin.database.SessionDatabaseDao
 import com.f2h.f2h_admin.database.SessionEntity
@@ -371,16 +372,26 @@ class FreezeMultipleViewModel(val database: SessionDatabaseDao, application: App
         return availabilityRequestList
     }
 
-    fun getAvailabilitiesToShare(): String{
+    fun getAvailabilitiesToShare(): String {
         var itemShareArray: ArrayList<String> = arrayListOf()
+        var date = ""
+        var anyAvailability = false
         visibleUiData.value?.filter { it.isItemChecked }?.forEach { element ->
             element.itemName
             element.itemPrice.toString()
-            itemShareArray.add(element.itemName + "\t - \t"  + element.itemPrice.toString() + "/" +element.itemUom)
+            date = element.availableDate
+            anyAvailability = true
+            itemShareArray.add(element.itemName + "  -  " + element.itemPrice.toString() + "/" + element.itemUom)
         }
-        return itemShareArray.joinToString("\n")
+        if (anyAvailability) {
+            var headerString =
+                "VILLAGE VEGGYS\n" + sessionData.value?.groupName + "\n Item list (" + date + "):\n"
+            headerString += "--------------------------------------\n"
+            return headerString + itemShareArray.joinToString("\n") + "\nPlayStore link:\n" + BUYER_APP_LINK
 
+        } else {
+            return ""
+        }
     }
-
 
 }
