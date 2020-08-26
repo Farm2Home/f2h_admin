@@ -90,7 +90,7 @@ class AssignDeliveryViewModel(val database: SessionDatabaseDao, application: App
                 var groupMembershipList = getGroupMembershipsDeferred.await()
 
                 var deliveryUserIdsList = groupMembershipList
-                    .filter { x -> x.roles!!.contains(USER_ROLE_DELIVER) }
+                    .filter { x -> x.roles!!.split(',').contains(USER_ROLE_DELIVER) }
                     .map { x -> x.userId ?: -1}
 
                 var userIds = orders.map { x -> x.buyerUserId ?: -1}
@@ -100,7 +100,7 @@ class AssignDeliveryViewModel(val database: SessionDatabaseDao, application: App
 
 
                 var getUserDetailsDataDeferred =
-                    UserApi.retrofitService.getUserDetailsByUserIds(userIds)
+                    UserApi.retrofitService.getUserDetailsByUserIds(userIds.joinToString())
 
                 var deliveryAreaList = getDeliveryArea.await()
                 var userDetailsList = getUserDetailsDataDeferred.await()

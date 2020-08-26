@@ -40,7 +40,7 @@ class MembersFragment : Fragment() {
         binding = inflate(inflater, R.layout.fragment_members, container, false)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
-
+        viewModel.getUserDetailsInGroup()
         return binding.root
     }
 
@@ -107,12 +107,6 @@ class MembersFragment : Fragment() {
         }
         val intent = Intent(Intent.ACTION_CALL, Uri.parse("tel:" + viewModel.selectedUiElement.value?.mobile))
         startActivity(intent)
-    }
-
-
-    override fun onResume() {
-        super.onResume()
-        viewModel.getUserDetailsInGroup()
     }
 
 }

@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="uiModel"
+            type="com.f2h.f2h_admin.screens.group.freeze_multiple.FreezeMultipleItemsModel" />
+        <variable
+            name="checkBoxClickListener"
+            type="com.f2h.f2h_admin.screens.group.freeze_multiple.CheckBoxClickListener" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardElevation="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/constraintLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:id="@+id/freezeItemImage"
+                        android:layout_width="70dp"
+                        android:layout_height="70dp"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginTop="10dp"
+                        android:contentDescription="TODO"
+                        app:layout_constraintStart_toEndOf="@+id/freezeCheckbox"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:loadSquareRoundedImage="@{uiModel.itemImageLink}" />
+
+                    <TextView
+                        android:id="@+id/freezeItemDetails"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginEnd="20dp"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:textSize="16sp"
+                        app:itemDetailsFormatted="@{uiModel}"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/freezeItemImage"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/date"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:singleLine="true"
+                        android:textSize="12sp"
+                        app:layout_constraintStart_toStartOf="@+id/freezeItemDetails"
+                        app:layout_constraintTop_toBottomOf="@+id/freezeItemDetails"
+                        app:availableDateFormatted="@{uiModel}" />
+
+                    <TextView
+                        android:id="@+id/status"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:textAlignment="center"
+                        android:textSize="12sp"
+                        app:layout_constraintEnd_toEndOf="@+id/freezeItemImage"
+                        app:layout_constraintStart_toStartOf="@+id/freezeItemImage"
+                        app:layout_constraintTop_toBottomOf="@+id/freezeItemImage"
+                        app:statusFormatted="@{uiModel}" />
+
+                    <TextView
+                        android:id="@+id/freezeSellerName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:ellipsize="end"
+                        android:maxLines="2"
+                        android:singleLine="false"
+                        android:text="@{uiModel.sellerName}"
+                        android:textSize="12sp"
+                        app:layout_constraintStart_toStartOf="@+id/date"
+
+                        app:layout_constraintTop_toBottomOf="@+id/date" />
+
+                    <CheckBox
+                        android:id="@+id/freezeCheckbox"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:checked="@{uiModel.isItemChecked}"
+                        android:onClick="@{() -> checkBoxClickListener.onClick(uiModel)}"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:background="@color/grey" />
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

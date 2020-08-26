@@ -80,10 +80,10 @@ class DeliverViewModel(val database: SessionDatabaseDao, application: Applicatio
                 var availabilityIds = orders.map { x -> x.itemAvailabilityId ?: -1 }
 
                 var getUserDetailsDataDeferred =
-                    UserApi.retrofitService.getUserDetailsByUserIds(userIds)
+                    UserApi.retrofitService.getUserDetailsByUserIds(userIds.joinToString())
 
                 var getItemAvailabilitiesDataDeferred =
-                    ItemAvailabilityApi.retrofitService.getItemAvailabilities(availabilityIds)
+                    ItemAvailabilityApi.retrofitService.getItemAvailabilities(availabilityIds.joinToString())
 
                 var itemAvailabilities = getItemAvailabilitiesDataDeferred.await()
                 var userDetailsList = getUserDetailsDataDeferred.await()

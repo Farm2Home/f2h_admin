@@ -10,156 +10,162 @@
             type="com.f2h.f2h_admin.screens.group.group_wallet.GroupWalletViewModel" />
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/walletSwipeRefresh"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".screens.groups_wallet.GroupWalletFragment">
+        android:layout_height="match_parent">
 
-        <!-- TODO: Update blank fragment layout -->
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cardView"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_margin="20dp"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginEnd="20dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.6"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            android:layout_height="match_parent"
+            tools:context=".screens.groups_wallet.GroupWalletFragment">
 
-
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <!-- TODO: Update blank fragment layout -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardView"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/balance"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:fontFamily=""
-                    android:paddingStart="20dp"
-                    android:paddingLeft="20dp"
-                    android:paddingTop="5dp"
-                    android:paddingEnd="20dp"
-                    android:paddingRight="20dp"
-                    android:paddingBottom="10dp"
-                    android:textAlignment="center"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="1.0"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/walletUserName"
-                    app:walletBalanceFormatted="@{viewModel.wallet.balance}" />
-
-                <TextView
-                    android:id="@+id/tvWalletAmount"
-                    android:layout_width="wrap_content"
-                    android:layout_height="0dp"
-                    android:layout_marginStart="20dp"
-                    android:gravity="center_vertical"
-                    android:text="Amount "
-                    android:textAlignment="gravity"
-                    app:layout_constraintBottom_toBottomOf="@+id/walletAmount"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/walletAmount" />
-
-                <EditText
-                    android:id="@+id/walletAmount"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginEnd="10dp"
-                    android:layout_marginBottom="10dp"
-                    android:ems="10"
-                    android:inputType="numberSigned|number"
-                    android:text="@={viewModel.transactionAmount}"
-                    android:textSize="14sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/walletCreateTransaction"
-                    app:layout_constraintStart_toEndOf="@+id/tvWalletAmount"
-                    app:layout_constraintTop_toBottomOf="@+id/transactionDescription" />
-
-                <TextView
-                    android:id="@+id/tvWalletDescription"
-                    android:layout_width="wrap_content"
-                    android:layout_height="0dp"
-                    android:layout_marginTop="5dp"
-                    android:gravity="center_vertical"
-                    android:text="Description "
-                    android:textAlignment="gravity"
-                    app:layout_constraintBottom_toBottomOf="@+id/transactionDescription"
-                    app:layout_constraintStart_toStartOf="@+id/tvWalletAmount"
-                    app:layout_constraintTop_toTopOf="@+id/transactionDescription" />
-
-                <EditText
-                    android:id="@+id/transactionDescription"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="10dp"
-                    android:ems="10"
-                    android:inputType="textPersonName"
-                    android:text="@={viewModel.transactionDescription}"
-                    android:textSize="14sp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/tvWalletDescription"
-                    app:layout_constraintTop_toBottomOf="@+id/balance" />
-
-                <Button
-                    android:id="@+id/walletCreateTransaction"
-                    android:layout_width="100dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="10dp"
-                    android:onClick="@{() -> viewModel.onAddMoneyButtonClick()}"
-                    android:text="Add Money"
-                    android:textAllCaps="false"
-                    app:buttonStatus="@{!viewModel.isProgressBarActive()}"
-                    app:layout_constraintBottom_toBottomOf="@+id/walletAmount"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/walletAmount" />
-
-                <TextView
-                    android:id="@+id/walletUserName"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:text="@{viewModel.selectedUserName + `\'s Wallet`}"
-                    android:textAlignment="center"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                android:layout_height="0dp"
+                android:layout_margin="20dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="20dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.6"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
 
-        </androidx.cardview.widget.CardView>
+                    <TextView
+                        android:id="@+id/balance"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:fontFamily=""
+                        android:paddingStart="20dp"
+                        android:paddingLeft="20dp"
+                        android:paddingTop="5dp"
+                        android:paddingEnd="20dp"
+                        android:paddingRight="20dp"
+                        android:paddingBottom="10dp"
+                        android:textAlignment="center"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="1.0"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/walletUserName"
+                        app:walletBalanceFormatted="@{viewModel.wallet.balance}" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/walletTransactions"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginTop="20dp"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/cardView" />
+                    <TextView
+                        android:id="@+id/tvWalletAmount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_marginStart="20dp"
+                        android:gravity="center_vertical"
+                        android:text="Amount "
+                        android:textAlignment="gravity"
+                        app:layout_constraintBottom_toBottomOf="@+id/walletAmount"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/walletAmount" />
 
-        <ProgressBar
-            android:id="@+id/progressBar"
-            style="?android:attr/progressBarStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:translationZ="2dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:progressBarVisibility="@{viewModel.isProgressBarActive().booleanValue()}" />
+                    <EditText
+                        android:id="@+id/walletAmount"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:ems="10"
+                        android:inputType="numberSigned|number"
+                        android:text="@={viewModel.transactionAmount}"
+                        android:textSize="14sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/walletCreateTransaction"
+                        app:layout_constraintStart_toEndOf="@+id/tvWalletAmount"
+                        app:layout_constraintTop_toBottomOf="@+id/transactionDescription" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+                    <TextView
+                        android:id="@+id/tvWalletDescription"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_marginTop="5dp"
+                        android:gravity="center_vertical"
+                        android:text="Description "
+                        android:textAlignment="gravity"
+                        app:layout_constraintBottom_toBottomOf="@+id/transactionDescription"
+                        app:layout_constraintStart_toStartOf="@+id/tvWalletAmount"
+                        app:layout_constraintTop_toTopOf="@+id/transactionDescription" />
+
+                    <EditText
+                        android:id="@+id/transactionDescription"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="10dp"
+                        android:ems="10"
+                        android:inputType="textPersonName"
+                        android:text="@={viewModel.transactionDescription}"
+                        android:textSize="14sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/tvWalletDescription"
+                        app:layout_constraintTop_toBottomOf="@+id/balance" />
+
+                    <Button
+                        android:id="@+id/walletCreateTransaction"
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="10dp"
+                        android:onClick="@{() -> viewModel.onAddMoneyButtonClick()}"
+                        android:text="Add Money"
+                        android:textAllCaps="false"
+                        app:buttonStatus="@{!viewModel.isProgressBarActive()}"
+                        app:layout_constraintBottom_toBottomOf="@+id/walletAmount"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/walletAmount" />
+
+                    <TextView
+                        android:id="@+id/walletUserName"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="@{viewModel.selectedUserName + `\'s Wallet`}"
+                        android:textAlignment="center"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/walletTransactions"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginTop="20dp"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/cardView" />
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:translationZ="2dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:progressBarVisibility="@{viewModel.isProgressBarActive().booleanValue()}" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 </layout>
