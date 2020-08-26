@@ -19,7 +19,7 @@ android {
         applicationId "com.f2h.f2h_admin"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 9 //Should be always increasing - every deploy to playstore, add 1
+        versionCode 11 //Should be always increasing - every deploy to playstore, add 1
         versionName "1.4.0"
         /*
              versionName Major.Minor.Patch
