@@ -384,10 +384,12 @@ class FreezeMultipleViewModel(val database: SessionDatabaseDao, application: App
             itemShareArray.add(element.itemName + "  -  " + element.itemPrice.toString() + "/" + element.itemUom)
         }
         if (anyAvailability) {
+            var d = formatter.parse(date)
+            var day = SimpleDateFormat("E").format(d)
             var headerString =
-                "VILLAGE VEGGYS\n" + sessionData.value?.groupName + "\n Item list (" + date + "):\n"
+                "VILLAGE VEGGYS\n" + sessionData.value?.groupName + "\nItem list (" + date +", "+ day + "):\n"
             headerString += "--------------------------------------\n"
-            return headerString + itemShareArray.joinToString("\n") + "\nPlayStore link:\n" + BUYER_APP_LINK
+            return headerString + itemShareArray.joinToString("\n") + "\n\nPlayStore link:\n" + BUYER_APP_LINK
 
         } else {
             _toastMessage.value = "Oops, Please select the availabilities to share"
