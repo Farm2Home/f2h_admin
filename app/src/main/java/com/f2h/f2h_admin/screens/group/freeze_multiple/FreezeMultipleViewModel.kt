@@ -268,26 +268,15 @@ class FreezeMultipleViewModel(val database: SessionDatabaseDao, application: App
         viewModelJob.cancel()
     }
 
-
-
     fun onFreezeStatusSelected(position: Int) {
-
         _reportUiFilterModel.value?.selectedFreezeStatus = _reportUiFilterModel.value?.freezeStatusList?.get(position) ?: ""
-
         filterVisibleItems()
     }
-
-
+    
     fun onTimeFilterSelected(position: Int) {
         for(i in 0..7){
             if (position == i) setTimeFilterRange(i,i)
         }
-//        if (position.equals(0)) setTimeFilterRange(0,0) //Today
-//        if (position.equals(1)) setTimeFilterRange(1,1) //Tomorrow
-//        if (position.equals(2)) setTimeFilterRange(2,2) //3rd day
-//        if (position.equals(3)) setTimeFilterRange(3,3) //4th day
-//        if (position.equals(4)) setTimeFilterRange(4,4) //5th day
-//        if (position.equals(5)) setTimeFilterRange(5,5) //5th day
         filterVisibleItems()
     }
 
