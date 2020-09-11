@@ -35,7 +35,7 @@ class FreezeMultipleFragment : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle  ?
     ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_freeze_multiple, container, false)
         binding.lifecycleOwner = this

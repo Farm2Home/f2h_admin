@@ -26,11 +26,13 @@ data class ItemCreateRequest (
     @Json(name = "image_link") var imageLink: String?,
     @Json(name = "description") var description: String?,
     @Json(name = "uom") var uom: String?,
-    @Json(name = "price_per_unit") var pricePerUnit: Double?,
+    @Json(name = "farmer_price") var farmerPrice: Double?,
+    @Json(name = "v2_price") var v2Price: Double?,
     @Json(name = "confirm_qty_jump") var confirmQtyJump: Double?,
     @Json(name = "order_qty_jump") var orderQtyJump: Double?,
     @Json(name = "created_by") var createdBy: String?,
-    @Json(name = "updated_by") var updatedBy: String?
+    @Json(name = "updated_by") var updatedBy: String?,
+    @Json(name = "handling_charges") var handlingCharges: List<HandlingChargesCreateRequest>
 )
 
 
@@ -46,4 +48,5 @@ data class ItemUpdateRequest (
     @Json(name = "confirm_qty_jump") var confirmQtyJump: Double?,
     @Json(name = "order_qty_jump") var orderQtyJump: Double?,
     @Json(name = "updated_by") var updatedBy: String?
+//    @Json(name = "handling_charges") var handlingCharges: List<HandlingChargesUpdateRequest>
 )
