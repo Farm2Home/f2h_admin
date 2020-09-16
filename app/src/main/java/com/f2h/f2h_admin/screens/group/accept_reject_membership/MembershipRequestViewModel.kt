@@ -88,6 +88,7 @@ class MembershipRequestViewModel (val database: SessionDatabaseDao, application:
                 var getDeliveryArea =
                     DeliveryAreaApi.retrofitService.getDeliveryAreaDetails(sessionData.groupId)
                 var deliveryArea = getDeliveryArea.await()
+                deliveryArea = deliveryArea.sortedBy { it.deliveryArea }
                 deliveryArea.forEach{
                     deliveryAreaIdList.add(it.deliveryAreaId?:-1L)
                     deliveryAreaNameList.add(it.deliveryArea?:"")

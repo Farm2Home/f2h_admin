@@ -15,212 +15,220 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:context=".screens.report.ReportFragment">
-
-            <View
-                android:id="@+id/view4"
-                android:layout_width="0dp"
-                android:layout_height="0.5dp"
-                android:background="@color/grey"
-                app:layout_constraintBottom_toTopOf="@+id/horizontalScrollView"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
-
-
-            <HorizontalScrollView
-                android:id="@+id/horizontalScrollView"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginEnd="0dp"
-                    android:layout_marginRight="0dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
-
-                    <Spinner
-                        android:id="@+id/timeFilterSelector"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="20dp"
-                        android:ellipsize="end"
-                        android:entries="@{viewModel.reportUiFilterModel.timeFilterList}"
-                        android:singleLine="true"
-                        android:visibility="visible"
-                        app:layout_constraintBottom_toBottomOf="@+id/assignStatusSelector"
-                        app:layout_constraintStart_toEndOf="@+id/assignStatusSelector"
-                        app:layout_constraintTop_toBottomOf="@+id/textView4" />
-
-                    <TextView
-                        android:id="@+id/textView4"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Time Filter"
-                        android:textSize="12sp"
-                        app:layout_constraintStart_toStartOf="@+id/timeFilterSelector"
-                        app:layout_constraintTop_toTopOf="@+id/textView10" />
-
-                    <TextView
-                        android:id="@+id/textView10"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
-                        android:text="Assign Status"
-                        android:textSize="12sp"
-                        app:layout_constraintStart_toStartOf="@+id/assignStatusSelector"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <Spinner
-                        android:id="@+id/assignStatusSelector"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginBottom="5dp"
-                        android:ellipsize="end"
-                        android:entries="@{viewModel.reportUiFilterModel.assignStatusList}"
-                        android:singleLine="true"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toEndOf="@+id/selectAllCheckBox"
-                        app:layout_constraintTop_toBottomOf="@+id/textView10" />
-
-                    <Spinner
-                        android:id="@+id/buyerNameSelector"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="20dp"
-                        android:layout_marginBottom="5dp"
-                        android:entries="@{viewModel.reportUiFilterModel.buyerNameList}"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toEndOf="@+id/deliveryAreaSelector"
-                        app:layout_constraintTop_toBottomOf="@+id/textView20" />
-
-                    <TextView
-                        android:id="@+id/textView20"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
-                        android:text="Buyer"
-                        android:textSize="12sp"
-                        app:layout_constraintStart_toStartOf="@+id/buyerNameSelector"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <Spinner
-                        android:id="@+id/deliveryAreaSelector"
-                        android:layout_width="120dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="20dp"
-                        android:layout_marginBottom="5dp"
-                        android:entries="@{viewModel.reportUiFilterModel.deliveryAreaList}"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toEndOf="@+id/timeFilterSelector" />
-
-                    <TextView
-                        android:id="@+id/textView3"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
-                        android:text="Delivery Area"
-                        android:textSize="12sp"
-                        app:layout_constraintBottom_toTopOf="@+id/deliveryAreaSelector"
-                        app:layout_constraintStart_toStartOf="@+id/deliveryAreaSelector"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintVertical_bias="1.0" />
-
-                    <CheckBox
-                        android:id="@+id/selectAllCheckBox"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="5dp"
-                        android:checked="@{viewModel.isAllItemsSelected}"
-                        android:onClick="@{() -> viewModel.onAllItemsCheckBoxClicked()}"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-                </androidx.constraintlayout.widget.ConstraintLayout>
-            </HorizontalScrollView>
-
-            <View
-                android:layout_width="0dp"
-                android:layout_height="0.5dp"
-                android:background="@color/grey"
-                app:layout_constraintBottom_toBottomOf="@+id/horizontalScrollView"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
+            android:layout_height="match_parent">
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/constraintLayout2"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_marginBottom="10dp"
-                android:orientation="vertical"
-                app:layout_constraintBottom_toTopOf="@+id/deliveryBoySelector"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.9"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/horizontalScrollView">
+                android:layout_height="match_parent"
+                tools:context=".screens.report.ReportFragment">
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/reportListRecyclerView"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                <View
+                    android:id="@+id/view4"
+                    android:layout_width="0dp"
+                    android:layout_height="0.5dp"
+                    android:background="@color/grey"
+                    app:layout_constraintBottom_toTopOf="@+id/horizontalScrollView"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+
+                <HorizontalScrollView
+                    android:id="@+id/horizontalScrollView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
 
-                </androidx.recyclerview.widget.RecyclerView>
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginEnd="0dp"
+                        android:layout_marginRight="0dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
 
-                <ProgressBar
-                    android:id="@+id/progressBar"
-                    style="@style/Widget.AppCompat.ProgressBar"
-                    android:layout_width="wrap_content"
-                    android:layout_height="50dp"
-                    android:indeterminate="true"
-                    app:layout_constraintBottom_toBottomOf="parent"
+                        <Spinner
+                            android:id="@+id/timeFilterSelector"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="20dp"
+                            android:ellipsize="end"
+                            android:entries="@{viewModel.reportUiFilterModel.timeFilterList}"
+                            android:singleLine="true"
+                            android:visibility="visible"
+                            app:layout_constraintBottom_toBottomOf="@+id/assignStatusSelector"
+                            app:layout_constraintStart_toEndOf="@+id/assignStatusSelector"
+                            app:layout_constraintTop_toBottomOf="@+id/textView4" />
+
+                        <TextView
+                            android:id="@+id/textView4"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Time Filter"
+                            android:textSize="12sp"
+                            app:layout_constraintStart_toStartOf="@+id/timeFilterSelector"
+                            app:layout_constraintTop_toTopOf="@+id/textView10" />
+
+                        <TextView
+                            android:id="@+id/textView10"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:text="Assign Status"
+                            android:textSize="12sp"
+                            app:layout_constraintStart_toStartOf="@+id/assignStatusSelector"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <Spinner
+                            android:id="@+id/assignStatusSelector"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginBottom="5dp"
+                            android:ellipsize="end"
+                            android:entries="@{viewModel.reportUiFilterModel.assignStatusList}"
+                            android:singleLine="true"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toEndOf="@+id/selectAllCheckBox"
+                            app:layout_constraintTop_toBottomOf="@+id/textView10" />
+
+                        <Spinner
+                            android:id="@+id/buyerNameSelector"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="20dp"
+                            android:layout_marginBottom="5dp"
+                            android:entries="@{viewModel.reportUiFilterModel.buyerNameList}"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toEndOf="@+id/deliveryAreaSelector"
+                            app:layout_constraintTop_toBottomOf="@+id/textView20" />
+
+                        <TextView
+                            android:id="@+id/textView20"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:text="Buyer"
+                            android:textSize="12sp"
+                            app:layout_constraintStart_toStartOf="@+id/buyerNameSelector"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <Spinner
+                            android:id="@+id/deliveryAreaSelector"
+                            android:layout_width="120dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="20dp"
+                            android:layout_marginBottom="5dp"
+                            android:entries="@{viewModel.reportUiFilterModel.deliveryAreaList}"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toEndOf="@+id/timeFilterSelector" />
+
+                        <TextView
+                            android:id="@+id/textView3"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:text="Delivery Area"
+                            android:textSize="12sp"
+                            app:layout_constraintBottom_toTopOf="@+id/deliveryAreaSelector"
+                            app:layout_constraintStart_toStartOf="@+id/deliveryAreaSelector"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintVertical_bias="1.0" />
+
+                        <CheckBox
+                            android:id="@+id/selectAllCheckBox"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="5dp"
+                            android:checked="@{viewModel.isAllItemsSelected}"
+                            android:onClick="@{() -> viewModel.onAllItemsCheckBoxClicked()}"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </HorizontalScrollView>
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0.5dp"
+                    android:background="@color/grey"
+                    app:layout_constraintBottom_toBottomOf="@+id/horizontalScrollView"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:progressBarVisibility="@{viewModel.isProgressBarActive().booleanValue()}" />
+                    app:layout_constraintStart_toStartOf="parent" />
 
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/constraintLayout2"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="10dp"
+                    android:orientation="vertical"
+                    app:layout_constraintBottom_toTopOf="@+id/deliveryBoySelector"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.9"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/horizontalScrollView">
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/reportListRecyclerView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                    </androidx.recyclerview.widget.RecyclerView>
+
+                    <ProgressBar
+                        android:id="@+id/progressBar"
+                        style="@style/Widget.AppCompat.ProgressBar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="50dp"
+                        android:indeterminate="true"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:progressBarVisibility="@{viewModel.isProgressBarActive().booleanValue()}" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <Spinner
+                    android:id="@+id/deliveryBoySelector"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:entries="@{viewModel.reportUiFilterModel.deliveryBoyNameList}"
+                    android:spinnerMode="dropdown"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/assignButton"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+                <Button
+                    android:id="@+id/assignButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="@{() -> viewModel.onAssignOrderButtonClicked()}"
+                    android:text="Assign Orders"
+                    android:textAllCaps="false"
+                    android:textSize="12sp"
+                    app:buttonStatus="@{!viewModel.isProgressBarActive().booleanValue()}"
+                    app:layout_constraintBottom_toBottomOf="@+id/deliveryBoySelector"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/deliveryBoySelector"
+                    app:layout_constraintTop_toTopOf="@+id/deliveryBoySelector" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <Spinner
-                android:id="@+id/deliveryBoySelector"
-                android:layout_width="150dp"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
-                android:entries="@{viewModel.reportUiFilterModel.deliveryBoyNameList}"
-                android:spinnerMode="dropdown"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/assignButton"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toStartOf="parent" />
+        </androidx.core.widget.NestedScrollView>
 
-            <Button
-                android:id="@+id/assignButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Assign Orders"
-                android:textAllCaps="false"
-                android:textSize="12sp"
-                android:onClick="@{() -> viewModel.onAssignOrderButtonClicked()}"
-                app:buttonStatus="@{!viewModel.isProgressBarActive().booleanValue()}"
-                app:layout_constraintBottom_toBottomOf="@+id/deliveryBoySelector"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/deliveryBoySelector"
-                app:layout_constraintTop_toTopOf="@+id/deliveryBoySelector" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 </layout>

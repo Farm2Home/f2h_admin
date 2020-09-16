@@ -285,8 +285,6 @@ class AddItemViewModel(val database: SessionDatabaseDao, application: Applicatio
             ?.filter { it.isItemChecked.equals(true) }
             ?.forEach { handlingCharge ->
                 var request = HandlingChargesCreateRequest()
-                request.name = handlingCharge.name
-                request.description = handlingCharge.description
                 request.handlingOptionId = handlingCharge.handlingOptionId
                 request.amount = handlingCharge.handlingCharge
                 request.userVisibility = false
