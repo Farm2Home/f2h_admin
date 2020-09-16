@@ -1,6 +1,7 @@
 package com.f2h.f2h_admin.screens.report
 
 import com.f2h.f2h_admin.network.models.Comment
+import com.f2h.f2h_admin.network.models.HandlingCharge
 
 data class ReportItemsModel (
     var itemId: Long = 0,
@@ -21,6 +22,9 @@ data class ReportItemsModel (
     var confirmedQuantity: Double = 0.0,
     var availableQuantity: Double = 0.0,
     var displayQuantity: Double = 0.0,
+    var farmerCommission: Double = 0.0,
+    var handlingCharges: List<HandlingCharge> = listOf(),
+    var v2Commission: Double = 0.0,
     var orderAmount: Double = 0.0,
     var orderStatus: String = "",
     var orderComment: String = "",

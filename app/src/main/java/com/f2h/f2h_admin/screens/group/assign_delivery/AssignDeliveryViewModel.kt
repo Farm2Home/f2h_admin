@@ -5,7 +5,6 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.f2h.f2h_admin.constants.F2HConstants.ORDER_STATUS_CONFIRMED
 import com.f2h.f2h_admin.constants.F2HConstants.ORDER_STATUS_ORDERED
 import com.f2h.f2h_admin.constants.F2HConstants.ASSIGN_STATUS_ASSIGNED
 import com.f2h.f2h_admin.constants.F2HConstants.ASSIGN_STATUS_NOT_ASSIGNED
@@ -15,7 +14,7 @@ import com.f2h.f2h_admin.database.SessionDatabaseDao
 import com.f2h.f2h_admin.database.SessionEntity
 import com.f2h.f2h_admin.network.*
 import com.f2h.f2h_admin.network.models.*
-import com.f2h.f2h_admin.screens.deliver.DeliverItemsModel
+import com.f2h.f2h_admin.utils.fetchOrderDate
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -51,7 +50,6 @@ class AssignDeliveryViewModel(val database: SessionDatabaseDao, application: App
 //        get() = _selectedUiElement
 
     private val df: DateFormat = SimpleDateFormat("yyyy-MM-dd")
-    private val requestFormatter: DateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
     private val formatter: DateFormat = SimpleDateFormat("dd-MMM-yyyy")
     private val sessionData = MutableLiveData<SessionEntity>()
     private var allUiData = ArrayList<AssignDeliveryItemsModel>()
@@ -72,28 +70,33 @@ class AssignDeliveryViewModel(val database: SessionDatabaseDao, application: App
 
         coroutineScope.launch {
             sessionData.value = retrieveSession()
-            var startDate = Calendar.getInstance()
-            startDate.add(Calendar.DATE, -1)
-            var startDateString = requestFormatter.format(startDate.time)
-            var endDate = Calendar.getInstance()
-            endDate.add(Calendar.DATE, 3)
-            var endDateString = requestFormatter.format(endDate.time)
-            var getOrdersDataDeferred =
-                OrderApi.retrofitService.getOrdersForGroup(sessionData.value!!.groupId, startDateString, endDateString)
+            var getOrderHeadersDataDeferred =
+                OrderApi.retrofitService.getOrderHeaderForGroup(sessionData.value!!.groupId, fetchOrderDate(-1), fetchOrderDate(3))
+
             var getDeliveryArea =
                 DeliveryAreaApi.retrofitService.getDeliveryAreaDetails(sessionData.value!!.groupId)
 
             var getGroupMembershipsDeferred =
                 GroupMembershipApi.retrofitService.getGroupMembership(sessionData.value!!.groupId, null)
             try {
-                var orders = getOrdersDataDeferred.await()
+                var orderHeaders = getOrderHeadersDataDeferred.await()
+                var orders = arrayListOf<Order>()
+                var serviceOrders = arrayListOf<ServiceOrder>()
+                orderHeaders.forEach { header ->
+                    header.orders?.map { it ->
+                        it.deliveryLocation = header.deliveryLocation
+                        it.buyerUserId = header.buyerUserId
+                    }
+                    orders.addAll(header.orders ?: arrayListOf())
+                    serviceOrders.addAll(header.serviceOrders ?: arrayListOf())
+                }
                 var groupMembershipList = getGroupMembershipsDeferred.await()
 
                 var deliveryUserIdsList = groupMembershipList
                     .filter { x -> x.roles!!.split(',').contains(USER_ROLE_DELIVER) }
                     .map { x -> x.userId ?: -1}
 
-                var userIds = orders.map { x -> x.buyerUserId ?: -1}
+                var userIds = orderHeaders.map { x -> x.buyerUserId ?: -1}
                     .plus(orders.map { x -> x.sellerUserId ?: -1})
                     .plus(deliveryUserIdsList)
                     .distinct()
@@ -106,10 +109,10 @@ class AssignDeliveryViewModel(val database: SessionDatabaseDao, application: App
                 var userDetailsList = getUserDetailsDataDeferred.await()
                 var deliverUserNamesList = deliveryUserIdsList.map { x-> userDetailsList.filter { y -> y.userId == x }.first().userName?: "" }
 
-                var toDeliverOrders = orders.filter { x -> x.orderStatus!!.contains(ORDER_STATUS_ORDERED)
-                        || x.orderStatus!!.contains(ORDER_STATUS_CONFIRMED)}
+//                var toDeliverOrders = orders.filter { x -> x.orderStatus!!.contains(ORDER_STATUS_ORDERED)
+//                        || x.orderStatus!!.contains(ORDER_STATUS_CONFIRMED)}
 
-                allUiData = createAllUiData(groupMembershipList, toDeliverOrders, userDetailsList, deliveryAreaList)
+                allUiData = createAllUiData(groupMembershipList, orderHeaders, userDetailsList, deliveryAreaList)
                 createAllUiFilters(deliveryAreaList, deliverUserNamesList)
 
                 _reportUiFilterModel.value!!.deliveryBoyNameList = arrayListOf("Remove").plus(deliverUserNamesList)
@@ -124,7 +127,7 @@ class AssignDeliveryViewModel(val database: SessionDatabaseDao, application: App
 
 
     private fun createAllUiData(groupMemberships: List<GroupMembership>,
-                                orders: List<Order>,
+                                orderHeaders: List<OrderHeader>,
                                 userDetailsList: List<UserDetails>,
                                 deliveryAreaList: List<DeliveryArea>): ArrayList<AssignDeliveryItemsModel> {
         var allUiData = ArrayList<AssignDeliveryItemsModel>()
@@ -132,57 +135,87 @@ class AssignDeliveryViewModel(val database: SessionDatabaseDao, application: App
             .add(KotlinJsonAdapterFactory())
             .build()
         val jsonAdapter: JsonAdapter<Item> = moshi.adapter(Item::class.java)
-        orders.forEach { order ->
-            var uiElement = AssignDeliveryItemsModel()
-            var item = Item()
-            try {
-                item = jsonAdapter.fromJson(order.orderDescription) ?: Item()
-            } catch (e: Exception){
-                Log.e("Parse Error", e.message)
+        orderHeaders.forEach { orderHeader ->
+            var headerUiElement = AssignDeliveryItemsModel()
+            var orderUiElements = arrayListOf<OrderUiElement>()
+
+            orderHeader.orders?.forEach { order ->
+                var orderUiElement = OrderUiElement()
+                var item = Item()
+                try {
+                    item = jsonAdapter.fromJson(order.orderDescription) ?: Item()
+                } catch (e: Exception){
+                    Log.e("Parse Error", e.message)
+                }
+                if (item != null) {
+                    orderUiElement.itemName = item.itemName ?: ""
+                    orderUiElement.itemImageLink = item.imageLink ?: ""
+                    orderUiElement.uom = item.uom ?: ""
+                    orderUiElement.farmerName = item.farmerUserName ?: ""
+                }
+                val sellerUserDetails = userDetailsList.filter { x -> x.userId?.equals(order.sellerUserId) ?: false }.firstOrNull()
+
+                orderUiElement.orderId = order.orderId ?: -1
+                orderUiElement.confirmedQuantity = order.confirmedQuantity ?: 0.0
+                orderUiElement.orderedQuantity = order.orderedQuantity ?: 0.0
+                orderUiElement.orderStatus = order.orderStatus ?: ""
+                orderUiElement.numberOfPackets = order.numberOfPackets ?: -1
+                orderUiElement.farmerName = sellerUserDetails?.userName ?: ""
+
+                orderUiElements.add(orderUiElement)
             }
 
-            if (item != null) {
-                uiElement.itemId = item.itemId ?: -1
-                uiElement.itemName = item.itemName ?: ""
-                uiElement.itemDescription = item.description ?: ""
-                uiElement.itemUom = item.uom ?: ""
-                uiElement.itemImageLink = item.imageLink ?: ""
-                uiElement.price = item.pricePerUnit ?: 0.0
-            }
-            uiElement.orderedDate = formatter.format(df.parse(order.orderedDate))
-            uiElement.orderedQuantity = order.orderedQuantity ?: 0.0
-            if(order.orderStatus.equals(ORDER_STATUS_ORDERED)) {
-                uiElement.confirmedQuantity =  order.orderedQuantity ?: 0.0
-            } else {
-                uiElement.confirmedQuantity = order.confirmedQuantity ?: 0.0
-            }
-
-            val buyerUserDetails = userDetailsList.filter { x -> x.userId?.equals(order.buyerUserId) ?: false }.firstOrNull()
-            val sellerUserDetails = userDetailsList.filter { x -> x.userId?.equals(order.sellerUserId) ?: false }.firstOrNull()
-            val deliveryUserDetails = userDetailsList.filter { x -> x.userId?.equals(order.deliveryUserId) ?: false }.firstOrNull()
-            val buyerMembershipDetails = groupMemberships.filter { x -> x.userId?.equals(order.buyerUserId) ?: false }.firstOrNull()
+            val buyerUserDetails = userDetailsList.filter { x -> x.userId?.equals(orderHeader.buyerUserId) ?: false }.firstOrNull()
+            val buyerMembershipDetails = groupMemberships.filter { x -> x.userId?.equals(orderHeader.buyerUserId) ?: false }.firstOrNull()
             val deliveryArea = deliveryAreaList.filter{ x-> x.deliveryAreaId?.equals(buyerMembershipDetails?.deliveryAreaId)?: false}.firstOrNull()
+            val deliveryUserDetails = userDetailsList.filter { x -> x.userId?.equals(orderHeader.deliveryUserId) ?: false }.firstOrNull()
 
-            uiElement.buyerName = buyerUserDetails?.userName ?: ""
-            uiElement.buyerMobile = buyerUserDetails?.mobile ?: ""
-            uiElement.sellerName = sellerUserDetails?.userName ?: ""
-            uiElement.sellerMobile = sellerUserDetails?.mobile ?: ""
-            uiElement.deliveryArea = deliveryArea?.deliveryArea ?: ""
-            uiElement.orderId = order.orderId ?: -1L
-            uiElement.orderAmount = order.orderedAmount ?: 0.0
-            uiElement.discountAmount = order.discountAmount ?: 0.0
-            uiElement.orderStatus = order.orderStatus ?: ""
-            uiElement.paymentStatus = order.paymentStatus ?: ""
-            uiElement.buyerUserId = order.buyerUserId ?: -1
-            uiElement.sellerUserId = order.sellerUserId ?: -1
-            uiElement.deliveryAddress = order.deliveryLocation ?: ""
-            uiElement.deliveryBoyId = order.deliveryUserId ?: -1L
-            uiElement.deliveryBoyName = deliveryUserDetails?.userName?: ""
-            uiElement.displayQuantity = getDisplayQuantity(uiElement.orderStatus, uiElement.orderedQuantity, uiElement.confirmedQuantity)
-            allUiData.add(uiElement)
+            headerUiElement.orderHeaderId = orderHeader.orderHeaderId ?: -1
+            headerUiElement.packingNumber = orderHeader.packingNumber ?: 0
+            headerUiElement.totalNumberOfPackets = orderUiElements.map { it.numberOfPackets }
+                .filter { it >= 0 }.sum()
+            headerUiElement.finalAmount = orderHeader.final_amount ?: 0.0
+            headerUiElement.buyerName = buyerUserDetails?.userName ?: ""
+            headerUiElement.buyerMobile = buyerUserDetails?.mobile ?: ""
+            headerUiElement.buyerUserId = orderHeader.buyerUserId ?: -1
+            headerUiElement.deliveryArea = deliveryArea?.deliveryArea ?: ""
+            headerUiElement.deliveryDate = formatter.format(df.parse(orderHeader.deliveryDate))
+            headerUiElement.deliveryAddress = orderHeader.deliveryLocation ?: ""
+            headerUiElement.deliveryBoyId = orderHeader.deliveryUserId ?: -1
+            headerUiElement.deliveryBoyName = deliveryUserDetails?.userName ?: ""
+            headerUiElement.orders = orderUiElements
+            headerUiElement.isItemChecked = false
+
+//
+//            uiElement.orderedQuantity = order.orderedQuantity ?: 0.0
+//            if(order.orderStatus.equals(ORDER_STATUS_ORDERED)) {
+//                uiElement.confirmedQuantity =  order.orderedQuantity ?: 0.0
+//            } else {
+//                uiElement.confirmedQuantity = order.confirmedQuantity ?: 0.0
+//            }
+//
+//            uiElement.buyerName = buyerUserDetails?.userName ?: ""
+//            uiElement.buyerMobile = buyerUserDetails?.mobile ?: ""
+//            uiElement.sellerName = sellerUserDetails?.userName ?: ""
+//            uiElement.sellerMobile = sellerUserDetails?.mobile ?: ""
+//            uiElement.deliveryArea = deliveryArea?.deliveryArea ?: ""
+//            uiElement.orderId = order.orderId ?: -1L
+//            uiElement.orderAmount = order.orderedAmount ?: 0.0
+//            uiElement.discountAmount = order.discountAmount ?: 0.0
+//            uiElement.orderStatus = order.orderStatus ?: ""
+//            uiElement.paymentStatus = order.paymentStatus ?: ""
+//            uiElement.buyerUserId = order.buyerUserId ?: -1
+//            uiElement.sellerUserId = order.sellerUserId ?: -1
+//            uiElement.deliveryAddress = order.deliveryLocation ?: ""
+//            uiElement.deliveryBoyId = order.deliveryUserId ?: -1L
+//            uiElement.deliveryBoyName = deliveryUserDetails?.userName?: ""
+//            uiElement.displayQuantity = getDisplayQuantity(uiElement.orderStatus, uiElement.orderedQuantity, uiElement.confirmedQuantity)
+
+
+            allUiData.add(headerUiElement)
         }
 
-        allUiData.sortByDescending { formatter.parse(it.orderedDate) }
+        allUiData.sortByDescending { formatter.parse(it.deliveryDate) }
         return allUiData
     }
 
@@ -298,12 +331,12 @@ class AssignDeliveryViewModel(val database: SessionDatabaseDao, application: App
         selectedEndDate: String
     ) : Boolean {
 
-        if (element.orderedDate.isBlank() ||
+        if (element.deliveryDate.isBlank() ||
             selectedEndDate.isBlank() ||
             selectedStartDate.isBlank()) return true
 
-        return formatter.parse(element.orderedDate) >= formatter.parse(selectedStartDate) &&
-                formatter.parse(element.orderedDate) <= formatter.parse(selectedEndDate)
+        return formatter.parse(element.deliveryDate) >= formatter.parse(selectedStartDate) &&
+                formatter.parse(element.deliveryDate) <= formatter.parse(selectedEndDate)
     }
 
 
@@ -371,12 +404,12 @@ class AssignDeliveryViewModel(val database: SessionDatabaseDao, application: App
 
     fun onCheckBoxClicked(selectedUiModel: AssignDeliveryItemsModel) {
         var isChecked = visibleUiData.value
-            ?.filter { it.orderId.equals(selectedUiModel.orderId) }
+            ?.filter { it.orderHeaderId.equals(selectedUiModel.orderHeaderId) }
             ?.first()
             ?.isItemChecked ?: true
 
         _visibleUiData.value
-            ?.filter { it.orderId.equals(selectedUiModel.orderId) }
+            ?.filter { it.orderHeaderId.equals(selectedUiModel.orderHeaderId) }
             ?.first()
             ?.isItemChecked = !isChecked
     }
@@ -405,20 +438,16 @@ class AssignDeliveryViewModel(val database: SessionDatabaseDao, application: App
         }
     }
 
-    private fun createAssignOrderRequests(uiDataElements: MutableList<AssignDeliveryItemsModel>?): List<OrderAssignRequest> {
-        var orderAssignRequestList: ArrayList<OrderAssignRequest> = arrayListOf()
+    private fun createAssignOrderRequests(uiDataElements: MutableList<AssignDeliveryItemsModel>?): List<OrderDeliveryAssignRequest> {
+        var orderDeliveryAssignRequestList: ArrayList<OrderDeliveryAssignRequest> = arrayListOf()
         uiDataElements?.filter { it.isItemChecked }?.forEach { element ->
-            var assignRequest = OrderAssignRequest(
-                orderId = element.orderId,
+            var assignRequest = OrderDeliveryAssignRequest(
+                orderHeaderId = element.orderHeaderId,
                 deliveryUserId = _reportUiFilterModel.value?.selectedDeliveryBoy
             )
-            orderAssignRequestList.add(assignRequest)
+            orderDeliveryAssignRequestList.add(assignRequest)
         }
-        return orderAssignRequestList
-    }
-
-    private fun calculateOrderAmount(element: AssignDeliveryItemsModel): Double {
-        return element.confirmedQuantity * element.price - element.discountAmount
+        return orderDeliveryAssignRequestList
     }
 
 }

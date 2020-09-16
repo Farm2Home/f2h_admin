@@ -18,6 +18,7 @@ import com.f2h.f2h_admin.constants.F2HConstants.ORDER_STATUS_ORDERED
 import com.f2h.f2h_admin.constants.F2HConstants.ORDER_STATUS_REJECTED
 import com.f2h.f2h_admin.constants.F2HConstants.PAYMENT_STATUS_PAID
 import com.f2h.f2h_admin.constants.F2HConstants.PAYMENT_STATUS_PENDING
+import com.f2h.f2h_admin.network.models.HandlingCharge
 import com.f2h.f2h_admin.screens.report.ReportItemsModel
 import java.text.DateFormat
 import java.text.SimpleDateFormat
@@ -181,6 +182,51 @@ fun TextView.setAggregationFormatted(list: List<ReportItemsModel>?){
         }
 
     }
+}
+
+
+@BindingAdapter("farmerCommission")
+fun TextView.setFarmerCommission(list: List<ReportItemsModel>?){
+    if (list != null) {
+        var totalFarmerCommission = (0).toDouble()
+        list.forEach { element ->
+            totalFarmerCommission += (element.farmerCommission)
+        }
+        text = String.format("₹%.0f", totalFarmerCommission)
+    }
+}
+
+
+@BindingAdapter("v2Commission")
+fun TextView.setV2Commission(list: List<ReportItemsModel>?){
+    if (list != null) {
+        var totalV2Commission = (0).toDouble()
+        list.forEach { element ->
+            totalV2Commission += (element.v2Commission)
+        }
+        text = String.format("₹%.0f", totalV2Commission)
+    }
+}
+
+
+@BindingAdapter("handlingChargesFormatted")
+fun TextView.setHandlingCharges(list: List<ReportItemsModel>?){
+    if (list != null) {
+        var handlingCharges = list.flatMap { it.handlingCharges }
+        var handlingOptionIds = handlingCharges.map { it.handlingOptionId }
+        var handlingChargeString = ""
+        handlingOptionIds.forEach { id ->
+            handlingChargeString = String.format("%s%s", handlingChargeString,
+                calculateTotalChargeForEach(id, handlingCharges.filter { it.handlingOptionId.equals(id) })  )
+        }
+        text = String.format("%s", handlingChargeString)
+    }
+}
+
+fun calculateTotalChargeForEach(id: Long, handlingCharges: List<HandlingCharge>): Any? {
+    var handlingChargeName: String = handlingCharges.firstOrNull()?.name ?: ""
+    var totalCharge = handlingCharges.sumByDouble { it.amount }
+    return String.format("%s = ₹%.0f\n", handlingChargeName, totalCharge)
 }
 
 

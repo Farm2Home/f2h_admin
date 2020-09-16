@@ -2,9 +2,7 @@ package com.f2h.f2h_admin.network
 
 import com.f2h.f2h_admin.constants.F2HConstants
 import com.f2h.f2h_admin.constants.F2HConstants.SERVER_URL
-import com.f2h.f2h_admin.network.models.Item
-import com.f2h.f2h_admin.network.models.ItemCreateRequest
-import com.f2h.f2h_admin.network.models.ItemUpdateRequest
+import com.f2h.f2h_admin.network.models.*
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -40,6 +38,15 @@ interface ItemApiService{
     @GET("item/{item_id}")
     fun getItem(@Path("item_id") itemId: Long):
             Deferred<Item>
+
+    @GET("handling_charge")
+    fun getAllHandlingChargesForItem(@Query("item_id") itemId: Long): Deferred<List<HandlingCharge>>
+
+    @POST("handling_charges")
+    fun createNewHandlingChargesForItem(@Body request: List<HandlingChargesCreateRequest>): Deferred<List<HandlingCharge>>
+
+    @DELETE("handling_charge")
+    fun deleteExistingHandlingCharges(@Query("handling_charge_ids") handlingChargeIds: String?): Deferred<String?>
 
 }
 
