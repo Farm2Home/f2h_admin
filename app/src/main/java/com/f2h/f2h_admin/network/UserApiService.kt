@@ -1,5 +1,6 @@
 package com.f2h.f2h_admin.network
 
+import android.content.Context
 import com.f2h.f2h_admin.constants.F2HConstants.SERVER_URL
 import com.f2h.f2h_admin.network.models.User
 import com.f2h.f2h_admin.network.models.UserCreateRequest
@@ -11,18 +12,6 @@ import kotlinx.coroutines.Deferred
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.*
-
-private const val BASE_URL = SERVER_URL
-
-private val moshi = Moshi.Builder()
-    .add(KotlinJsonAdapterFactory())
-    .build()
-
-private val retrofit = Retrofit.Builder()
-    .addConverterFactory(MoshiConverterFactory.create(moshi))
-    .addCallAdapterFactory(CoroutineCallAdapterFactory())
-    .baseUrl(BASE_URL)
-    .build()
 
 interface UserApiService{
     @GET("user/{user_id}")
@@ -41,7 +30,7 @@ interface UserApiService{
 }
 
 object UserApi {
-    val retrofitService : UserApiService by lazy {
-        retrofit.create(UserApiService::class.java)
+    fun retrofitService(context: Context): UserApiService {
+        return RetrofitInstance.build(context).create(UserApiService::class.java)
     }
 }

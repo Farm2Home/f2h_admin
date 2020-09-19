@@ -31,8 +31,8 @@ class ContactUsViewModel(val database: SessionDatabaseDao, application: Applicat
         coroutineScope.launch {
             userSession = retrieveSession()
             try {
-                var activeGroupData = GroupApi.retrofitService.getGroupDetails(userSession.groupId).await()
-                var userData = activeGroupData.ownerUserId?.let { UserApi.retrofitService.getUserDetails(it).await() }
+                var activeGroupData = GroupApi.retrofitService(getApplication()).getGroupDetails(userSession.groupId).await()
+                var userData = activeGroupData.ownerUserId?.let { UserApi.retrofitService(getApplication()).getUserDetails(it).await() }
                 _response.value = userData
             } catch (t:Throwable){
                 println(t.message)

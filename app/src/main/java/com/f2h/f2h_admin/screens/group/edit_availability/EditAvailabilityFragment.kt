@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil.inflate
 import androidx.fragment.app.Fragment
@@ -49,6 +50,36 @@ class EditAvailabilityFragment : Fragment() {
             Toast.makeText(this.context, message, Toast.LENGTH_SHORT).show()
         })
 
+
+
+        viewModel.deliverySlotList.observe(viewLifecycleOwner, Observer { deliverySlotItem ->
+            val spinnerArrayAdapter: ArrayAdapter<String> = ArrayAdapter(
+                requireContext(), android.R.layout.simple_spinner_item, deliverySlotItem.map { it.name ?: "" }
+            )
+            spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            binding.editDeliverySlotSpinner.adapter = spinnerArrayAdapter
+        })
+
+        viewModel.initialDeliverySlotId.observe(viewLifecycleOwner, Observer { initialDeliverySlotId ->
+            var pos = viewModel.getInitialIndex()
+            println(binding.editDeliverySlotSpinner.getItemAtPosition(pos))
+            binding.editDeliverySlotSpinner.setSelection(pos)
+        })
+
+        //Delivery Slot Spinner
+        binding.editDeliverySlotSpinner?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                TODO("Not yet implemented")
+            }
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                viewModel.onDeliverySlotSelected(position)
+            }
+        }
 
         //Date Spinner
         binding.editDateSpinner?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {

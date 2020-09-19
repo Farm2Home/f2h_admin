@@ -72,11 +72,11 @@ class AddItemViewModel(val database: SessionDatabaseDao, application: Applicatio
     private fun getFarmersAndUoms() {
         coroutineScope.launch {
             _sessionData.value = retrieveSession()
-            val getAllUomsDataDeferred = UomApi.retrofitService.getAllUoms()
-            val getAllFarmersInGroupDataDeferred = GroupMembershipApi.retrofitService.getGroupMembership(_sessionData.value!!.groupId, "FARMER")
+            val getAllUomsDataDeferred = UomApi.retrofitService(getApplication()).getAllUoms()
+            val getAllFarmersInGroupDataDeferred = GroupMembershipApi.retrofitService(getApplication()).getGroupMembership(_sessionData.value!!.groupId, "FARMER")
             try {
                 val farmerUserIds = getAllFarmersInGroupDataDeferred.await().map { it.userId ?: -1}
-                val getFarmerDetailsDataDeferred = UserApi.retrofitService.getUserDetailsByUserIds(farmerUserIds.joinToString())
+                val getFarmerDetailsDataDeferred = UserApi.retrofitService(getApplication()).getUserDetailsByUserIds(farmerUserIds.joinToString())
                 farmerDetails = getFarmerDetailsDataDeferred.await()
                 itemUomDetails =  getAllUomsDataDeferred.await()
                 createSpinnerEntries()
@@ -91,7 +91,7 @@ class AddItemViewModel(val database: SessionDatabaseDao, application: Applicatio
     private fun getHandlingOptions() {
         coroutineScope.launch {
             try {
-                val getAllHandlingOptionsDataDeferred = HandlingOptionApi.retrofitService.getAllHandlingOptions()
+                val getAllHandlingOptionsDataDeferred = HandlingOptionApi.retrofitService(getApplication()).getAllHandlingOptions()
                 handlingOptions = getAllHandlingOptionsDataDeferred.await()
                 createRecyclerView()
             } catch (t:Throwable){
@@ -267,7 +267,7 @@ class AddItemViewModel(val database: SessionDatabaseDao, application: Applicatio
 
         _isProgressBarActive.value = true
         coroutineScope.launch {
-            val createItemDataDeferred = ItemApi.retrofitService.createItemForGroup(requestBody)
+            val createItemDataDeferred = ItemApi.retrofitService(getApplication()).createItemForGroup(requestBody)
             try {
                 createItemDataDeferred.await()
                 _toastText.value = "Successfully created a new item"

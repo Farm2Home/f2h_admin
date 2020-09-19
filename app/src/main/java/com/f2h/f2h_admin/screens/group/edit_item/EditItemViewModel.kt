@@ -69,8 +69,8 @@ class EditItemViewModel(val database: SessionDatabaseDao, application: Applicati
     private fun getHandlingChargesAndOptions() {
         coroutineScope.launch {
             try {
-                val getAllHandlingOptionsDataDeferred = HandlingOptionApi.retrofitService.getAllHandlingOptions()
-                val getAllHandlingChargesDataDeferred = ItemApi.retrofitService.getAllHandlingChargesForItem(selectedItemId)
+                val getAllHandlingOptionsDataDeferred = HandlingOptionApi.retrofitService(getApplication()).getAllHandlingOptions()
+                val getAllHandlingChargesDataDeferred = ItemApi.retrofitService(getApplication()).getAllHandlingChargesForItem(selectedItemId)
                 handlingOptions = getAllHandlingOptionsDataDeferred.await()
                 handlingCharges = getAllHandlingChargesDataDeferred.await()
                 populateHandlingChargeRecyclerView()
@@ -111,12 +111,12 @@ class EditItemViewModel(val database: SessionDatabaseDao, application: Applicati
     private fun getItemFarmersAndUoms() {
         coroutineScope.launch {
             _sessionData.value = retrieveSession()
-            val getAllUomsDataDeferred = UomApi.retrofitService.getAllUoms()
-            val getAllFarmersInGroupDataDeferred = GroupMembershipApi.retrofitService.getGroupMembership(_sessionData.value!!.groupId, "FARMER")
-            val getSelectedItemDataDeferred = ItemApi.retrofitService.getItem(selectedItemId)
+            val getAllUomsDataDeferred = UomApi.retrofitService(getApplication()).getAllUoms()
+            val getAllFarmersInGroupDataDeferred = GroupMembershipApi.retrofitService(getApplication()).getGroupMembership(_sessionData.value!!.groupId, "FARMER")
+            val getSelectedItemDataDeferred = ItemApi.retrofitService(getApplication()).getItem(selectedItemId)
             try {
                 val farmerUserIds = getAllFarmersInGroupDataDeferred.await().map { it.userId ?: -1}
-                val getFarmerDetailsDataDeferred = UserApi.retrofitService.getUserDetailsByUserIds(farmerUserIds.joinToString())
+                val getFarmerDetailsDataDeferred = UserApi.retrofitService(getApplication()).getUserDetailsByUserIds(farmerUserIds.joinToString())
 
                 selectedItem = getSelectedItemDataDeferred.await()
                 farmerDetails = getFarmerDetailsDataDeferred.await()
@@ -331,7 +331,7 @@ class EditItemViewModel(val database: SessionDatabaseDao, application: Applicati
 
         coroutineScope.launch {
             val updateItemDataDeferred =
-                ItemApi.retrofitService.updateItemForGroup(selectedItemId, requestBody)
+                ItemApi.retrofitService(getApplication()).updateItemForGroup(selectedItemId, requestBody)
             try {
                 updateItemDataDeferred.await()
                 _toastText.value =

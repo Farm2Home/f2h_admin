@@ -73,7 +73,7 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
 
         coroutineScope.launch {
             sessionData.value = retrieveSession()
-            var getOrdersDataDeferred = OrderApi.retrofitService.getOrdersForGroup(sessionData.value!!.groupId, null, null)
+            var getOrdersDataDeferred = OrderApi.retrofitService(getApplication()).getOrdersForGroup(sessionData.value!!.groupId, null, null)
             try {
                 var orders = getOrdersDataDeferred.await()
                 var userIds = orders.map { x -> x.buyerUserId ?: -1}
@@ -81,10 +81,10 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
                 var availabilityIds = orders.map { x -> x.itemAvailabilityId ?: -1 }
 
                 var getUserDetailsDataDeferred =
-                    UserApi.retrofitService.getUserDetailsByUserIds(userIds.joinToString())
+                    UserApi.retrofitService(getApplication()).getUserDetailsByUserIds(userIds.joinToString())
 
                 var getItemAvailabilitiesDataDeferred =
-                    ItemAvailabilityApi.retrofitService.getItemAvailabilities(availabilityIds.joinToString())
+                    ItemAvailabilityApi.retrofitService(getApplication()).getItemAvailabilities(availabilityIds.joinToString())
 
                 var itemAvailabilities = getItemAvailabilitiesDataDeferred.await()
                 var userDetailsList = getUserDetailsDataDeferred.await()
@@ -437,7 +437,7 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
         var orderUpdateRequests = createRejectOrderRequests(visibleUiData.value)
         _isProgressBarActive.value = true;
         coroutineScope.launch {
-            var updateOrdersDataDeferred = OrderApi.retrofitService.updateOrders(orderUpdateRequests)
+            var updateOrdersDataDeferred = OrderApi.retrofitService(getApplication()).updateOrders(orderUpdateRequests)
             try{
                 updateOrdersDataDeferred.await()
                 _toastMessage.value = "Successfully rejected orders"
@@ -473,7 +473,7 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
         var orderUpdateRequests = createConfirmedOrderRequests(visibleUiData.value)
         _isProgressBarActive.value = true
         coroutineScope.launch {
-            var updateOrdersDataDeferred = OrderApi.retrofitService.updateOrders(orderUpdateRequests)
+            var updateOrdersDataDeferred = OrderApi.retrofitService(getApplication()).updateOrders(orderUpdateRequests)
             try{
                 updateOrdersDataDeferred.await()
                 _toastMessage.value = "Successfully confirmed orders"

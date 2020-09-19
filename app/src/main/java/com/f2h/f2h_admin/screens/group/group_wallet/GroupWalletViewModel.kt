@@ -62,10 +62,10 @@ class GroupWalletViewModel(val database: SessionDatabaseDao, application: Applic
             userSession = retrieveSession()
             try {
                 var walletTransactions = listOf<WalletTransaction>()
-                var activeWalletData = WalletApi.retrofitService.getWalletDetails(userSession.groupId, selectedUserId.value ?: -1).await()
+                var activeWalletData = WalletApi.retrofitService(getApplication()).getWalletDetails(userSession.groupId, selectedUserId.value ?: -1).await()
                 var walletData = activeWalletData.firstOrNull() ?: Wallet()
                 if(walletData != null){
-                    var activeWalletTransactionData = WalletApi.retrofitService.getWalletTransactionDetails(walletData.walletId ?: -1).await()
+                    var activeWalletTransactionData = WalletApi.retrofitService(getApplication()).getWalletTransactionDetails(walletData.walletId ?: -1).await()
                     walletTransactions = activeWalletTransactionData
                 }
                 _wallet.value = walletData
@@ -94,7 +94,7 @@ class GroupWalletViewModel(val database: SessionDatabaseDao, application: Applic
         _isProgressBarActive.value = true
         var newTransaction = createWalletTransactionRequestObject()
         coroutineScope.launch {
-            val createTransactionDeferred = WalletApi.retrofitService.createWalletTransaction(newTransaction)
+            val createTransactionDeferred = WalletApi.retrofitService(getApplication()).createWalletTransaction(newTransaction)
             try {
                 val response = createTransactionDeferred.await()
                 _toastText.value = "Successfully created transaction"

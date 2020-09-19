@@ -48,7 +48,7 @@ class SearchGroupsViewModel(val database: SessionDatabaseDao, application: Appli
     private fun fetchAllLocalities(){
         _isProgressBarActive.value = true
         coroutineScope.launch {
-            var getLocalitiesDataDeferred = LocalityApi.retrofitService.getLocalityDetails()
+            var getLocalitiesDataDeferred = LocalityApi.retrofitService(getApplication()).getLocalityDetails()
             try {
                 var localityNames = arrayListOf<String>()
                 var localityList = getLocalitiesDataDeferred.await()
@@ -66,7 +66,7 @@ class SearchGroupsViewModel(val database: SessionDatabaseDao, application: Appli
         _isProgressBarActive.value = true
         coroutineScope.launch {
             userSession = retrieveSession()
-            var getMemberGroupsDataDeferred = GroupApi.retrofitService.getUserGroups(userSession.userId, roles.joinToString())
+            var getMemberGroupsDataDeferred = GroupApi.retrofitService(getApplication()).getUserGroups(userSession.userId, roles.joinToString())
             try {
                 userGroups = getMemberGroupsDataDeferred.await()
                 getGroupsInfoForLocalities()
@@ -78,7 +78,7 @@ class SearchGroupsViewModel(val database: SessionDatabaseDao, application: Appli
 
     private fun getGroupsInfoForLocalities() {
         coroutineScope.launch {
-            var getSearchGroupsDataDeferred = GroupApi.retrofitService.searchGroupsByLocality(_selectedLocality.value ?: listOf())
+            var getSearchGroupsDataDeferred = GroupApi.retrofitService(getApplication()).searchGroupsByLocality(_selectedLocality.value ?: listOf())
             try {
                 var searchedGroups = getSearchGroupsDataDeferred.await()
                 _groups.value = createSearchGroupsItemList(userGroups, searchedGroups)
@@ -144,11 +144,12 @@ class SearchGroupsViewModel(val database: SessionDatabaseDao, application: Appli
             group.groupId,
             null,
             userSession.userId,
+            null,
             USER_ROLE_GROUP_ADMIN_REQUESTED,
             userSession.userName
         )
         coroutineScope.launch {
-            var getGroupMembershipDataDeferred = GroupMembershipApi.retrofitService.requestGroupMembership(membershipRequest)
+            var getGroupMembershipDataDeferred = GroupMembershipApi.retrofitService(getApplication()).requestGroupMembership(membershipRequest)
             try {
                 var requestedMembership = getGroupMembershipDataDeferred.await()
                 getUserGroupsInformation()

@@ -48,7 +48,7 @@ class EditProfileViewModel(val database: SessionDatabaseDao, application: Applic
         coroutineScope.launch {
             _isProgressBarActive.value = true
             userSession = retrieveSession()
-            var getUserDataDeferred = UserApi.retrofitService.getUserDetails(userSession.userId)
+            var getUserDataDeferred = UserApi.retrofitService(getApplication()).getUserDetails(userSession.userId)
             try {
                 var userData = getUserDataDeferred.await()
                 saveSession(userData, userSession)
@@ -105,7 +105,7 @@ class EditProfileViewModel(val database: SessionDatabaseDao, application: Applic
                 userName.value
             )
 
-            var updateUserData = UserApi.retrofitService.updateUser(userSession.userId, updatedUser)
+            var updateUserData = UserApi.retrofitService(getApplication()).updateUser(userSession.userId, updatedUser)
             try {
                 var userData = updateUserData.await()
                 _response.value = userData;

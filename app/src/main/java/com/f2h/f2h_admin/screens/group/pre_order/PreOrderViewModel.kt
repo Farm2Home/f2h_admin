@@ -60,11 +60,11 @@ class PreOrderViewModel(val database: SessionDatabaseDao, application: Applicati
             try {
 
                 // Fetch Item Data
-                val getItemDataDeferred = ItemApi.retrofitService.getItem(itemId)
+                val getItemDataDeferred = ItemApi.retrofitService(getApplication()).getItem(itemId)
                 val item = getItemDataDeferred.await()
 
                 //Fetch all availabilities for the item
-                val getItemAvailabilitiesDeferred = ItemAvailabilityApi.retrofitService.getItemAvailabilitiesByItemId(item.itemId!!)
+                val getItemAvailabilitiesDeferred = ItemAvailabilityApi.retrofitService(getApplication()).getItemAvailabilitiesByItemId(selectedItemId)
                 val itemAvailabilities = ArrayList(getItemAvailabilitiesDeferred.await())
 
                 //Create the UI Model to populate UI
