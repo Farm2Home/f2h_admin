@@ -56,6 +56,17 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
+                android:id="@+id/textView36"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:text="Delivery Time Slot"
+                android:textSize="12sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/editDateSpinner" />
+
+            <TextView
                 android:id="@+id/textView23"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -87,11 +98,11 @@
                 android:id="@+id/textView26"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="30dp"
+                android:layout_marginTop="20dp"
                 android:text="Available Quantity"
                 android:textSize="12sp"
                 app:layout_constraintStart_toStartOf="@+id/editAvailableQuantity"
-                app:layout_constraintTop_toBottomOf="@+id/editDateSpinner" />
+                app:layout_constraintTop_toBottomOf="@+id/editDeliverySlotSpinner" />
 
             <EditText
                 android:id="@+id/editAvailableQuantity"
@@ -113,6 +124,16 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/textView11"
                 app:layout_constraintTop_toBottomOf="@+id/textView11" />
+
+            <Spinner
+                android:id="@+id/editDeliverySlotSpinner"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:dropDownWidth="match_parent"
+                android:spinnerMode="dropdown"
+                app:layout_constraintEnd_toEndOf="@+id/editDateSpinner"
+                app:layout_constraintStart_toStartOf="@+id/editDateSpinner"
+                app:layout_constraintTop_toBottomOf="@+id/textView36" />
 
             <CheckBox
                 android:id="@+id/freezeCheckbox"

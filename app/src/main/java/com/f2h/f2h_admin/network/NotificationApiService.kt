@@ -1,5 +1,6 @@
 package com.f2h.f2h_admin.network
 
+import android.content.Context
 import com.f2h.f2h_admin.constants.F2HConstants.SERVER_URL
 import com.f2h.f2h_admin.network.models.Comment
 import com.f2h.f2h_admin.network.models.CommentCreateRequest
@@ -15,17 +16,6 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Query
 
-private const val BASE_URL = SERVER_URL
-
-private val moshi = Moshi.Builder()
-    .add(KotlinJsonAdapterFactory())
-    .build()
-
-private val retrofit = Retrofit.Builder()
-    .addConverterFactory(MoshiConverterFactory.create(moshi))
-    .addCallAdapterFactory(CoroutineCallAdapterFactory())
-    .baseUrl(BASE_URL)
-    .build()
 
 interface NotificationApiService{
     @GET("notification/send_groups?")
@@ -37,7 +27,7 @@ interface NotificationApiService{
 }
 
 object NotificationApi {
-    val retrofitService : NotificationApiService by lazy {
-        retrofit.create(NotificationApiService::class.java)
+    fun retrofitService(context: Context): NotificationApiService {
+        return RetrofitInstance.build(context).create(NotificationApiService::class.java)
     }
 }

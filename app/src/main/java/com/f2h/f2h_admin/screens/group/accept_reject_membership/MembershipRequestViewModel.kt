@@ -42,6 +42,8 @@ class MembershipRequestViewModel (val database: SessionDatabaseDao, application:
     val email: LiveData<String>
         get() = _email
 
+    val deliveryCharge = MutableLiveData<String>()
+
     private var _toastMessage = MutableLiveData<String>()
     val toastMessage: LiveData<String>
         get() = _toastMessage
@@ -66,11 +68,12 @@ class MembershipRequestViewModel (val database: SessionDatabaseDao, application:
     init {
         _isProgressBarActive.value = true
         _isMembershipActionComplete.value = false
-        _userName.value = navArgs.memberUiModel.userName ?: ""
-        _deliveryAddress.value = navArgs.memberUiModel.deliveryAddress ?: ""
-        _mobile.value = navArgs.memberUiModel.mobile ?: ""
-        _email.value = navArgs.memberUiModel.email ?: ""
-        groupMembershipId = navArgs.memberUiModel.groupMembershipId ?: -1
+        _userName.value = navArgs.memberUiModel.userName
+        _deliveryAddress.value = navArgs.memberUiModel.deliveryAddress
+        _mobile.value = navArgs.memberUiModel.mobile
+        _email.value = navArgs.memberUiModel.email
+        deliveryCharge.value = navArgs.memberUiModel.deliveryCharge.toString()
+        groupMembershipId = navArgs.memberUiModel.groupMembershipId
         _selectedDeliveryAreaId.value = null
         getMembershipsRequested(navArgs)
 
@@ -86,7 +89,7 @@ class MembershipRequestViewModel (val database: SessionDatabaseDao, application:
             deliveryAreaIdList.add(-1L)
             try{
                 var getDeliveryArea =
-                    DeliveryAreaApi.retrofitService.getDeliveryAreaDetails(sessionData.groupId)
+                    DeliveryAreaApi.retrofitService(getApplication()).getDeliveryAreaDetails(sessionData.groupId)
                 var deliveryArea = getDeliveryArea.await()
                 deliveryArea = deliveryArea.sortedBy { it.deliveryArea }
                 deliveryArea.forEach{
@@ -188,7 +191,7 @@ class MembershipRequestViewModel (val database: SessionDatabaseDao, application:
         if(is_change && acceptedRoles.size == 0){
             coroutineScope.launch {
                 var deleteGroupMembershipDataDeferred =
-                    GroupMembershipApi.retrofitService.deleteGroupMembership(groupMembershipId)
+                    GroupMembershipApi.retrofitService(getApplication()).deleteGroupMembership(groupMembershipId)
                 try {
                     var deleteMembership = deleteGroupMembershipDataDeferred.await()
                     _isMembershipActionComplete.value = true
@@ -202,12 +205,13 @@ class MembershipRequestViewModel (val database: SessionDatabaseDao, application:
                 null,
                 selectedDeliveryAreaId.value,
                 null,
+                deliveryCharge.value?.toDouble(),
                 acceptedRoles.joinToString(","),
                 null
             )
             coroutineScope.launch {
                 var updateGroupMembershipDataDeferred =
-                    GroupMembershipApi.retrofitService.updateGroupMembership(groupMembershipId, membershipRequest)
+                    GroupMembershipApi.retrofitService(getApplication()).updateGroupMembership(groupMembershipId, membershipRequest)
                 try {
                     var updatedMembership = updateGroupMembershipDataDeferred.await()
                     _isMembershipActionComplete.value = true

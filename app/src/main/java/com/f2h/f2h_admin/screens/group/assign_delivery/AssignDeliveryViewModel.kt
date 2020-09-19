@@ -71,13 +71,13 @@ class AssignDeliveryViewModel(val database: SessionDatabaseDao, application: App
         coroutineScope.launch {
             sessionData.value = retrieveSession()
             var getOrderHeadersDataDeferred =
-                OrderApi.retrofitService.getOrderHeaderForGroup(sessionData.value!!.groupId, fetchOrderDate(-1), fetchOrderDate(3))
+                OrderApi.retrofitService(getApplication()).getOrderHeaderForGroup(sessionData.value!!.groupId, fetchOrderDate(-1), fetchOrderDate(3))
 
             var getDeliveryArea =
-                DeliveryAreaApi.retrofitService.getDeliveryAreaDetails(sessionData.value!!.groupId)
+                DeliveryAreaApi.retrofitService(getApplication()).getDeliveryAreaDetails(sessionData.value!!.groupId)
 
             var getGroupMembershipsDeferred =
-                GroupMembershipApi.retrofitService.getGroupMembership(sessionData.value!!.groupId, null)
+                GroupMembershipApi.retrofitService(getApplication()).getGroupMembership(sessionData.value!!.groupId, null)
             try {
                 var orderHeaders = getOrderHeadersDataDeferred.await()
                 var orders = arrayListOf<Order>()
@@ -103,7 +103,7 @@ class AssignDeliveryViewModel(val database: SessionDatabaseDao, application: App
 
 
                 var getUserDetailsDataDeferred =
-                    UserApi.retrofitService.getUserDetailsByUserIds(userIds.joinToString())
+                    UserApi.retrofitService(getApplication()).getUserDetailsByUserIds(userIds.joinToString())
 
                 var deliveryAreaList = getDeliveryArea.await()
                 var userDetailsList = getUserDetailsDataDeferred.await()
@@ -427,7 +427,7 @@ class AssignDeliveryViewModel(val database: SessionDatabaseDao, application: App
         var orderUpdateRequests = createAssignOrderRequests(visibleUiData.value)
         _isProgressBarActive.value = true
         coroutineScope.launch {
-            var updateOrdersDataDeferred = OrderApi.retrofitService.assignOrders(orderUpdateRequests)
+            var updateOrdersDataDeferred = OrderApi.retrofitService(getApplication()).assignOrders(orderUpdateRequests)
             try{
                 updateOrdersDataDeferred.await()
                 _toastMessage.value = "Successfully assigned orders"
