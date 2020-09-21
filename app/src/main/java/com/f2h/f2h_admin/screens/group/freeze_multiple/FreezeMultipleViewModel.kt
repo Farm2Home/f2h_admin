@@ -73,7 +73,7 @@ class FreezeMultipleViewModel(val database: SessionDatabaseDao, application: App
 //            var endDateString = requestFormatter.format(endDate.time)
 
             var getItemsDeferred =
-                ItemApi.retrofitService.getItemsForGroup(sessionData.value?.groupId!!)
+                ItemApi.retrofitService(getApplication()).getItemsForGroup(sessionData.value?.groupId!!)
 
             try {
                 var items = getItemsDeferred.await()
@@ -85,10 +85,10 @@ class FreezeMultipleViewModel(val database: SessionDatabaseDao, application: App
                     .distinct()
 
                 var getAvailabilitiesDeferred =
-                    ItemAvailabilityApi.retrofitService.getItemAvailabilitiesByItemId(itemIdsList)
+                    ItemAvailabilityApi.retrofitService(getApplication()).getItemAvailabilitiesByItemId(itemIdsList)
 
                 var getUserDetailsDataDeferred =
-                    UserApi.retrofitService.getUserDetailsByUserIds(userIds.joinToString())
+                    UserApi.retrofitService(getApplication()).getUserDetailsByUserIds(userIds.joinToString())
 
                 var userDetailsList = getUserDetailsDataDeferred.await()
                 var availabilities = getAvailabilitiesDeferred.await()
@@ -320,7 +320,7 @@ class FreezeMultipleViewModel(val database: SessionDatabaseDao, application: App
     fun updateAvailability(availabilityUpdateRequests: List<ItemAvailabilityUpdateRequest>){
         _isProgressBarActive.value = true
         coroutineScope.launch {
-            var freezeAvailabilityDataDeferred = ItemAvailabilityApi.retrofitService.updateItemAvailabilities(availabilityUpdateRequests)
+            var freezeAvailabilityDataDeferred = ItemAvailabilityApi.retrofitService(getApplication()).updateItemAvailabilities(availabilityUpdateRequests)
             try{
                 freezeAvailabilityDataDeferred.await()
                 _toastMessage.value = "Successfull"

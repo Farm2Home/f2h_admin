@@ -57,18 +57,28 @@ class ReportViewModel(val database: SessionDatabaseDao, application: Application
         _isProgressBarActive.value = true
         coroutineScope.launch {
             sessionData.value = retrieveSession()
-            var getOrdersDataDeferred = OrderApi.retrofitService.getOrdersForGroup(sessionData.value!!.groupId, null, null)
+            var getOrderHeaderDataDeferred = OrderApi.retrofitService(getApplication()).getOrderHeaderForGroup(sessionData.value!!.groupId, null, null)
             try {
-                var orders = getOrdersDataDeferred.await()
-                var userIds = orders.map { x -> x.buyerUserId ?: -1}
+                var orderHeaders = getOrderHeaderDataDeferred.await()
+                var orders = arrayListOf<Order>()
+                var serviceOrders = arrayListOf<ServiceOrder>()
+                orderHeaders.forEach { header ->
+                    header.orders?.map { it ->
+                        it.deliveryLocation = header.deliveryLocation
+                        it.buyerUserId = header.buyerUserId
+                    }
+                    orders.addAll(header.orders ?: arrayListOf())
+                    serviceOrders.addAll(header.serviceOrders ?: arrayListOf())
+                }
+                var userIds = orderHeaders.map { x -> x.buyerUserId ?: -1}
                     .plus(orders.map { x -> x.sellerUserId ?: -1}).distinct()
                 var availabilityIds = orders.map { x -> x.itemAvailabilityId ?: -1 }
 
                 var getUserDetailsDataDeferred =
-                    UserApi.retrofitService.getUserDetailsByUserIds(userIds.joinToString())
+                    UserApi.retrofitService(getApplication()).getUserDetailsByUserIds(userIds.joinToString())
 
                 var getItemAvailabilitiesDataDeferred =
-                    ItemAvailabilityApi.retrofitService.getItemAvailabilities(availabilityIds.joinToString())
+                    ItemAvailabilityApi.retrofitService(getApplication()).getItemAvailabilities(availabilityIds.joinToString())
 
                 var itemAvailabilities = getItemAvailabilitiesDataDeferred.await()
                 var userDetailsList = getUserDetailsDataDeferred.await()
@@ -120,6 +130,7 @@ class ReportViewModel(val database: SessionDatabaseDao, application: Application
                 uiElement.itemUom = item.uom ?: ""
                 uiElement.itemImageLink = item.imageLink ?: ""
                 uiElement.price = item.pricePerUnit ?: 0.0
+                uiElement.handlingCharges = item.handlingCharges
             }
 
             val buyerUserDetails = userDetailsList.filter { x -> x.userId?.equals(order.buyerUserId) ?: false }.firstOrNull()
@@ -129,6 +140,8 @@ class ReportViewModel(val database: SessionDatabaseDao, application: Application
             uiElement.sellerName = sellerUserDetails?.userName ?: ""
             uiElement.sellerMobile = sellerUserDetails?.mobile ?: ""
 
+            uiElement.v2Commission = order.v2Amount ?: 0.0
+            uiElement.farmerCommission = order.farmerAmount ?: 0.0
             uiElement.orderedDate = formatter.format(df.parse(order.orderedDate))
             uiElement.orderedQuantity = order.orderedQuantity ?: 0.0
             uiElement.confirmedQuantity = order.confirmedQuantity ?: 0.0

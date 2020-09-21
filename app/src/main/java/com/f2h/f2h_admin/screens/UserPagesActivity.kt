@@ -1,5 +1,6 @@
 package com.f2h.f2h_admin.screens
 
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.databinding.DataBindingUtil
@@ -76,6 +77,10 @@ class UserPagesActivity : AppCompatActivity() {
             }
             return@withContext session
         }
+    }
+
+    fun getContext(): Context {
+        return this.applicationContext
     }
 
 }

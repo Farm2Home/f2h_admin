@@ -18,7 +18,6 @@ fun TextView.setPriceFormattedFromItem(data: Item?){
     }
 }
 
-
 @BindingAdapter("buttonStatus")
 fun Button.setButtonStatus(status: Boolean){
     isEnabled = status
@@ -79,3 +78,4 @@ fun loadGroupImage(view: ImageView, url: String?) {
         .circleCrop()
         .into(view)
 }
+

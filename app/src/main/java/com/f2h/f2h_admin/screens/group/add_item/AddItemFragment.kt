@@ -19,8 +19,6 @@ import com.f2h.f2h_admin.R
 import com.f2h.f2h_admin.database.F2HDatabase
 import com.f2h.f2h_admin.database.SessionDatabaseDao
 import com.f2h.f2h_admin.databinding.FragmentAddItemBinding
-import com.f2h.f2h_admin.network.models.Item
-import com.f2h.f2h_admin.screens.group.group_tabs.GroupDetailsTabsFragmentDirections
 import com.github.dhaval2404.imagepicker.ImagePicker
 
 
@@ -95,6 +93,22 @@ class AddItemFragment : Fragment() {
         })
 
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val adapter = HandlingChargesItemsAdapter(CheckBoxClickListener { uiModel ->
+            viewModel.onCheckBoxClicked(uiModel)
+        })
+        binding.handlingChargeRV.adapter = adapter
+        viewModel.visibleHandlingChargeUiData.observe(viewLifecycleOwner, Observer {
+            it?.let {
+                adapter.submitList(it)
+                adapter.notifyDataSetChanged()
+            }
+        })
+
     }
 
 

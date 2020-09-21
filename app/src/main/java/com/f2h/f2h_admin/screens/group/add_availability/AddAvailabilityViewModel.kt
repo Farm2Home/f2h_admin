@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import com.f2h.f2h_admin.database.SessionDatabaseDao
 import com.f2h.f2h_admin.database.SessionEntity
 import com.f2h.f2h_admin.network.*
+import com.f2h.f2h_admin.network.models.DeliverySlot
 import com.f2h.f2h_admin.network.models.ItemAvailabilityCreateRequest
 import com.f2h.f2h_admin.network.models.Uom
 import com.f2h.f2h_admin.network.models.UserDetails
@@ -22,9 +23,11 @@ class AddAvailabilityViewModel(val database: SessionDatabaseDao, application: Ap
     val itemId = MutableLiveData<Long>()
     val availableQuantity = MutableLiveData<String>()
     val selectedDate = MutableLiveData<String>()
+    val selectedDeliverySlot = MutableLiveData<DeliverySlot>()
     val selectedRepeatFeature = MutableLiveData<String>()
     val dateStringList = MutableLiveData<List<String>>()
     val repeatFeaturesList = MutableLiveData<List<String>>()
+    val deliverySlotList = MutableLiveData<List<DeliverySlot>>()
 
     private val _isProgressBarActive = MutableLiveData<Boolean>()
     val isProgressBarActive: LiveData<Boolean>
@@ -46,14 +49,22 @@ class AddAvailabilityViewModel(val database: SessionDatabaseDao, application: Ap
     private val df: DateFormat = SimpleDateFormat("EEEE, dd-MM-yyyy")
 
     init {
+        _isProgressBarActive.value = true
         _isAvailabilityActionComplete.value = false
         fetchSessionData()
-        createSpinnerEntries()
     }
 
     private fun fetchSessionData() {
         coroutineScope.launch {
             _sessionData = retrieveSession()
+            val fetchDeliverySlots = DeliverySlotApi.retrofitService(getApplication()).getDeliverySlotsForGroup(_sessionData.groupId)
+            try {
+                deliverySlotList.value = fetchDeliverySlots.await()
+                createSpinnerEntries()
+            } catch (t: Throwable) {
+                _toastText.value = "Oops something went wrong, try again later"
+            }
+            _isProgressBarActive.value = false
         }
     }
 
@@ -100,6 +111,9 @@ class AddAvailabilityViewModel(val database: SessionDatabaseDao, application: Ap
         selectedDate.value = dateStringList.value?.get(position)
     }
 
+    fun onDeliverySlotSelected(position: Int) {
+        selectedDeliverySlot.value = deliverySlotList.value?.get(position)
+    }
 
     private fun isAnyFieldInvalid(): Boolean {
 
@@ -160,12 +174,13 @@ class AddAvailabilityViewModel(val database: SessionDatabaseDao, application: Ap
             isFreezed = false,
             repeatDay = calculateRepeatDayFromRepeatFeature(selectedRepeatFeature.value),
             createdBy = _sessionData.userName,
-            updatedBy = _sessionData.userName
+            updatedBy = _sessionData.userName,
+            deliverySlotId = selectedDeliverySlot.value?.deliverySlotId
         )
 
         _isProgressBarActive.value = true
         coroutineScope.launch {
-            val createItemAvailabilityDataDeferred = ItemAvailabilityApi.retrofitService.createItemAvailability(requestBody)
+            val createItemAvailabilityDataDeferred = ItemAvailabilityApi.retrofitService(getApplication()).createItemAvailability(requestBody)
             try {
                 createItemAvailabilityDataDeferred.await()
                 _toastText.value = "Successfully created a new availability"

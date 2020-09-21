@@ -72,7 +72,7 @@ class DeliverViewModel(val database: SessionDatabaseDao, application: Applicatio
 
         coroutineScope.launch {
             sessionData.value = retrieveSession()
-            var getOrdersDataDeferred = OrderApi.retrofitService.getOrdersForGroup(sessionData.value!!.groupId, null, null)
+            var getOrdersDataDeferred = OrderApi.retrofitService(getApplication()).getOrdersForGroup(sessionData.value!!.groupId, null, null)
             try {
                 var orders = getOrdersDataDeferred.await()
                 var userIds = orders.map { x -> x.buyerUserId ?: -1}
@@ -80,10 +80,10 @@ class DeliverViewModel(val database: SessionDatabaseDao, application: Applicatio
                 var availabilityIds = orders.map { x -> x.itemAvailabilityId ?: -1 }
 
                 var getUserDetailsDataDeferred =
-                    UserApi.retrofitService.getUserDetailsByUserIds(userIds.joinToString())
+                    UserApi.retrofitService(getApplication()).getUserDetailsByUserIds(userIds.joinToString())
 
                 var getItemAvailabilitiesDataDeferred =
-                    ItemAvailabilityApi.retrofitService.getItemAvailabilities(availabilityIds.joinToString())
+                    ItemAvailabilityApi.retrofitService(getApplication()).getItemAvailabilities(availabilityIds.joinToString())
 
                 var itemAvailabilities = getItemAvailabilitiesDataDeferred.await()
                 var userDetailsList = getUserDetailsDataDeferred.await()
@@ -374,7 +374,7 @@ class DeliverViewModel(val database: SessionDatabaseDao, application: Applicatio
         var deliveredOrderUpdateRequests = createDeliverOrderRequests(visibleUiData.value)
         _isProgressBarActive.value = true;
         coroutineScope.launch {
-            var updateOrdersDataDeferred = OrderApi.retrofitService.cashCollectedAndUpdateOrders(deliveredOrderUpdateRequests)
+            var updateOrdersDataDeferred = OrderApi.retrofitService(getApplication()).cashCollectedAndUpdateOrders(deliveredOrderUpdateRequests)
             try{
                 updateOrdersDataDeferred.await()
                 _toastMessage.value = "Successfully paid and delivered orders"
@@ -391,7 +391,7 @@ class DeliverViewModel(val database: SessionDatabaseDao, application: Applicatio
         var deliveredOrderUpdateRequests = createDeliverOrderRequests(visibleUiData.value)
         _isProgressBarActive.value = true
         coroutineScope.launch {
-            var deliverOrdersDataDeferred = OrderApi.retrofitService.updateOrders(deliveredOrderUpdateRequests)
+            var deliverOrdersDataDeferred = OrderApi.retrofitService(getApplication()).updateOrders(deliveredOrderUpdateRequests)
             try{
                 deliverOrdersDataDeferred.await()
                 _toastMessage.value = "Successfully delivered orders"

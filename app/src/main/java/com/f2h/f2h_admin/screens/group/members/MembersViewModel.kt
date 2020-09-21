@@ -57,11 +57,11 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
         _isProgressBarActive.value = true
         coroutineScope.launch {
             sessionData.value = retrieveSession()
-            var getGroupMembershipsDeferred = GroupMembershipApi.retrofitService.getGroupMembership(sessionData.value!!.groupId, null)
+            var getGroupMembershipsDeferred = GroupMembershipApi.retrofitService(getApplication()).getGroupMembership(sessionData.value!!.groupId, null)
             try {
                 var memberships = getGroupMembershipsDeferred.await()
                 var userIds = memberships.map { x -> x.userId ?: -1 }.distinct()
-                var getUserDetailsDataDeferred = UserApi.retrofitService.getUserDetailsByUserIds(userIds.joinToString())
+                var getUserDetailsDataDeferred = UserApi.retrofitService(getApplication()).getUserDetailsByUserIds(userIds.joinToString())
                 var userDetails = getUserDetailsDataDeferred.await()
                 allUiData = createAllUiData(memberships, userDetails)
                 if (allUiData.size > 0) {
@@ -88,6 +88,7 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
                 uiElement.mobile = membershipUserDetail.mobile ?: ""
                 uiElement.email = membershipUserDetail.email ?: ""
                 uiElement.roles = membership.roles ?: ""
+                uiElement.deliveryCharge = membership.baseDeliveryCharge ?: 0.0
                 uiElement.groupMembershipId = membership.groupMembershipId ?: -1
                 uiElement.deliveryAreaId = membership.deliveryAreaId ?: -1
                 var roles = membership.roles?.split(",")
