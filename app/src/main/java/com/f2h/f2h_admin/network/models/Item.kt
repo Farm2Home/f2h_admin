@@ -52,5 +52,5 @@ data class ItemUpdateRequest (
     @Json(name = "confirm_qty_jump") var confirmQtyJump: Double?,
     @Json(name = "order_qty_jump") var orderQtyJump: Double?,
     @Json(name = "updated_by") var updatedBy: String?,
-    @Json(name = "handling_charges") var handlingCharges: List<HandlingChargesCreateRequest>
+    @Json(name = "handling_charges") var handlingCharges: List<HandlingChargesCreateRequest>?
 )
