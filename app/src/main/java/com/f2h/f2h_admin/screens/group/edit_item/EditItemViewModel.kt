@@ -135,8 +135,8 @@ class EditItemViewModel(val database: SessionDatabaseDao, application: Applicati
         //Populate the UI screen (edit texts with item details
         itemName.value = selectedItem.itemName
         itemDescription.value = selectedItem.description
-        farmerPrice.value = selectedItem.farmerPrice.toString()
-        v2Price.value = selectedItem.v2Price.toString()
+        farmerPrice.value = (selectedItem.farmerPrice ?: 0.0).toString()
+        v2Price.value = (selectedItem.v2Price ?: 0.0).toString()
         itemImageUrl.value = selectedItem.imageLink
         confirmQuantityJump.value = selectedItem.confirmQtyJump.toString()
         orderQuantityJump.value = selectedItem.orderQtyJump.toString()
@@ -284,33 +284,6 @@ class EditItemViewModel(val database: SessionDatabaseDao, application: Applicati
     private fun updateItemData(imageUrl: String?) {
         _isProgressBarActive.value = true
 
-        //Create new handling charges
-//        createNewHandlingCharges()
-
-        //Delete existing but unchecked handling charges
-//        deletedDeselectedHandlingCharges()
-
-
-
-//        var handlingChargesCreateRequests = ArrayList<HandlingChargesCreateRequest>()
-//        visibleHandlingChargeUiData.value
-//            ?.filter { it.isItemChecked.equals(true) && it.handlingChargeId.equals(0L)}
-//            ?.forEach { handlingCharge ->
-//                var request = HandlingChargesCreateRequest()
-//                request.itemId = selectedItemId
-//                request.groupId = _sessionData.value?.groupId
-//                request.handlingOptionId = handlingCharge.handlingOptionId
-//                request.amount = handlingCharge.handlingCharge
-//                request.userVisibility = false
-//                request.createdBy = _sessionData.value?.userName ?: ""
-//                request.updatedBy = _sessionData.value?.userName ?: ""
-//                handlingChargesCreateRequests.add(request)
-//            }
-//
-//        val handlingChargeIds = visibleHandlingChargeUiData.value
-//            ?.filter { it.isItemChecked.equals(false) && !it.handlingChargeId.equals(0L)}
-//            ?.map { it.handlingChargeId} ?: arrayListOf()
-
 
         //Update existing handling charges and Item
         var requestBody = ItemUpdateRequest(
@@ -359,36 +332,6 @@ class EditItemViewModel(val database: SessionDatabaseDao, application: Applicati
         return handlingChargesCreateRequests
     }
 
-
-//    private fun createNewHandlingCharges() {
-//
-//
-//        coroutineScope.launch {
-//            val createNewHandlingChargeDataDeferred = ItemApi.retrofitService.createNewHandlingChargesForItem(handlingChargesCreateRequests)
-//            val deleteHandlingChargeDataDeferred = ItemApi.retrofitService.deleteExistingHandlingCharges(handlingChargeIds?.joinToString { "," })
-//            try {
-//                createNewHandlingChargeDataDeferred.await()
-//                deleteHandlingChargeDataDeferred.await()
-//            } catch (t: Throwable) {
-//                _toastText.value = "Oops something went wrong, please try again"
-//            }
-//        }
-//    }
-
-
-//    private fun deletedDeselectedHandlingCharges() {
-//        val handlingChargeIds = visibleHandlingChargeUiData.value
-//            ?.filter { it.isItemChecked.equals(false) && !it.handlingChargeId.equals(0L)}
-//            ?.map { it.handlingChargeId}
-//
-//        coroutineScope.launch {
-//            try {
-//
-//            } catch (t: Throwable) {
-//                _toastText.value = "Oops something went wrong, please try again"
-//            }
-//        }
-//    }
 
     fun onCheckBoxClicked(selectedUiModel: HandlingChargesItemsModel) {
         var isChecked = visibleHandlingChargeUiData.value

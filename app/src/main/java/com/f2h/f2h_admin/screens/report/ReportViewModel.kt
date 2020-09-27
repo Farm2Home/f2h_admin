@@ -16,6 +16,7 @@ import com.f2h.f2h_admin.network.ItemAvailabilityApi
 import com.f2h.f2h_admin.network.OrderApi
 import com.f2h.f2h_admin.network.UserApi
 import com.f2h.f2h_admin.network.models.*
+import com.f2h.f2h_admin.utils.fetchOrderDate
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -57,7 +58,7 @@ class ReportViewModel(val database: SessionDatabaseDao, application: Application
         _isProgressBarActive.value = true
         coroutineScope.launch {
             sessionData.value = retrieveSession()
-            var getOrderHeaderDataDeferred = OrderApi.retrofitService(getApplication()).getOrderHeaderForGroup(sessionData.value!!.groupId, null, null)
+            var getOrderHeaderDataDeferred = OrderApi.retrofitService(getApplication()).getOrderHeaderForGroup(sessionData.value!!.groupId, fetchOrderDate(-3), fetchOrderDate(10))
             try {
                 var orderHeaders = getOrderHeaderDataDeferred.await()
                 var orders = arrayListOf<Order>()
@@ -186,7 +187,7 @@ class ReportViewModel(val database: SessionDatabaseDao, application: Application
 
         filters.farmerNameList = arrayListOf("ALL")
 
-        filters.timeFilterList = arrayListOf("Today", "Tomorrow", "Next 7 days", "Last 7 days", "Last 15 days", "Last 30 days")
+        filters.timeFilterList = arrayListOf("Today", "Tomorrow", "Next 7 days", "Last 3 days")
 
         filters.selectedItem = "ALL"
         filters.selectedPaymentStatus = "ALL"
@@ -328,9 +329,7 @@ class ReportViewModel(val database: SessionDatabaseDao, application: Application
         if (position.equals(0)) setTimeFilterRange(0,0) //Today
         if (position.equals(1)) setTimeFilterRange(1,1) //Tomorrow
         if (position.equals(2)) setTimeFilterRange(0,7) //Next 7 Days
-        if (position.equals(3)) setTimeFilterRange(-7,0) //Last week
-        if (position.equals(4)) setTimeFilterRange(-15,0)  //Last 15 days
-        if (position.equals(5)) setTimeFilterRange(-30,0) //Last 30 days
+        if (position.equals(3)) setTimeFilterRange(-3,0) //Last 3 days
         filterVisibleItems()
     }
 
