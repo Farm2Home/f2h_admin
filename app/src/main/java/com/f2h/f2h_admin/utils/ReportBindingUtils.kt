@@ -213,7 +213,7 @@ fun TextView.setV2Commission(list: List<ReportItemsModel>?){
 fun TextView.setHandlingCharges(list: List<ReportItemsModel>?){
     if (list != null) {
         var handlingCharges = list.flatMap { it.handlingCharges }
-        var handlingOptionIds = handlingCharges.map { it.handlingOptionId }
+        var handlingOptionIds = handlingCharges.map { it.handlingOptionId }.distinct()
         var handlingChargeString = ""
         handlingOptionIds.forEach { id ->
             handlingChargeString = String.format("%s%s", handlingChargeString,
