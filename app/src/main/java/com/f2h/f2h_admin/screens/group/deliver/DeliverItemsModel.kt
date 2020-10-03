@@ -31,9 +31,9 @@ data class DeliverItemsModel (
     var comments: ArrayList<Comment> = arrayListOf(),
     var newComment: String = "",
     var isCommentProgressBarActive: Boolean = false,
-    var receivedPacketCount: Int = 0,
+    var receivedPacketCount: Long = 0,
     var isReceived: Boolean = false,
-    var packetCount: Int = 1
+    var packetCount: Long = 1
 )
 
 

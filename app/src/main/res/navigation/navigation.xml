@@ -81,6 +81,9 @@
         <action
             android:id="@+id/action_groupDetailsTabsFragment_to_notificationFragment"
             app:destination="@id/notificationFragment" />
+        <action
+            android:id="@+id/action_groupDetailsTabsFragment_to_deliveryMembersFragment"
+            app:destination="@id/deliveryMembersFragment" />
     </fragment>
     <fragment
         android:id="@+id/allItemsFragment"
@@ -205,4 +208,7 @@
         android:id="@+id/notificationFragment"
         android:name="com.f2h.f2h_admin.screens.group.notification.NotificationFragment"
         tools:layout="@layout/fragment_notification" />
+    <fragment
+        android:id="@+id/deliveryMembersFragment"
+        android:name="com.f2h.f2h_admin.screens.group.deliver.DeliveryMembersFragment" />
 </navigation>

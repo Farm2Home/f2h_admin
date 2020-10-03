@@ -20,5 +20,12 @@ data class GroupMembership (
     @Json(name = "roles") val roles: String? = "",
     @Json(name = "base_delivery_charge") val baseDeliveryCharge: Double? = 0.0,
     @Json(name = "created_by") val createdBy: String? = "",
-    @Json(name = "updated_by") val updatedBy: String? = ""
+    @Json(name = "updated_by") val updatedBy: String? = "",
+    @Json(name = "delivery_sequence") val deliverySequence: Long? = 0L
+)
+
+data class GroupMembershipUpdateRequest (
+    @Json(name = "group_membership_id") val groupMembershipId: Long?,
+    @Json(name = "delivery_sequence") val deliverySequence: Long?,
+    @Json(name = "updated_by") val updatedBy: String?
 )

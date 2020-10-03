@@ -17,7 +17,6 @@ import com.f2h.f2h_admin.network.ItemAvailabilityApi
 import com.f2h.f2h_admin.network.OrderApi
 import com.f2h.f2h_admin.network.UserApi
 import com.f2h.f2h_admin.network.models.*
-import com.f2h.f2h_admin.screens.deliver.DeliverItemsModel
 import com.f2h.f2h_admin.utils.fetchOrderDate
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
@@ -65,7 +64,7 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
         getOrdersReportForGroup()
     }
 
-    fun getOrdersReportForGroup() {
+    private fun getOrdersReportForGroup() {
 
         //refresh data
         _isProgressBarActive.value = true
@@ -74,21 +73,21 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
 
         coroutineScope.launch {
             sessionData.value = retrieveSession()
-            var getOrdersDataDeferred = OrderApi.retrofitService(getApplication()).getOrdersForGroup(sessionData.value!!.groupId, fetchOrderDate(-3), fetchOrderDate(10))
+            val getOrdersDataDeferred = OrderApi.retrofitService(getApplication()).getOrdersForGroup(sessionData.value!!.groupId, fetchOrderDate(-3), fetchOrderDate(10))
             try {
-                var orders = getOrdersDataDeferred.await()
-                var userIds = orders.map { x -> x.buyerUserId ?: -1}
+                val orders = getOrdersDataDeferred.await()
+                val userIds = orders.map { x -> x.buyerUserId ?: -1}
                     .plus(orders.map { x -> x.sellerUserId ?: -1}).distinct()
-                var availabilityIds = orders.map { x -> x.itemAvailabilityId ?: -1 }
+                val availabilityIds = orders.map { x -> x.itemAvailabilityId ?: -1 }
 
-                var getUserDetailsDataDeferred =
+                val getUserDetailsDataDeferred =
                     UserApi.retrofitService(getApplication()).getUserDetailsByUserIds(userIds.joinToString())
 
-                var getItemAvailabilitiesDataDeferred =
+                val getItemAvailabilitiesDataDeferred =
                     ItemAvailabilityApi.retrofitService(getApplication()).getItemAvailabilities(availabilityIds.joinToString())
 
-                var itemAvailabilities = getItemAvailabilitiesDataDeferred.await()
-                var userDetailsList = getUserDetailsDataDeferred.await()
+                val itemAvailabilities = getItemAvailabilitiesDataDeferred.await()
+                val userDetailsList = getUserDetailsDataDeferred.await()
 
                 allUiData = createAllUiData(itemAvailabilities, orders, userDetailsList)
                 createAllUiFilters()
@@ -103,14 +102,14 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
 
     private fun createAllUiData(itemAvailabilitys: List<ItemAvailability>,
                                 orders: List<Order>, userDetailsList: List<UserDetails>): ArrayList<ConfirmRejectItemsModel> {
-        var allUiData = ArrayList<ConfirmRejectItemsModel>()
+        val allUiData = ArrayList<ConfirmRejectItemsModel>()
         val moshi = Moshi.Builder()
             .add(KotlinJsonAdapterFactory())
             .build()
         val jsonAdapter: JsonAdapter<Item> = moshi.adapter(Item::class.java)
         orders.forEach { order ->
 
-            var uiElement = ConfirmRejectItemsModel()
+            val uiElement = ConfirmRejectItemsModel()
             var item = Item()
             try {
                 item = jsonAdapter.fromJson(order.orderDescription) ?: Item()
@@ -183,8 +182,8 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
         _reportUiFilterModel.value?.selectedBuyer = "ALL"
 
         // Set date range as today
-        var rangeStartDate = Calendar.getInstance()
-        var rangeEndDate = Calendar.getInstance()
+        val rangeStartDate = Calendar.getInstance()
+        val rangeEndDate = Calendar.getInstance()
         _reportUiFilterModel.value?.selectedStartDate = formatter.format(rangeStartDate.time)
         _reportUiFilterModel.value?.selectedEndDate = formatter.format(rangeEndDate.time)
     }
@@ -360,8 +359,8 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
     }
 
     fun setTimeFilterRange(startDateOffset: Int, endDateOffset: Int) {
-        var rangeStartDate = Calendar.getInstance()
-        var rangeEndDate = Calendar.getInstance()
+        val rangeStartDate = Calendar.getInstance()
+        val rangeEndDate = Calendar.getInstance()
         rangeStartDate.add(Calendar.DATE, startDateOffset)
         rangeEndDate.add(Calendar.DATE, endDateOffset)
         _reportUiFilterModel.value?.selectedStartDate = formatter.format(rangeStartDate.time)
@@ -371,7 +370,7 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
 
 
     fun onCheckBoxClicked(selectedUiModel: ConfirmRejectItemsModel) {
-        var isChecked = visibleUiData.value
+        val isChecked = visibleUiData.value
             ?.filter { it.orderId.equals(selectedUiModel.orderId) }
             ?.first()
             ?.isItemChecked ?: true
@@ -433,10 +432,10 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
 
 
     fun onRejectOrderButtonClicked() {
-        var orderUpdateRequests = createRejectOrderRequests(visibleUiData.value)
+        val orderUpdateRequests = createRejectOrderRequests(visibleUiData.value)
         _isProgressBarActive.value = true;
         coroutineScope.launch {
-            var updateOrdersDataDeferred = OrderApi.retrofitService(getApplication()).updateOrders(orderUpdateRequests)
+            val updateOrdersDataDeferred = OrderApi.retrofitService(getApplication()).updateOrders(orderUpdateRequests)
             try{
                 updateOrdersDataDeferred.await()
                 _toastMessage.value = "Successfully rejected orders"
@@ -448,9 +447,9 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
     }
 
     private fun createRejectOrderRequests(uiDataElements: MutableList<ConfirmRejectItemsModel>?): List<OrderUpdateRequest> {
-        var orderUpdateRequestList: ArrayList<OrderUpdateRequest> = arrayListOf()
+        val orderUpdateRequestList: ArrayList<OrderUpdateRequest> = arrayListOf()
         uiDataElements?.filter { it.isItemChecked }?.forEach { element ->
-            var updateRequest = OrderUpdateRequest(
+            val updateRequest = OrderUpdateRequest(
                 orderId = element.orderId,
                 orderStatus = ORDER_STATUS_REJECTED,
                 paymentStatus = "",
@@ -459,7 +458,8 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
                 discountAmount = 0.0,
                 orderedAmount = 0.0,
                 orderComment = null,
-                deliveryComment = null
+                deliveryComment = null,
+                collectedCash = null
             )
             onSendCommentButtonClicked(element)
             orderUpdateRequestList.add(updateRequest)
@@ -469,10 +469,10 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
 
 
     fun onConfirmOrderButtonClicked() {
-        var orderUpdateRequests = createConfirmedOrderRequests(visibleUiData.value)
+        val orderUpdateRequests = createConfirmedOrderRequests(visibleUiData.value)
         _isProgressBarActive.value = true
         coroutineScope.launch {
-            var updateOrdersDataDeferred = OrderApi.retrofitService(getApplication()).updateOrders(orderUpdateRequests)
+            val updateOrdersDataDeferred = OrderApi.retrofitService(getApplication()).updateOrders(orderUpdateRequests)
             try{
                 updateOrdersDataDeferred.await()
                 _toastMessage.value = "Successfully confirmed orders"
@@ -484,9 +484,9 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
     }
 
     private fun createConfirmedOrderRequests(uiDataElements: MutableList<ConfirmRejectItemsModel>?): List<OrderUpdateRequest> {
-        var orderUpdateRequestList: ArrayList<OrderUpdateRequest> = arrayListOf()
+        val orderUpdateRequestList: ArrayList<OrderUpdateRequest> = arrayListOf()
         uiDataElements?.filter { it.isItemChecked }?.forEach { element ->
-            var updateRequest = OrderUpdateRequest(
+            val updateRequest = OrderUpdateRequest(
                 orderId = element.orderId,
                 orderStatus = ORDER_STATUS_CONFIRMED,
                 paymentStatus = "",
@@ -495,7 +495,8 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
                 discountAmount = element.discountAmount,
                 orderedAmount = calculateOrderAmount(element),
                 orderComment = null,
-                deliveryComment = null
+                deliveryComment = null,
+                collectedCash = null
             )
             onSendCommentButtonClicked(element)
             orderUpdateRequestList.add(updateRequest)
@@ -531,7 +532,7 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
     private fun fetchCommentsForOrder(element: ConfirmRejectItemsModel) {
         setCommentProgressBar(true, element)
         coroutineScope.launch {
-            var getCommentsDataDeferred = CommentApi.retrofitService.getComments(element.orderId)
+            val getCommentsDataDeferred = CommentApi.retrofitService.getComments(element.orderId)
             try {
                 val comments: List<Comment> = getCommentsDataDeferred.await()
                 _visibleUiData.value?.filter { data -> data.orderId.equals(element.orderId) }
@@ -546,11 +547,11 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
 
 
     fun onSendCommentButtonClicked(element: ConfirmRejectItemsModel){
-        if(element.newComment.isNullOrBlank()){
+        if(element.newComment.isBlank()){
             return
         }
 
-        var request = CommentCreateRequest(
+        val request = CommentCreateRequest(
             comment = element.newComment,
             commenter = sessionData.value?.userName ?: "",
             commenterUserId = sessionData.value?.userId ?: -1,
@@ -561,7 +562,7 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
 
         setCommentProgressBar(true, element)
         coroutineScope.launch {
-            var createCommentsDataDeferred = CommentApi.retrofitService.createComment(request)
+            val createCommentsDataDeferred = CommentApi.retrofitService.createComment(request)
             try{
                 createCommentsDataDeferred.await()
                 // Do API call to refresh comments

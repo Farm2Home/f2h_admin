@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.f2h.f2h_deliver.databinding.ListMembersBinding
+import com.f2h.f2h_admin.databinding.ListDeliveryMembersBinding
 
 class MemberItemsAdapter(val callUserButtonClickListener: CallUserButtonClickListener,
                          val membersItemClickListener: MembersItemClickListener,
@@ -22,7 +22,7 @@ class MemberItemsAdapter(val callUserButtonClickListener: CallUserButtonClickLis
     }
 
 
-    class ViewHolder private constructor(val binding: ListMembersBinding): RecyclerView.ViewHolder(binding.root) {
+    class ViewHolder private constructor(val binding: ListDeliveryMembersBinding): RecyclerView.ViewHolder(binding.root) {
 
         fun bind(
             item: MembersUiModel,
@@ -35,10 +35,6 @@ class MemberItemsAdapter(val callUserButtonClickListener: CallUserButtonClickLis
             binding.clickListener = membersItemClickListener
             binding.deliverClickListener = DeliverButtonClickListener { uiDataElement ->
                 viewModel.onDeliverButtonClicked(uiDataElement)
-            }
-
-            binding.cashCollectedClickListener = CashCollectedButtonClickListener { uiDataElement ->
-                viewModel.onCashCollectedbuttonClicked(uiDataElement)
             }
 
             val adapter = DeliverItemsAdapter(OrderedItemClickListener { uiDataElement ->
@@ -59,7 +55,7 @@ class MemberItemsAdapter(val callUserButtonClickListener: CallUserButtonClickLis
         companion object {
             fun from(parent: ViewGroup): ViewHolder {
                 val view = LayoutInflater.from(parent.context)
-                val binding = ListMembersBinding.inflate(view, parent, false)
+                val binding = ListDeliveryMembersBinding.inflate(view, parent, false)
                 return ViewHolder(binding)
             }
         }
@@ -87,9 +83,5 @@ class MembersItemClickListener(val clickListener: (uiModel: MembersUiModel) -> U
 }
 
 class DeliverButtonClickListener(val clickListener: (uiModel: MembersUiModel) -> Unit) {
-    fun onClick(uiModel: MembersUiModel) = clickListener(uiModel)
-}
-
-class CashCollectedButtonClickListener(val clickListener: (uiModel: MembersUiModel) -> Unit) {
     fun onClick(uiModel: MembersUiModel) = clickListener(uiModel)
 }

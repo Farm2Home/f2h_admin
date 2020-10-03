@@ -1,13 +1,14 @@
 package com.f2h.f2h_admin.utils
 
 import android.graphics.Color
+import android.text.InputType
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
 import android.text.style.RelativeSizeSpan
 import android.text.style.StrikethroughSpan
 import android.view.View
-import android.widget.Button
-import android.widget.TextView
+import android.view.View.*
+import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
@@ -18,16 +19,19 @@ import com.f2h.f2h_admin.constants.F2HConstants.ORDER_STATUS_ORDERED
 import com.f2h.f2h_admin.constants.F2HConstants.ORDER_STATUS_REJECTED
 import com.f2h.f2h_admin.constants.F2HConstants.PAYMENT_STATUS_PAID
 import com.f2h.f2h_admin.constants.F2HConstants.PAYMENT_STATUS_PENDING
-import com.f2h.f2h_admin.screens.deliver.DeliverItemsModel
+import com.f2h.f2h_admin.screens.group.deliver.DeliverItemsModel
+import com.f2h.f2h_admin.screens.group.deliver.MembersUiModel
 import java.text.DateFormat
+import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.reflect.jvm.internal.impl.types.AbstractTypeCheckerContext
 
 
 @BindingAdapter("priceFormatted")
 fun TextView.setPriceFormatted(data: DeliverItemsModel?){
     data?.let {
-        text =  String.format("₹ %.0f /%s", data.price, data.itemUom)
+        text =  String.format("₹ %.0f/%s x %s", data.price, data.itemUom, data.confirmedQuantity)
     }
 }
 
@@ -54,6 +58,41 @@ fun Button.setQuantityChangeButtonState(data: DeliverItemsModel){
     if(data.orderStatus.equals(ORDER_STATUS_DELIVERED)){
         isEnabled = false
         return
+    }
+}
+
+
+@BindingAdapter("receivedButtonCheck")
+fun ImageButton.setReceivedButtonCheck(data: DeliverItemsModel){
+    if(data.isReceived){
+        visibility = GONE
+    }
+}
+
+@BindingAdapter("deliverButtonFormatted")
+fun Button.setDeliverButtonFormatted(data: MembersUiModel){
+    isEnabled = (data.deliveryItems.firstOrNull{
+        it.isItemChecked && it.orderStatus != ORDER_STATUS_DELIVERED
+    } != null) && !data.isProgressBarActive
+}
+
+@BindingAdapter("receivedImageCheck")
+fun ImageView.setReceivedImageCheck(data: DeliverItemsModel){
+    if(data.isReceived && data.receivedPacketCount == data.packetCount){
+        visibility = VISIBLE
+        setImageResource(R.drawable.check)
+    }
+    else if(data.isReceived && data.receivedPacketCount != data.packetCount){
+        visibility = VISIBLE
+        setImageResource(R.drawable.warning)
+    }
+}
+
+@BindingAdapter("numberOfPacketsInputType")
+fun EditText.setNumberOfPacketsInputType(data: DeliverItemsModel){
+    if(data.isReceived){
+        inputType = InputType.TYPE_NULL
+        isEnabled = false
     }
 }
 
@@ -162,15 +201,23 @@ fun TextView.setStatusFormatted(data: DeliverItemsModel){
     text = colouredText
 }
 
+@BindingAdapter("orderedItemAmountFormatted")
+fun TextView.setOrderedItemAmountFormatted(data: MembersUiModel){
 
-private fun isOrderFreezed(data: DeliverItemsModel) : Boolean {
-    if (data.isFreezed.equals(false) &&
-        (data.orderStatus.equals(ORDER_STATUS_ORDERED) ||
-                data.orderStatus.isBlank())){
-        return false
-    }
-    return true
+    text = String.format("Total Order Amount - ₹%.0f", data.totalAmount)
+//    text = "Receivable - Rs. " + getFormattedQtyNumber(totalAmount)
 }
+
+@BindingAdapter("minCollectAmountFormatted")
+fun TextView.setMinCollectAmountFormatted(data: MembersUiModel){
+    var minPayable = data.totalAmount - data.walletBalance
+    if (minPayable < 0){
+        minPayable = 0.0
+    }
+    text = String.format("Min Receivable - ₹%.0f", minPayable)
+}
+
+
 
 @BindingAdapter("commentFormatted")
 fun TextView.setCommentFormatted(data: DeliverItemsModel){
@@ -190,6 +237,15 @@ fun TextView.setCommentFormatted(data: DeliverItemsModel){
 @BindingAdapter("moreDetailsLayoutFormatted")
 fun ConstraintLayout.setMoreDetailsLayoutFormatted(data: DeliverItemsModel){
     if(data.isMoreDetailsDisplayed){
+        visibility = View.VISIBLE
+        return
+    }
+    visibility = View.GONE
+}
+
+@BindingAdapter("orderedItemDetailsLayoutFormatted")
+fun ConstraintLayout.setOrderedItemDetailsLayoutFormatted(data: MembersUiModel){
+    if(data.isItemsDisplayed){
         visibility = View.VISIBLE
         return
     }

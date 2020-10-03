@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="uiModel"
+            type="com.f2h.f2h_admin.screens.group.deliver.MembersUiModel" />
+        <variable
+            name="clickListener"
+            type="com.f2h.f2h_admin.screens.group.deliver.MembersItemClickListener" />
+        <variable
+            name="callUserButtonClickListener"
+            type="com.f2h.f2h_admin.screens.group.deliver.CallUserButtonClickListener" />
+        <variable
+            name="deliverClickListener"
+            type="com.f2h.f2h_admin.screens.group.deliver.DeliverButtonClickListener" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="@{() -> clickListener.onClick(uiModel)}">
+
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardElevation="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/constraintLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/packingNumber"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginEnd="20dp"
+                        android:text="@{`` + uiModel.packingNumber}"
+                        android:textSize="25sp"
+                        app:layout_constraintStart_toEndOf="@+id/reorderHandle"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/memberUserName"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginEnd="20dp"
+                        android:text="@{uiModel.userName}"
+                        android:textSize="15sp"
+                        app:layout_constraintEnd_toStartOf="@+id/memberMobileButton"
+                        app:layout_constraintStart_toEndOf="@+id/packingNumber"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/address"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:maxLines="3"
+                        android:text="@{uiModel.deliveryAddress}"
+                        android:textSize="12sp"
+                        app:layout_constraintEnd_toEndOf="@+id/memberUserName"
+                        app:layout_constraintStart_toStartOf="@+id/memberUserName"
+                        app:layout_constraintTop_toBottomOf="@+id/memberUserName" />
+
+                    <TextView
+                        android:id="@+id/mobile"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:text="@{`+91-` + uiModel.mobile}"
+                        android:textSize="12sp"
+                        app:layout_constraintEnd_toEndOf="@+id/address"
+                        app:layout_constraintStart_toStartOf="@+id/address"
+                        app:layout_constraintTop_toBottomOf="@+id/address" />
+
+                    <TextView
+                        android:id="@+id/buyerTotalAmount"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:textSize="12sp"
+                        app:layout_constraintStart_toStartOf="@+id/mobile"
+                        app:layout_constraintTop_toBottomOf="@+id/mobile"
+                        app:orderedItemAmountFormatted="@{uiModel}"/>
+
+                    <TextView
+                        android:id="@+id/buyerMinReceivable"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:textSize="12sp"
+                        app:layout_constraintStart_toStartOf="@+id/buyerTotalAmount"
+                        app:layout_constraintTop_toBottomOf="@+id/buyerTotalAmount"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:minCollectAmountFormatted="@{uiModel}"/>
+
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="0.5dp"
+                        android:background="@color/grey"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="parent" />
+
+
+                    <ImageButton
+                        android:id="@+id/memberMobileButton"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_marginEnd="20dp"
+                        android:onClick="@{() -> callUserButtonClickListener.onClick(uiModel)}"
+                        android:tint="@color/cardview_shadow_start_color"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/contact_us_icon" />
+
+                    <ImageView
+                        android:id="@+id/reorderHandle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/reorder_icon" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/orderedItemsDetailsLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:visibility="visible"
+                    app:orderedItemDetailsLayoutFormatted="@{uiModel}">
+
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/itemListRecyclerView2"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_marginBottom="5dp"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent">
+
+                    </androidx.recyclerview.widget.RecyclerView>
+
+
+                    <EditText
+                        android:id="@+id/amountCollectedField"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@={`` + uiModel.amountCollected}"
+                        android:ems="5"
+                        android:inputType="numberDecimal"
+                        android:textSize="16sp"
+                        android:textAlignment="center"
+                        android:selectAllOnFocus="true"
+                        app:layout_constraintBottom_toBottomOf="@+id/confirmButton"
+                        app:layout_constraintEnd_toStartOf="@+id/confirmButton"
+                        app:layout_constraintHorizontal_bias="1"
+                        app:layout_constraintStart_toStartOf="parent" />
+
+                    <Button
+                        android:id="@+id/confirmButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Deliver"
+                        android:layout_marginBottom="5dp"
+                        android:textAllCaps="false"
+                        android:textSize="12sp"
+                        android:onClick="@{() -> deliverClickListener.onClick(uiModel)}"
+                        app:deliverButtonFormatted="@{uiModel}"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="1"
+                        app:layout_constraintTop_toBottomOf="@+id/itemListRecyclerView2"
+                        app:layout_constraintStart_toEndOf="@+id/amountCollectedField" />
+
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/grey" />
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

@@ -15,32 +15,27 @@ import androidx.databinding.DataBindingUtil.inflate
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-//import androidx.navigation.Navigation
-import androidx.navigation.findNavController
-import androidx.navigation.fragment.navArgs
-import androidx.navigation.ui.NavigationUI
+
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ItemTouchHelper.*
 import androidx.recyclerview.widget.RecyclerView
-import com.f2h.f2h_deliver.R
-import com.f2h.f2h_deliver.database.F2HDatabase
-import com.f2h.f2h_deliver.database.SessionDatabaseDao
-import com.f2h.f2h_deliver.databinding.FragmentMembersBinding
+import com.f2h.f2h_admin.R
+import com.f2h.f2h_admin.database.F2HDatabase
+import com.f2h.f2h_admin.database.SessionDatabaseDao
+import com.f2h.f2h_admin.databinding.FragmentDeliverBinding
 import java.util.*
 
 /**
  * A simple [Fragment] subclass.
  */
-class MembersFragment : Fragment() {
+class DeliveryMembersFragment : Fragment() {
 
-    private lateinit var binding: FragmentMembersBinding
+    private lateinit var binding: FragmentDeliverBinding
     private val application: Application by lazy { requireNotNull(this.activity).application }
     private val dataSource: SessionDatabaseDao by lazy { F2HDatabase.getInstance(application).sessionDatabaseDao }
     private val viewModelFactory: MembersViewModelFactory by lazy { MembersViewModelFactory(dataSource, application) }
     private val viewModel: MembersViewModel by lazy { ViewModelProvider(this, viewModelFactory).get(
         MembersViewModel::class.java) }
-
-    private val args: MembersFragmentArgs by navArgs()
 
     private val itemTouchHelper by lazy {
         val simpleItemTouchCallback =
@@ -74,9 +69,8 @@ class MembersFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
 
-        binding = inflate(inflater, R.layout.fragment_members, container, false)
+        binding = inflate(inflater, R.layout.fragment_deliver, container, false)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         itemTouchHelper.attachToRecyclerView(binding.itemListRecyclerView)
@@ -89,21 +83,9 @@ class MembersFragment : Fragment() {
         inflater?.inflate(R.menu.group_options_menu, menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return if (item.itemId == R.id.exitGroup) {
-            viewModel.onClickExitGroup()
-            true
-        } else {
-            NavigationUI.onNavDestinationSelected(item, requireView().findNavController()) ||
-                    super.onOptionsItemSelected(item)
-        }
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        //Set app bar title to group name here
-        (context as AppCompatActivity).supportActionBar!!.title = args.groupName
 
         // Members List recycler view
         val adapter = MemberItemsAdapter(CallUserButtonClickListener { uiDataElement ->
@@ -174,30 +156,23 @@ class MembersFragment : Fragment() {
             )
             areaSpinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             binding.deliveryAreaSelector.adapter = areaSpinnerArrayAdapter
-            var pos = viewModel.getInitialDeliveryIndex()
-            binding.deliveryAreaSelector.setSelection(pos)
 
             val statusSpinnerArrayAdapter: ArrayAdapter<String> = ArrayAdapter(
                 requireContext(), android.R.layout.simple_spinner_item, uiItems.statusList
             )
             statusSpinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             binding.statusSelector.adapter = statusSpinnerArrayAdapter
-            pos = viewModel.getInitialStatusIndex()
-            binding.statusSelector.setSelection(pos)
 
             val timeSpinnerArrayAdapter: ArrayAdapter<String> = ArrayAdapter(
                 requireContext(), android.R.layout.simple_spinner_item, uiItems.timeFilterList
             )
             timeSpinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             binding.memberTimeFilterSelector.adapter = timeSpinnerArrayAdapter
-            pos = viewModel.getInitialTimeIndex()
-            binding.memberTimeFilterSelector.setSelection(pos)
+
 
         })
 
-//        viewModel.initialDeliveryArea.observe(viewLifecycleOwner, Observer { initialDeliveryAreaId ->
-//
-//        })
+
 
 
     }

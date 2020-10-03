@@ -1,7 +1,5 @@
 package com.f2h.f2h_admin.screens.group.deliver
 
-import com.f2h.f2h_deliver.network.models.Order
-
 data class MembersUiModel (
     var userId: Long = 0,
     var userName: String = "",

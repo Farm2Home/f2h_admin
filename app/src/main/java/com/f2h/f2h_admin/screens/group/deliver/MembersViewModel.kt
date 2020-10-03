@@ -11,7 +11,6 @@ import com.f2h.f2h_admin.constants.F2HConstants.DELIVERY_STATUS_COMPLETED
 import com.f2h.f2h_admin.constants.F2HConstants.DELIVERY_STATUS_NOT_DONE
 import com.f2h.f2h_admin.constants.F2HConstants.ORDER_STATUS_DELIVERED
 import com.f2h.f2h_admin.constants.F2HConstants.TIME_SELECTION_TODAY
-import com.f2h.f2h_admin.constants.F2HConstants.USER_ROLE_DELIVER
 import com.f2h.f2h_admin.database.SessionDatabaseDao
 import com.f2h.f2h_admin.database.SessionEntity
 import com.f2h.f2h_admin.network.*
@@ -77,11 +76,11 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
         _isProgressBarActive.value = true
         coroutineScope.launch {
             sessionData.value = retrieveSession()
-            val getOrdersForDeliveryAgentDeferred = OrderApi.retrofitService(getApplication()).getOrderHeadersForGroupUserAndItem(sessionData.value!!.groupId, null, null, startDate(), endDate(), sessionData.value!!.userId)
+            val getOrdersForDeliveryAgentDeferred = OrderApi.retrofitService(getApplication()).getOrderHeaderForGroup(sessionData.value!!.groupId, startDate(), endDate())
             try {
                 val orderHeaders = getOrdersForDeliveryAgentDeferred.await()
                 val buyerIds = arrayListOf<Long>(-1).plus(orderHeaders.map { x -> x.buyerUserId ?: -1})
-                    .plus(orderHeaders.flatMap { x -> x.orders.map { it.sellerUserId }}).distinct()
+                    .plus(orderHeaders.flatMap { x -> x.orders!!.map { it.sellerUserId }}).distinct()
 
                 val getMemberWallets = WalletApi.retrofitService(getApplication()).getWalletDetails(sessionData.value!!.groupId, null)
                 val getDeliveryArea = DeliveryAreaApi.retrofitService(getApplication()).getDeliveryAreaDetails(sessionData.value!!.groupId)
@@ -144,13 +143,13 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
 
             uiElement.packingNumber = orderHeader.packingNumber ?: -1
             uiElement.deliveryDate = orderHeader.deliveryDate ?: ""
-            uiElement.totalAmount = orderHeader.finalAmount ?: 0.0
+            uiElement.totalAmount = orderHeader.final_amount ?: 0.0
             uiElement.deliverySequence = userMembership?.deliverySequence ?: 0
             uiElement.groupMembershipId = userMembership?.groupMembershipId
             uiElement.deliveryArea = deliveryArea?.deliveryArea ?: ""
 
             val deliveryItemsList = arrayListOf<DeliverItemsModel>()
-            orderHeader.orders.forEach { order ->
+            orderHeader.orders!!.forEach { order ->
                 if (order.orderStatus == F2HConstants.ORDER_STATUS_REJECTED){
                     return@forEach
                 }
@@ -194,7 +193,7 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
 
 
                 deliverItemsModel.receivedPacketCount = order.receivedNumberOfPackets ?: -1
-                if (deliverItemsModel.receivedPacketCount == -1){
+                if (deliverItemsModel.receivedPacketCount == -1L){
                     deliverItemsModel.receivedPacketCount = deliverItemsModel.packetCount
                     deliverItemsModel.isReceived = false
                 }
@@ -289,39 +288,6 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
 
     }
 
-//    private fun isInSelectedDateRange(
-//        element: MembersUiModel,
-//        selectedStartDate: String,
-//        selectedEndDate: String
-//    ) : Boolean {
-//
-//        var orderedDates: List<String> = element.orders.map { x -> x.orderedDate }.filterNotNull()
-//
-//        if ( isEmpty(orderedDates) ||
-//            selectedEndDate.isBlank() ||
-//            selectedStartDate.isBlank()) return true
-//
-//        var isInDateRange: Boolean = false
-//        for (orderedDate in orderedDates) {
-//            var orderedDateObject = parser.parse(orderedDate)
-//            val cal = Calendar.getInstance()
-//            cal.time = orderedDateObject
-//            cal[Calendar.HOUR_OF_DAY] = 0
-//            cal[Calendar.MINUTE] = 0
-//            cal[Calendar.SECOND] = 0
-//            cal[Calendar.MILLISECOND] = 0
-//            orderedDateObject = cal.getTime()
-//
-//            isInDateRange = orderedDateObject >= formatter.parse(selectedStartDate) &&
-//                    orderedDateObject <= formatter.parse(selectedEndDate)
-//
-//            if (isInDateRange) {
-//                break
-//            }
-//        }
-//        return isInDateRange
-//    }
-
     private fun startDate(): String {
         val formatter: DateFormat = SimpleDateFormat("yyyy-MM-dd'T'00:00:00'Z'")
         val today = Calendar.getInstance()
@@ -341,77 +307,23 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
         _selectedUiElement.value = uiElement
     }
 
-    fun onClickExitGroup() {
-        _isProgressBarActive.value = true
-        coroutineScope.launch {
-            sessionData.value = retrieveSession()
-            val membershipId: Long
-            var role: String
 
-            val getGroupMembershipsDeferred = GroupMembershipApi.retrofitService(getApplication()).getGroupMembership(sessionData.value!!.groupId, sessionData.value!!.userId)
-            try {
-                val memberships = getGroupMembershipsDeferred.await()
-                println(memberships)
-                role = memberships[0].roles!!
-                membershipId = memberships[0].groupMembershipId!!
-            } catch (t:Throwable){
-                println(t.message)
-                _isProgressBarActive.value = false
-                return@launch
-            }
+//    fun getInitialDeliveryIndex(): Int{
+//        return _uiFilterModel.value?.deliveryAreaList?.indexOf(_selectedArea.value)?:0
+//    }
+//
+//    fun getInitialStatusIndex(): Int{
+//        return _uiFilterModel.value?.statusList?.indexOf(_selectedStatus.value)?:0
+//    }
 
-            val roleList = role.split(",")
-            role = roleList.minus(USER_ROLE_DELIVER).joinToString(",")
-
-            if (role.isBlank()){
-                val deleteGroupMembershipDataDeferred =
-                    GroupMembershipApi.retrofitService(getApplication()).deleteGroupMembership(membershipId)
-                try {
-                    deleteGroupMembershipDataDeferred.await()
-                    _hasExitGroup.value = true
-                } catch (t:Throwable){
-                    println(t.message)
-
-                }
-            }
-            else{
-                println(role)
-                val membershipRequest = GroupMembershipRequest(
-                    null,
-                    null,
-                    role,
-                    null
-                )
-                val updateGroupMembershipDataDeferred =
-                    GroupMembershipApi.retrofitService(getApplication()).updateGroupMembership(membershipId, membershipRequest)
-                try {
-                    updateGroupMembershipDataDeferred.await()
-                    _hasExitGroup.value = true
-                } catch (t:Throwable){
-                    println(t.message)
-                }
-            }
-        }
-        _isProgressBarActive.value = false
-    }
-
-
-    fun getInitialDeliveryIndex(): Int{
-        return _uiFilterModel.value?.deliveryAreaList?.indexOf(_selectedArea.value)?:0
-    }
-
-    fun getInitialStatusIndex(): Int{
-        return _uiFilterModel.value?.statusList?.indexOf(_selectedStatus.value)?:0
-    }
-
-    fun getInitialTimeIndex(): Int{
-        val rangeStartDate = Calendar.getInstance()
-        val today = formatter.format(rangeStartDate.time)
-        if (_selectedDate.value!! == today){
-            return 0
-        }
-        return _uiFilterModel.value?.timeFilterList?.indexOf(_selectedDate.value!!)?:0
-    }
+//    fun getInitialTimeIndex(): Int{
+//        val rangeStartDate = Calendar.getInstance()
+//        val today = formatter.format(rangeStartDate.time)
+//        if (_selectedDate.value!! == today){
+//            return 0
+//        }
+//        return _uiFilterModel.value?.timeFilterList?.indexOf(_selectedDate.value!!)?:0
+//    }
 
     private fun createAllUiFilters() {
 
@@ -438,10 +350,6 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
                     .sorted())
             .plus(DELIVERY_AREA_NOT_ASSIGNED)
 
-            // Set date range as today
-            setTimeFilterRange(sessionData.value!!.selectedTimeFilter)
-            _selectedArea.value = sessionData.value!!.selectedDeliveryArea
-            _selectedStatus.value = sessionData.value!!.selectedDeliveryStatus
             //Refresh filter
             _uiFilterModel.value = uiModel
         }
@@ -450,19 +358,16 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
     fun onTimeFilterSelected(position: Int) {
         val selectedTime = _uiFilterModel.value?.timeFilterList?.get(position) ?: TIME_SELECTION_TODAY
         setTimeFilterRange(selectedTime)
-        updateSessionWithTimeFilter(selectedTime)
         filterVisibleItems()
     }
 
     fun onDeliveryAreaSelected(position: Int) {
         _selectedArea.value = _uiFilterModel.value?.deliveryAreaList?.get(position) ?: F2HConstants.ALL_DELIVERY_AREA
-        updateSessionWithDeliveryArea(_selectedArea.value?:F2HConstants.ALL_DELIVERY_AREA)
         filterVisibleItems()
     }
 
     fun onStatusSelected(position: Int) {
         _selectedStatus.value = _uiFilterModel.value?.statusList?.get(position) ?: ""
-        updateSessionWithDeliveryStatus(_selectedStatus.value?:"")
         filterVisibleItems()
     }
 
@@ -503,29 +408,6 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
                 _toastMessage.value = "Oops, something went wrong!"
             }
             _isProgressBarActive.value = false
-        }
-    }
-    private fun updateSessionWithDeliveryArea(selectedDeliveryArea: String){
-        coroutineScope.launch {
-            withContext(Dispatchers.IO) {
-                database.updateSelectedDeliveryArea(selectedDeliveryArea)
-            }
-        }
-    }
-
-    private fun updateSessionWithDeliveryStatus(selectedDeliveryStatus: String){
-        coroutineScope.launch {
-            withContext(Dispatchers.IO) {
-                database.updateSelectedDeliveryStatus(selectedDeliveryStatus)
-            }
-        }
-    }
-
-    private fun updateSessionWithTimeFilter(selectedTimeFilter: String){
-        coroutineScope.launch {
-            withContext(Dispatchers.IO) {
-                database.updateSelectedTimeFilter(selectedTimeFilter)
-            }
         }
     }
 
@@ -642,32 +524,6 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
 
     }
 
-
-    fun onCashCollectedbuttonClicked(element: MembersUiModel) {
-//        val deliveredOrderUpdateRequests = createDeliverOrderRequests(element.deliveryItems)
-//        _isProgressBarActive.value = true
-//        coroutineScope.launch {
-//            val updateOrdersDataDeferred = OrderApi.retrofitService(getApplication()).cashCollectedAndUpdateOrders(deliveredOrderUpdateRequests)
-//            try{
-//                updateOrdersDataDeferred.await()
-//                _toastMessage.value = "Successfully paid and delivered orders"
-//                element.deliveryItems.filter { it.isItemChecked }.forEach { deliverItem ->
-//                    deliverItem.orderStatus = ORDER_STATUS_DELIVERED
-//                    deliverItem.paymentStatus = F2HConstants.PAYMENT_STATUS_PAID
-//                    deliverItem.isItemChecked = false
-//                }
-//                element.anyDeliveredOrder = getDeliveredOrder(element.deliveryItems)
-//                element.anyOpenOrder = getAnyOpenOrder(element.deliveryItems)
-//                filterVisibleItems()
-//                _isProgressBarActive.value = false
-//            } catch (t:Throwable){
-//                _toastMessage.value = "Oops, Something went wrong " + t.message
-//            }
-//        }
-    }
-
-
-
     fun onDeliverButtonClicked(element: MembersUiModel) {
         val deliveredOrderUpdateRequest = createDeliverOrderRequests(element.deliveryItems)
         if (deliveredOrderUpdateRequest.isEmpty()){
@@ -705,22 +561,6 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
         }
     }
 
-//    private fun createWalletTransactionRequest(element: MembersUiModel): WalletTransactionRequest {
-//        val timeZone = TimeZone.getTimeZone("UTC")
-//        TimeZone.setDefault(timeZone)
-//        val today = Calendar.getInstance(timeZone)
-//        val formatter: DateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
-//
-//        return WalletTransactionRequest (
-//            recipientUserId = element.userId,
-//            groupId = sessionData.value!!.groupId,
-//            orderId = null,
-//            transactionDate = formatter.format(today.time),
-//            transactionDescription = "Amount Collected by Delivery Boy",
-//            amount = element.amountCollected
-//        )
-//    }
-
     private fun createDeliverOrderRequests(uiDataElements: List<DeliverItemsModel>?): List<OrderUpdateRequest> {
         val orderUpdateRequestList: ArrayList<OrderUpdateRequest> = arrayListOf()
         uiDataElements?.filter { it.isItemChecked && it.orderStatus != ORDER_STATUS_DELIVERED
@@ -733,7 +573,9 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
                 confirmedQuantity = null,
                 discountAmount = null,
                 orderedAmount = null,
-                collectedCash = null
+                collectedCash = null,
+                orderComment = null,
+                deliveryComment = null
             )
             orderUpdateRequestList.add(updateRequest)
         }
