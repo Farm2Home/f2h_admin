@@ -27,7 +27,8 @@ data class Order (
     @Json(name = "created_by") val createdBy: String? = "",
     @Json(name = "updated_by") val updatedBy: String? = "",
     @Json(name= "delivery_user_id") val deliveryUserId: Long? = -1L,
-    @Json(name = "number_of_packets") val numberOfPackets: Long? = 0L
+    @Json(name = "number_of_packets") val numberOfPackets: Long? = 0L,
+    @Json(name = "received_number_of_packets") val receivedNumberOfPackets: Long? = -1
 )
 
 
@@ -40,9 +41,14 @@ data class OrderUpdateRequest (
     @Json(name = "ordered_quantity") var orderedQuantity: Double?,
     @Json(name = "confirmed_quantity") var confirmedQuantity: Double?,
     @Json(name = "discount_amount") var discountAmount: Double?,
-    @Json(name = "ordered_amount") var orderedAmount: Double?
+    @Json(name = "ordered_amount") var orderedAmount: Double?,
+    @Json(name = "collected_cash") var collectedCash: Double?
 )
 
+data class OrderReceivedNumberUpdateRequest (
+    @Json(name = "order_id") var orderId: Long?,
+    @Json(name = "received_number_of_packets") var receivedNumberOfPackets: Long?
+)
 
 data class OrderCreateRequest (
     @Json(name = "buyer_user_id") var buyerUserId: Long?,

@@ -9,7 +9,7 @@ import retrofit2.http.*
 
 interface WalletApiService{
     @GET("wallet")
-    fun getWalletDetails(@Query("group_id") groupId: Long, @Query("user_id") userId: Long):
+    fun getWalletDetails(@Query("group_id") groupId: Long, @Query("user_id") userId: Long?):
             Deferred<List<Wallet>>
 
     @GET("transaction")

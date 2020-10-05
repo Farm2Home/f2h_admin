@@ -5,7 +5,6 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.f2h.f2h_admin.constants.F2HConstants.ORDER_STATUS_CONFIRMED
 import com.f2h.f2h_admin.constants.F2HConstants.ORDER_STATUS_DELIVERED
 import com.f2h.f2h_admin.constants.F2HConstants.ORDER_STATUS_ORDERED
 import com.f2h.f2h_admin.constants.F2HConstants.PAYMENT_STATUS_PAID
@@ -68,21 +67,21 @@ class PaymentViewModel(val database: SessionDatabaseDao, application: Applicatio
 
         coroutineScope.launch {
             sessionData.value = retrieveSession()
-            var getOrdersDataDeferred = OrderApi.retrofitService(getApplication()).getOrdersForGroup(sessionData.value!!.groupId, null, null)
+            val getOrdersDataDeferred = OrderApi.retrofitService(getApplication()).getOrdersForGroup(sessionData.value!!.groupId, null, null)
             try {
-                var orders = getOrdersDataDeferred.await()
-                var userIds = orders.map { x -> x.buyerUserId ?: -1}
+                val orders = getOrdersDataDeferred.await()
+                val userIds = orders.map { x -> x.buyerUserId ?: -1}
                     .plus(orders.map { x -> x.sellerUserId ?: -1}).distinct()
-                var availabilityIds = orders.map { x -> x.itemAvailabilityId ?: -1 }
+                val availabilityIds = orders.map { x -> x.itemAvailabilityId ?: -1 }
 
-                var getUserDetailsDataDeferred =
+                val getUserDetailsDataDeferred =
                     UserApi.retrofitService(getApplication()).getUserDetailsByUserIds(userIds.joinToString())
 
-                var getItemAvailabilitiesDataDeferred =
+                val getItemAvailabilitiesDataDeferred =
                     ItemAvailabilityApi.retrofitService(getApplication()).getItemAvailabilities(availabilityIds.joinToString())
 
-                var itemAvailabilities = getItemAvailabilitiesDataDeferred.await()
-                var userDetailsList = getUserDetailsDataDeferred.await()
+                val itemAvailabilities = getItemAvailabilitiesDataDeferred.await()
+                val userDetailsList = getUserDetailsDataDeferred.await()
 
                 allUiData = createAllUiData(itemAvailabilities, orders, userDetailsList)
                 createAllUiFilters()
@@ -97,14 +96,14 @@ class PaymentViewModel(val database: SessionDatabaseDao, application: Applicatio
 
     private fun createAllUiData(itemAvailabilitys: List<ItemAvailability>,
                                 orders: List<Order>, userDetailsList: List<UserDetails>): ArrayList<PaymentItemsModel> {
-        var allUiData = ArrayList<PaymentItemsModel>()
+        val allUiData = ArrayList<PaymentItemsModel>()
         val moshi = Moshi.Builder()
             .add(KotlinJsonAdapterFactory())
             .build()
         val jsonAdapter: JsonAdapter<Item> = moshi.adapter(Item::class.java)
         orders.forEach { order ->
 
-            var uiElement = PaymentItemsModel()
+            val uiElement = PaymentItemsModel()
             var item = Item()
             try {
                 item = jsonAdapter.fromJson(order.orderDescription) ?: Item()
@@ -122,15 +121,13 @@ class PaymentViewModel(val database: SessionDatabaseDao, application: Applicatio
                 }
             }
 
-            if (item != null) {
-                uiElement.itemId = item.itemId ?: -1
-                uiElement.itemName = item.itemName ?: ""
-                uiElement.itemDescription = item.description ?: ""
-                uiElement.itemUom = item.uom ?: ""
-                uiElement.itemImageLink = item.imageLink ?: ""
-                uiElement.price = item.pricePerUnit ?: 0.0
-                uiElement.confirmedQuantityJump = item.confirmQtyJump ?: 0.0
-            }
+            uiElement.itemId = item.itemId ?: -1
+            uiElement.itemName = item.itemName ?: ""
+            uiElement.itemDescription = item.description ?: ""
+            uiElement.itemUom = item.uom ?: ""
+            uiElement.itemImageLink = item.imageLink ?: ""
+            uiElement.price = item.pricePerUnit ?: 0.0
+            uiElement.confirmedQuantityJump = item.confirmQtyJump ?: 0.0
             uiElement.orderedDate = formatter.format(df.parse(order.orderedDate))
             uiElement.orderedQuantity = order.orderedQuantity ?: 0.0
             if(order.orderStatus.equals(ORDER_STATUS_ORDERED)) {
@@ -179,8 +176,8 @@ class PaymentViewModel(val database: SessionDatabaseDao, application: Applicatio
         _reportUiFilterModel.value?.selectedBuyer = "ALL"
 
         // Set date range as today
-        var rangeStartDate = Calendar.getInstance()
-        var rangeEndDate = Calendar.getInstance()
+        val rangeStartDate = Calendar.getInstance()
+        val rangeEndDate = Calendar.getInstance()
         _reportUiFilterModel.value?.selectedStartDate = formatter.format(rangeStartDate.time)
         _reportUiFilterModel.value?.selectedEndDate = formatter.format(rangeEndDate.time)
     }
@@ -336,9 +333,9 @@ class PaymentViewModel(val database: SessionDatabaseDao, application: Applicatio
         filterVisibleItems()
     }
 
-    fun setTimeFilterRange(startDateOffset: Int, endDateOffset: Int) {
-        var rangeStartDate = Calendar.getInstance()
-        var rangeEndDate = Calendar.getInstance()
+    private fun setTimeFilterRange(startDateOffset: Int, endDateOffset: Int) {
+        val rangeStartDate = Calendar.getInstance()
+        val rangeEndDate = Calendar.getInstance()
         rangeStartDate.add(Calendar.DATE, startDateOffset)
         rangeEndDate.add(Calendar.DATE, endDateOffset)
         _reportUiFilterModel.value?.selectedStartDate = formatter.format(rangeStartDate.time)
@@ -348,9 +345,7 @@ class PaymentViewModel(val database: SessionDatabaseDao, application: Applicatio
 
 
     fun onCheckBoxClicked(selectedUiModel: PaymentItemsModel) {
-        var isChecked = visibleUiData.value
-            ?.filter { it.orderId.equals(selectedUiModel.orderId) }
-            ?.first()
+        val isChecked = visibleUiData.value?.first { it.orderId == selectedUiModel.orderId }
             ?.isItemChecked ?: true
 
         _visibleUiData.value
@@ -370,10 +365,10 @@ class PaymentViewModel(val database: SessionDatabaseDao, application: Applicatio
 
 
     fun onCashCollectedbuttonClicked() {
-        var cashCollectedForOrderUpdateRequests = createOrderRequests(visibleUiData.value)
+        val cashCollectedForOrderUpdateRequests = createOrderRequests(visibleUiData.value)
         _isProgressBarActive.value = true;
         coroutineScope.launch {
-            var updateOrdersDataDeferred = OrderApi.retrofitService(getApplication()).cashCollectedAndUpdateOrders(cashCollectedForOrderUpdateRequests)
+            val updateOrdersDataDeferred = OrderApi.retrofitService(getApplication()).cashCollectedAndUpdateOrders(cashCollectedForOrderUpdateRequests)
             try{
                 updateOrdersDataDeferred.await()
                 _toastMessage.value = "Successful, marked orders as paid";
@@ -387,10 +382,10 @@ class PaymentViewModel(val database: SessionDatabaseDao, application: Applicatio
 
 
     fun onPayFromWalletButtonClicked() {
-        var paymentDoneOrderUpdateRequests = createOrderRequests(visibleUiData.value)
+        val paymentDoneOrderUpdateRequests = createOrderRequests(visibleUiData.value)
         _isProgressBarActive.value = true
         coroutineScope.launch {
-            var updateOrdersDataDeferred = OrderApi.retrofitService(getApplication()).updateOrders(paymentDoneOrderUpdateRequests)
+            val updateOrdersDataDeferred = OrderApi.retrofitService(getApplication()).updateOrders(paymentDoneOrderUpdateRequests)
             try{
                 updateOrdersDataDeferred.await()
                 _toastMessage.value = "Successful, marked orders as paid";
@@ -403,9 +398,9 @@ class PaymentViewModel(val database: SessionDatabaseDao, application: Applicatio
 
 
     private fun createOrderRequests(uiDataElements: MutableList<PaymentItemsModel>?): List<OrderUpdateRequest> {
-        var orderUpdateRequestList: ArrayList<OrderUpdateRequest> = arrayListOf()
+        val orderUpdateRequestList: ArrayList<OrderUpdateRequest> = arrayListOf()
         uiDataElements?.filter { it.isItemChecked }?.forEach { element ->
-            var updateRequest = OrderUpdateRequest(
+            val updateRequest = OrderUpdateRequest(
                 orderId = element.orderId,
                 orderStatus = element.orderStatus,
                 paymentStatus = PAYMENT_STATUS_PAID,
@@ -414,7 +409,8 @@ class PaymentViewModel(val database: SessionDatabaseDao, application: Applicatio
                 discountAmount = null,
                 orderedAmount = null,
                 orderComment = null,
-                deliveryComment = element.deliveryComment
+                deliveryComment = element.deliveryComment,
+                collectedCash = null
             )
             orderUpdateRequestList.add(updateRequest)
         }

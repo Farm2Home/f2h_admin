@@ -56,7 +56,7 @@ class GroupDetailsTabsFragment : Fragment() {
             }
 
             R.id.deliverFragment -> {
-                val action = GroupDetailsTabsFragmentDirections.actionGroupDetailsTabsFragmentToDeliverFragment()
+                val action = GroupDetailsTabsFragmentDirections.actionGroupDetailsTabsFragmentToDeliveryMembersFragment()
                 view?.let { Navigation.findNavController(it).navigate(action) }
             }
 

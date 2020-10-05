@@ -36,6 +36,10 @@ interface OrderApiService {
     @POST("orders/save_all")
     fun createOrders(@Body createOrders: List<OrderCreateRequest>): Deferred<List<Order>>
 
+    @PUT("orders/packet_number")
+    fun updateReceivedNumber(@Body receivedNumberUpdateRequests: List<OrderReceivedNumberUpdateRequest>): Deferred<List<Order>>
+
+
 }
 
 object OrderApi {
