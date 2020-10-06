@@ -13,5 +13,6 @@ data class MembersUiModel(
     var roles: String = "",
     var groupMembershipId: Long = 0,
     var deliveryAreaId: Long = 0,
+    var deliveryCharge: Double = 0.0,
     var isBuyerRequested : Boolean = false
 ): Parcelable

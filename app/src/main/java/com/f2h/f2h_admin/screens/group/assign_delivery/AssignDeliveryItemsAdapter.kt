@@ -46,7 +46,7 @@ class AssignDeliveryItemsAdapter(val checkBoxClickListener: CheckBoxClickListene
 
 class ListItemDiffCallback : DiffUtil.ItemCallback<AssignDeliveryItemsModel>() {
     override fun areItemsTheSame(oldItem: AssignDeliveryItemsModel, newItem: AssignDeliveryItemsModel): Boolean {
-        return oldItem.orderId == newItem.orderId
+        return oldItem.orderHeaderId == newItem.orderHeaderId
     }
 
     override fun areContentsTheSame(oldItem: AssignDeliveryItemsModel, newItem: AssignDeliveryItemsModel): Boolean {
@@ -60,9 +60,5 @@ class OrderedItemClickListener(val clickListener: (uiModel: AssignDeliveryItemsM
 }
 
 class CheckBoxClickListener(val clickListener: (uiModel: AssignDeliveryItemsModel) -> Unit) {
-    fun onClick(uiModel: AssignDeliveryItemsModel) = clickListener(uiModel)
-}
-
-class SendCommentButtonClickListener(val clickListener: (uiModel: AssignDeliveryItemsModel) -> Unit) {
     fun onClick(uiModel: AssignDeliveryItemsModel) = clickListener(uiModel)
 }

@@ -16,6 +16,7 @@ import com.f2h.f2h_admin.network.ItemAvailabilityApi
 import com.f2h.f2h_admin.network.OrderApi
 import com.f2h.f2h_admin.network.UserApi
 import com.f2h.f2h_admin.network.models.*
+import com.f2h.f2h_admin.utils.fetchOrderDate
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -57,18 +58,28 @@ class ReportViewModel(val database: SessionDatabaseDao, application: Application
         _isProgressBarActive.value = true
         coroutineScope.launch {
             sessionData.value = retrieveSession()
-            var getOrdersDataDeferred = OrderApi.retrofitService.getOrdersForGroup(sessionData.value!!.groupId, null, null)
+            var getOrderHeaderDataDeferred = OrderApi.retrofitService(getApplication()).getOrderHeaderForGroup(sessionData.value!!.groupId, fetchOrderDate(-3), fetchOrderDate(10))
             try {
-                var orders = getOrdersDataDeferred.await()
-                var userIds = orders.map { x -> x.buyerUserId ?: -1}
+                var orderHeaders = getOrderHeaderDataDeferred.await()
+                var orders = arrayListOf<Order>()
+                var serviceOrders = arrayListOf<ServiceOrder>()
+                orderHeaders.forEach { header ->
+                    header.orders?.map { it ->
+                        it.deliveryLocation = header.deliveryLocation
+                        it.buyerUserId = header.buyerUserId
+                    }
+                    orders.addAll(header.orders ?: arrayListOf())
+                    serviceOrders.addAll(header.serviceOrders ?: arrayListOf())
+                }
+                var userIds = orderHeaders.map { x -> x.buyerUserId ?: -1}
                     .plus(orders.map { x -> x.sellerUserId ?: -1}).distinct()
                 var availabilityIds = orders.map { x -> x.itemAvailabilityId ?: -1 }
 
                 var getUserDetailsDataDeferred =
-                    UserApi.retrofitService.getUserDetailsByUserIds(userIds.joinToString())
+                    UserApi.retrofitService(getApplication()).getUserDetailsByUserIds(userIds.joinToString())
 
                 var getItemAvailabilitiesDataDeferred =
-                    ItemAvailabilityApi.retrofitService.getItemAvailabilities(availabilityIds.joinToString())
+                    ItemAvailabilityApi.retrofitService(getApplication()).getItemAvailabilities(availabilityIds.joinToString())
 
                 var itemAvailabilities = getItemAvailabilitiesDataDeferred.await()
                 var userDetailsList = getUserDetailsDataDeferred.await()
@@ -120,6 +131,7 @@ class ReportViewModel(val database: SessionDatabaseDao, application: Application
                 uiElement.itemUom = item.uom ?: ""
                 uiElement.itemImageLink = item.imageLink ?: ""
                 uiElement.price = item.pricePerUnit ?: 0.0
+                uiElement.handlingCharges = item.handlingCharges
             }
 
             val buyerUserDetails = userDetailsList.filter { x -> x.userId?.equals(order.buyerUserId) ?: false }.firstOrNull()
@@ -129,6 +141,8 @@ class ReportViewModel(val database: SessionDatabaseDao, application: Application
             uiElement.sellerName = sellerUserDetails?.userName ?: ""
             uiElement.sellerMobile = sellerUserDetails?.mobile ?: ""
 
+            uiElement.v2Commission = order.v2Amount ?: 0.0
+            uiElement.farmerCommission = order.farmerAmount ?: 0.0
             uiElement.orderedDate = formatter.format(df.parse(order.orderedDate))
             uiElement.orderedQuantity = order.orderedQuantity ?: 0.0
             uiElement.confirmedQuantity = order.confirmedQuantity ?: 0.0
@@ -173,7 +187,7 @@ class ReportViewModel(val database: SessionDatabaseDao, application: Application
 
         filters.farmerNameList = arrayListOf("ALL")
 
-        filters.timeFilterList = arrayListOf("Today", "Tomorrow", "Next 7 days", "Last 7 days", "Last 15 days", "Last 30 days")
+        filters.timeFilterList = arrayListOf("Today", "Tomorrow", "Next 7 days", "Last 3 days")
 
         filters.selectedItem = "ALL"
         filters.selectedPaymentStatus = "ALL"
@@ -315,9 +329,7 @@ class ReportViewModel(val database: SessionDatabaseDao, application: Application
         if (position.equals(0)) setTimeFilterRange(0,0) //Today
         if (position.equals(1)) setTimeFilterRange(1,1) //Tomorrow
         if (position.equals(2)) setTimeFilterRange(0,7) //Next 7 Days
-        if (position.equals(3)) setTimeFilterRange(-7,0) //Last week
-        if (position.equals(4)) setTimeFilterRange(-15,0)  //Last 15 days
-        if (position.equals(5)) setTimeFilterRange(-30,0) //Last 30 days
+        if (position.equals(3)) setTimeFilterRange(-3,0) //Last 3 days
         filterVisibleItems()
     }
 

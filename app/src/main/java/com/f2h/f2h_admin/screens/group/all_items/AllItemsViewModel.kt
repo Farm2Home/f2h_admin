@@ -51,7 +51,7 @@ class AllItemsViewModel(val database: SessionDatabaseDao, application: Applicati
     private fun getItemsAndAvailabilitiesForGroup() {
         coroutineScope.launch {
             _sessionData.value = retrieveSession()
-            var getItemsDataDeferred = ItemApi.retrofitService.getItemsForGroup(_sessionData.value!!.groupId)
+            var getItemsDataDeferred = ItemApi.retrofitService(getApplication()).getItemsForGroup(_sessionData.value!!.groupId)
             try {
                 allItems = ArrayList(getItemsDataDeferred.await())
                 if (allItems.size > 0) {

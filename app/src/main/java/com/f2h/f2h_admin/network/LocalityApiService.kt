@@ -1,5 +1,6 @@
 package com.f2h.f2h_admin.network
 
+import android.content.Context
 import com.f2h.f2h_admin.constants.F2HConstants.SERVER_URL
 import com.f2h.f2h_admin.network.models.Locality
 import com.f2h.f2h_admin.network.models.User
@@ -12,18 +13,6 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Path
 
-private const val BASE_URL = SERVER_URL
-
-private val moshi = Moshi.Builder()
-    .add(KotlinJsonAdapterFactory())
-    .build()
-
-private val retrofit = Retrofit.Builder()
-    .addConverterFactory(MoshiConverterFactory.create(moshi))
-    .addCallAdapterFactory(CoroutineCallAdapterFactory())
-    .baseUrl(BASE_URL)
-    .build()
-
 interface LocalityApiService{
     @GET("locality")
     fun getLocalityDetails():
@@ -31,7 +20,7 @@ interface LocalityApiService{
 }
 
 object LocalityApi {
-    val retrofitService : LocalityApiService by lazy {
-        retrofit.create(LocalityApiService::class.java)
+    fun retrofitService(context: Context): LocalityApiService {
+        return RetrofitInstance.build(context).create(LocalityApiService::class.java)
     }
 }

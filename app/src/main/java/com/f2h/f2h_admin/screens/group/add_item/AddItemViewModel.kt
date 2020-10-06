@@ -11,18 +11,19 @@ import com.f2h.f2h_admin.BuildConfig
 import com.f2h.f2h_admin.database.SessionDatabaseDao
 import com.f2h.f2h_admin.database.SessionEntity
 import com.f2h.f2h_admin.network.*
-import com.f2h.f2h_admin.network.models.ItemCreateRequest
-import com.f2h.f2h_admin.network.models.Uom
-import com.f2h.f2h_admin.network.models.UserDetails
+import com.f2h.f2h_admin.network.models.*
+import com.f2h.f2h_admin.screens.group.freeze_multiple.FreezeMultipleItemsModel
 import kotlinx.coroutines.*
 import java.lang.Exception
 import java.util.*
+import kotlin.collections.ArrayList
 
 class AddItemViewModel(val database: SessionDatabaseDao, application: Application) : AndroidViewModel(application) {
 
     val itemName = MutableLiveData<String>()
     val itemDescription = MutableLiveData<String>()
-    val itemPrice = MutableLiveData<String>()
+    val farmerPrice = MutableLiveData<String>()
+    val v2Price = MutableLiveData<String>()
     val confirmQuantityJump = MutableLiveData<String>()
     val orderQuantityJump = MutableLiveData<String>()
     val selectedItemUomDetails = MutableLiveData<Uom>()
@@ -30,6 +31,10 @@ class AddItemViewModel(val database: SessionDatabaseDao, application: Applicatio
     val farmersStringList = MutableLiveData<List<String>>()
     val itemUomStringList = MutableLiveData<List<String>>()
     val imageFilePath = MutableLiveData<String>()
+
+    private var _visibleHandlingChargeUiData = MutableLiveData<MutableList<HandlingChargesItemsModel>>()
+    val visibleHandlingChargeUiData: LiveData<MutableList<HandlingChargesItemsModel>>
+        get() = _visibleHandlingChargeUiData
 
     private val _isProgressBarActive = MutableLiveData<Boolean>()
     val isProgressBarActive: LiveData<Boolean>
@@ -47,6 +52,7 @@ class AddItemViewModel(val database: SessionDatabaseDao, application: Applicatio
 
     private var farmerDetails = listOf<UserDetails>()
     private var itemUomDetails = listOf<Uom>()
+    private var handlingOptions = listOf<HandlingOption>()
     private var viewModelJob = Job()
     private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main)
 
@@ -54,6 +60,10 @@ class AddItemViewModel(val database: SessionDatabaseDao, application: Applicatio
     init {
         _isAddItemActionComplete.value = false
         _isProgressBarActive.value = true
+        farmerPrice.value = "0.0"
+        v2Price.value = "0.0"
+        _visibleHandlingChargeUiData.value = arrayListOf<HandlingChargesItemsModel>()
+        getHandlingOptions()
         getFarmersAndUoms()
     }
 
@@ -62,11 +72,11 @@ class AddItemViewModel(val database: SessionDatabaseDao, application: Applicatio
     private fun getFarmersAndUoms() {
         coroutineScope.launch {
             _sessionData.value = retrieveSession()
-            val getAllUomsDataDeferred = UomApi.retrofitService.getAllUoms()
-            val getAllFarmersInGroupDataDeferred = GroupMembershipApi.retrofitService.getGroupMembership(_sessionData.value!!.groupId, "FARMER")
+            val getAllUomsDataDeferred = UomApi.retrofitService(getApplication()).getAllUoms()
+            val getAllFarmersInGroupDataDeferred = GroupMembershipApi.retrofitService(getApplication()).getGroupMembership(_sessionData.value!!.groupId, "FARMER")
             try {
                 val farmerUserIds = getAllFarmersInGroupDataDeferred.await().map { it.userId ?: -1}
-                val getFarmerDetailsDataDeferred = UserApi.retrofitService.getUserDetailsByUserIds(farmerUserIds.joinToString())
+                val getFarmerDetailsDataDeferred = UserApi.retrofitService(getApplication()).getUserDetailsByUserIds(farmerUserIds.joinToString())
                 farmerDetails = getFarmerDetailsDataDeferred.await()
                 itemUomDetails =  getAllUomsDataDeferred.await()
                 createSpinnerEntries()
@@ -76,6 +86,33 @@ class AddItemViewModel(val database: SessionDatabaseDao, application: Applicatio
             _isProgressBarActive.value = false
         }
     }
+
+
+    private fun getHandlingOptions() {
+        coroutineScope.launch {
+            try {
+                val getAllHandlingOptionsDataDeferred = HandlingOptionApi.retrofitService(getApplication()).getAllHandlingOptions()
+                handlingOptions = getAllHandlingOptionsDataDeferred.await()
+                createRecyclerView()
+            } catch (t:Throwable){
+                println(t.message)
+            }
+        }
+    }
+
+    private fun createRecyclerView() {
+        handlingOptions.forEach { option ->
+            var uiModel = HandlingChargesItemsModel()
+            uiModel.handlingOptionId = option.handlingOptionId
+            uiModel.name = option.name
+            uiModel.description = option.description
+            uiModel.isItemChecked = false
+            uiModel.handlingCharge = 0.0
+            _visibleHandlingChargeUiData.value?.add(uiModel)
+        }
+        _visibleHandlingChargeUiData.value = _visibleHandlingChargeUiData.value
+    }
+
 
     private fun createSpinnerEntries() {
         itemUomStringList.value = itemUomDetails.map { it.uom ?: "" }
@@ -147,8 +184,12 @@ class AddItemViewModel(val database: SessionDatabaseDao, application: Applicatio
             _toastText.value = "Please enter a valid minimum order quantity number"
             return true
         }
-        if (!isDecimal(itemPrice.value.toString())) {
-            _toastText.value = "Please enter a valid price per unit number"
+        if (!isDecimal(farmerPrice.value.toString())) {
+            _toastText.value = "Please enter a valid farmer price"
+            return true
+        }
+        if (!isDecimal(v2Price.value.toString())) {
+            _toastText.value = "Please enter a valid v2 price"
             return true
         }
 
@@ -214,17 +255,19 @@ class AddItemViewModel(val database: SessionDatabaseDao, application: Applicatio
             farmerUserName = selectedFarmerDetails.value?.userName,
             description = itemDescription.value,
             uom = selectedItemUomDetails.value?.uom,
-            pricePerUnit = itemPrice.value?.toDouble(),
+            farmerPrice = farmerPrice.value?.toDouble(),
+            v2Price = v2Price.value?.toDouble(),
             confirmQtyJump = confirmQuantityJump.value?.toDouble(),
             orderQtyJump = orderQuantityJump.value?.toDouble(),
             createdBy = _sessionData.value?.userName,
             updatedBy = _sessionData.value?.userName,
-            imageLink = imageUrl
+            imageLink = imageUrl,
+            handlingCharges = createHandlingChargeRequest()
         )
 
         _isProgressBarActive.value = true
         coroutineScope.launch {
-            val createItemDataDeferred = ItemApi.retrofitService.createItemForGroup(requestBody)
+            val createItemDataDeferred = ItemApi.retrofitService(getApplication()).createItemForGroup(requestBody)
             try {
                 createItemDataDeferred.await()
                 _toastText.value = "Successfully created a new item"
@@ -235,6 +278,38 @@ class AddItemViewModel(val database: SessionDatabaseDao, application: Applicatio
             _isProgressBarActive.value = false
         }
     }
+
+    private fun createHandlingChargeRequest(): ArrayList<HandlingChargesCreateRequest> {
+        var handlingChargesCreateRequests = ArrayList<HandlingChargesCreateRequest>()
+        visibleHandlingChargeUiData.value
+            ?.filter { it.isItemChecked.equals(true) }
+            ?.forEach { handlingCharge ->
+                var request = HandlingChargesCreateRequest()
+                request.handlingOptionId = handlingCharge.handlingOptionId
+                request.amount = handlingCharge.handlingCharge
+                request.userVisibility = false
+                request.createdBy = _sessionData.value?.userName ?: ""
+                request.updatedBy = _sessionData.value?.userName ?: ""
+                handlingChargesCreateRequests.add(request)
+            }
+        return handlingChargesCreateRequests
+    }
+
+
+    fun onCheckBoxClicked(selectedUiModel:HandlingChargesItemsModel) {
+        var isChecked = visibleHandlingChargeUiData.value
+            ?.filter { it.handlingOptionId.equals(selectedUiModel.handlingOptionId) }
+            ?.first()
+            ?.isItemChecked ?: true
+
+        _visibleHandlingChargeUiData.value
+            ?.filter { it.handlingOptionId.equals(selectedUiModel.handlingOptionId) }
+            ?.first()
+            ?.isItemChecked = !isChecked
+    }
+
+
+
 
     override fun onCleared() {
         super.onCleared()
