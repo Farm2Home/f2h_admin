@@ -78,7 +78,7 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
                 val orders = getOrdersDataDeferred.await()
                 val userIds = orders.map { x -> x.buyerUserId ?: -1}
                     .plus(orders.map { x -> x.sellerUserId ?: -1}).distinct()
-                val availabilityIds = orders.map { x -> x.itemAvailabilityId ?: -1 }
+                val availabilityIds = orders.map { x -> x.itemAvailabilityId ?: -1 }.distinct()
 
                 val getUserDetailsDataDeferred =
                     UserApi.retrofitService(getApplication()).getUserDetailsByUserIds(userIds.joinToString())
@@ -458,8 +458,7 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
                 discountAmount = 0.0,
                 orderedAmount = 0.0,
                 orderComment = null,
-                deliveryComment = null,
-                collectedCash = null
+                deliveryComment = null
             )
             onSendCommentButtonClicked(element)
             orderUpdateRequestList.add(updateRequest)
@@ -495,8 +494,7 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
                 discountAmount = element.discountAmount,
                 orderedAmount = calculateOrderAmount(element),
                 orderComment = null,
-                deliveryComment = null,
-                collectedCash = null
+                deliveryComment = null
             )
             onSendCommentButtonClicked(element)
             orderUpdateRequestList.add(updateRequest)

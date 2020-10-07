@@ -33,7 +33,8 @@ data class DeliverItemsModel (
     var isCommentProgressBarActive: Boolean = false,
     var receivedPacketCount: Long = 0,
     var isReceived: Boolean = false,
-    var packetCount: Long = 1
+    var packetCount: Long = 1,
+    var orderDescription: String = ""
 )
 
 
