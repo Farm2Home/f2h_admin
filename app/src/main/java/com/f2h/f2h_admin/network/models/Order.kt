@@ -1,6 +1,7 @@
 package com.f2h.f2h_admin.network.models
 
 import com.squareup.moshi.Json
+import java.util.*
 
 
 data class Order (
@@ -37,12 +38,12 @@ data class OrderUpdateRequest (
     @Json(name = "order_status") var orderStatus: String?,
     @Json(name = "payment_status") var paymentStatus: String?,
     @Json(name = "order_comment") var orderComment: String?,
+    @Json(name = "order_description") val orderDescription: String? = "",
     @Json(name = "delivery_comment") var deliveryComment: String?,
     @Json(name = "ordered_quantity") var orderedQuantity: Double?,
     @Json(name = "confirmed_quantity") var confirmedQuantity: Double?,
     @Json(name = "discount_amount") var discountAmount: Double?,
-    @Json(name = "ordered_amount") var orderedAmount: Double?,
-    @Json(name = "collected_cash") var collectedCash: Double?
+    @Json(name = "ordered_amount") var orderedAmount: Double?
 )
 
 data class OrderReceivedNumberUpdateRequest (
@@ -64,3 +65,14 @@ data class OrderCreateRequest (
     @Json(name = "updated_by") var updatedBy: String?
 )
 
+
+data class OrderHeaderDeliveryRequest (
+    @Json(name = "order_header_id") var orderHeaderId: Long?,
+    @Json(name = "collected_cash") var collectedCash: Double?,
+    @Json(name = "wallet_id") var walletId: Long?,
+    @Json(name = "buyer_id") var buyerId: Long?,
+    @Json(name = "group_id") var groupId: Long?,
+    @Json(name = "buyer_name") var buyerName: String?,
+    @Json(name = "delivery_date") var deliveryDate: String?,
+    @Json(name = "orders") var orders: List<OrderUpdateRequest>?
+)

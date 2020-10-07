@@ -73,7 +73,7 @@ class ReportViewModel(val database: SessionDatabaseDao, application: Application
                 }
                 var userIds = orderHeaders.map { x -> x.buyerUserId ?: -1}
                     .plus(orders.map { x -> x.sellerUserId ?: -1}).distinct()
-                var availabilityIds = orders.map { x -> x.itemAvailabilityId ?: -1 }
+                var availabilityIds = orders.map { x -> x.itemAvailabilityId ?: -1 }.distinct()
 
                 var getUserDetailsDataDeferred =
                     UserApi.retrofitService(getApplication()).getUserDetailsByUserIds(userIds.joinToString())

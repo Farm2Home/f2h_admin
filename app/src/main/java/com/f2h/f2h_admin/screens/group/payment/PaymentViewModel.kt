@@ -72,7 +72,7 @@ class PaymentViewModel(val database: SessionDatabaseDao, application: Applicatio
                 val orders = getOrdersDataDeferred.await()
                 val userIds = orders.map { x -> x.buyerUserId ?: -1}
                     .plus(orders.map { x -> x.sellerUserId ?: -1}).distinct()
-                val availabilityIds = orders.map { x -> x.itemAvailabilityId ?: -1 }
+                val availabilityIds = orders.map { x -> x.itemAvailabilityId ?: -1 }.distinct()
 
                 val getUserDetailsDataDeferred =
                     UserApi.retrofitService(getApplication()).getUserDetailsByUserIds(userIds.joinToString())
@@ -409,8 +409,7 @@ class PaymentViewModel(val database: SessionDatabaseDao, application: Applicatio
                 discountAmount = null,
                 orderedAmount = null,
                 orderComment = null,
-                deliveryComment = element.deliveryComment,
-                collectedCash = null
+                deliveryComment = element.deliveryComment
             )
             orderUpdateRequestList.add(updateRequest)
         }

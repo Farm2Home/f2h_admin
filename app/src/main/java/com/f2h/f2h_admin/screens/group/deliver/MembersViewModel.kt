@@ -131,6 +131,7 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
                 x.userId?.equals(orderHeader.buyerUserId) ?: false
             }
             val uiElement = MembersUiModel()
+            uiElement.orderHeaderId = orderHeader.orderHeaderId ?: -1
             uiElement.userId = orderHeader.buyerUserId ?: -1
             uiElement.userName = buyer!!.userName ?: ""
             uiElement.deliveryAddress = buyer.address ?: ""
@@ -180,6 +181,7 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
                 deliverItemsModel.sellerName = sellerUserDetails?.userName ?: ""
                 deliverItemsModel.sellerMobile = sellerUserDetails?.mobile ?: ""
 
+                deliverItemsModel.orderDescription = order.orderDescription ?: ""
                 deliverItemsModel.orderId = order.orderId ?: -1L
                 deliverItemsModel.orderAmount = order.orderedAmount ?: 0.0
                 deliverItemsModel.discountAmount = order.discountAmount ?: 0.0
@@ -531,20 +533,29 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
             _toastMessage.value = "Please select the orders to deliver"
             return
         }
+
+        val deliveryRequest =  OrderHeaderDeliveryRequest (
+            orders = deliveredOrderUpdateRequest,
+            collectedCash = element.amountCollected,
+            orderHeaderId = element.orderHeaderId,
+            walletId = element.walletId,
+            groupId = sessionData.value?.groupId,
+            buyerId = element.userId,
+            buyerName = element.userName,
+            deliveryDate = element.deliveryDate
+        )
+
         _isProgressBarActive.value = true
         coroutineScope.launch {
             try{
-                if (element.amountCollected > 0.0) {
-                    deliveredOrderUpdateRequest.first{true}.collectedCash = element.amountCollected
-                }
-                val deliverOrdersDataDeferred = OrderApi.retrofitService(getApplication()).cashCollectedAndUpdateOrders(deliveredOrderUpdateRequest)
+                val deliverOrdersDataDeferred = OrderApi.retrofitService(getApplication()).headerCashCollected(deliveryRequest)
                 val updatedOrders = deliverOrdersDataDeferred.await()
                 _toastMessage.value = "Successfully delivered orders"
                 element.deliveryItems.filter { it.isItemChecked }.forEach { deliverItem ->
                     deliverItem.orderStatus = ORDER_STATUS_DELIVERED
                     deliverItem.isItemChecked = false
                 }
-                updatedOrders.forEach {updatedOrder ->
+                updatedOrders.orders?.forEach {updatedOrder ->
                     val order = element.deliveryItems.first { x-> updatedOrder.orderId == x.orderId }
                     order.orderStatus = updatedOrder.orderStatus ?: ""
                     order.paymentStatus = updatedOrder.paymentStatus ?:""
@@ -561,6 +572,7 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
         }
     }
 
+
     private fun createDeliverOrderRequests(uiDataElements: List<DeliverItemsModel>?): List<OrderUpdateRequest> {
         val orderUpdateRequestList: ArrayList<OrderUpdateRequest> = arrayListOf()
         uiDataElements?.filter { it.isItemChecked && it.orderStatus != ORDER_STATUS_DELIVERED
@@ -569,11 +581,11 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
                 orderId = element.orderId,
                 orderStatus = ORDER_STATUS_DELIVERED,
                 paymentStatus = F2HConstants.PAYMENT_STATUS_PAID,
+                orderDescription = element.orderDescription,
                 orderedQuantity = null,
                 confirmedQuantity = null,
                 discountAmount = null,
                 orderedAmount = null,
-                collectedCash = null,
                 orderComment = null,
                 deliveryComment = null
             )
