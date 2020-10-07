@@ -583,7 +583,7 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
                 paymentStatus = F2HConstants.PAYMENT_STATUS_PAID,
                 orderDescription = element.orderDescription,
                 orderedQuantity = null,
-                confirmedQuantity = null,
+                confirmedQuantity = element.confirmedQuantity,
                 discountAmount = null,
                 orderedAmount = null,
                 orderComment = null,
