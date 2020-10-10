@@ -9,6 +9,7 @@ import com.f2h.f2h_admin.constants.F2HConstants.REPEAT_WEEKLY
 import com.f2h.f2h_admin.database.SessionDatabaseDao
 import com.f2h.f2h_admin.database.SessionEntity
 import com.f2h.f2h_admin.network.*
+import com.f2h.f2h_admin.network.models.DeliverySlot
 import com.f2h.f2h_admin.network.models.ItemAvailability
 import com.f2h.f2h_admin.network.models.ItemAvailabilityUpdateRequest
 import kotlinx.coroutines.*
@@ -24,8 +25,11 @@ class EditAvailabilityViewModel(val database: SessionDatabaseDao, application: A
     val isAvailabilityFreezed = MutableLiveData<Boolean>()
     val selectedDate = MutableLiveData<String>()
     val selectedRepeatFeature = MutableLiveData<String>()
+    val selectedDeliverySlot = MutableLiveData<DeliverySlot>()
     val dateStringList = MutableLiveData<List<String>>()
     val repeatFeaturesList = MutableLiveData<List<String>>()
+    val deliverySlotList = MutableLiveData<List<DeliverySlot>>()
+    val initialDeliverySlotId = MutableLiveData<Long>()
 
     private val _isProgressBarActive = MutableLiveData<Boolean>()
     val isProgressBarActive: LiveData<Boolean>
@@ -48,19 +52,23 @@ class EditAvailabilityViewModel(val database: SessionDatabaseDao, application: A
 
     init {
         _isAvailabilityActionComplete.value = false
-        fetchSessionData()
         fetchAvailability()
     }
 
     private fun fetchAvailability() {
         _isProgressBarActive.value = true
         coroutineScope.launch {
+            _sessionData = retrieveSession()
+            val fetchDeliverySlots = DeliverySlotApi.retrofitService(getApplication())
+                .getDeliverySlotsForGroup(_sessionData.groupId)
             val getItemAvailabilityDataDeferred = ItemAvailabilityApi
-                .retrofitService.getItemAvailabilities((itemAvailabilityId.value ?: -1).toString())
+                .retrofitService(getApplication()).getItemAvailabilities((itemAvailabilityId.value ?: -1).toString())
             try {
+                deliverySlotList.value = fetchDeliverySlots.await()
                 existingAvailability = getItemAvailabilityDataDeferred.await().first()
                 availableQuantity.value = existingAvailability.availableQuantity.toString()
                 isAvailabilityFreezed.value = existingAvailability.isFreezed
+                initialDeliverySlotId.value = existingAvailability.deliverySlot?.deliverySlotId
                 createSpinnerEntries()
             } catch (t: Throwable) {
                 _toastText.value = "Oops something went wrong"
@@ -69,11 +77,6 @@ class EditAvailabilityViewModel(val database: SessionDatabaseDao, application: A
         }
     }
 
-    private fun fetchSessionData() {
-        coroutineScope.launch {
-            _sessionData = retrieveSession()
-        }
-    }
 
     private fun createSpinnerEntries() {
         dateStringList.value = getFormattedDateList()
@@ -159,6 +162,9 @@ class EditAvailabilityViewModel(val database: SessionDatabaseDao, application: A
         return ""
     }
 
+    fun onDeliverySlotSelected(position: Int) {
+        selectedDeliverySlot.value = deliverySlotList.value?.get(position)
+    }
 
     private fun updateItemAvailability() {
         var requestBody = ItemAvailabilityUpdateRequest(
@@ -169,13 +175,14 @@ class EditAvailabilityViewModel(val database: SessionDatabaseDao, application: A
             availableQuantity = availableQuantity.value?.toDouble(),
             isFreezed = isAvailabilityFreezed.value,
             repeatDay = calculateRepeatDayFromRepeatFeature(selectedRepeatFeature.value),
-            updatedBy = _sessionData.userName
+            updatedBy = _sessionData.userName,
+            deliverySlotId = selectedDeliverySlot.value?.deliverySlotId
         )
 
         _isProgressBarActive.value = true
         coroutineScope.launch {
             val updateItemAvailabilityDataDeferred = ItemAvailabilityApi
-                .retrofitService.updateItemAvailabilities(arrayListOf(requestBody))
+                .retrofitService(getApplication()).updateItemAvailabilities(arrayListOf(requestBody))
             try {
                 updateItemAvailabilityDataDeferred.await()
                 _toastText.value = "Successfully updated item availability"
@@ -185,6 +192,11 @@ class EditAvailabilityViewModel(val database: SessionDatabaseDao, application: A
             }
             _isProgressBarActive.value = false
         }
+    }
+
+    fun getInitialIndex(): Int{
+        var returnVal = deliverySlotList.value?.map { it.deliverySlotId }?.indexOf(initialDeliverySlotId.value)?:0
+        return returnVal
     }
 
     override fun onCleared() {

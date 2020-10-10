@@ -1,5 +1,6 @@
 package com.f2h.f2h_admin.network
 
+import android.content.Context
 import com.f2h.f2h_admin.constants.F2HConstants.SERVER_URL
 import com.f2h.f2h_admin.network.models.Group
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
@@ -39,7 +40,10 @@ interface GroupApiService{
 }
 
 object GroupApi {
-    val retrofitService : GroupApiService by lazy {
-        retrofit.create(GroupApiService::class.java)
+//    val retrofitService : GroupApiService by lazy {
+//        retrofit.create(GroupApiService::class.java)
+//    }
+    fun retrofitService(context: Context): GroupApiService {
+        return RetrofitInstance.build(context).create(GroupApiService::class.java)
     }
 }

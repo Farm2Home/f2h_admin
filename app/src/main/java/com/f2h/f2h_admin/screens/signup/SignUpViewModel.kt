@@ -130,7 +130,7 @@ class SignUpViewModel(val database: SessionDatabaseDao, application: Application
         _isProgressBarActive.value = true
         var newUser = createUserRequestObject()
         coroutineScope.launch {
-            val getCreatedUser = UserApi.retrofitService.createUser(newUser)
+            val getCreatedUser = UserApi.retrofitService(getApplication()).createUser(newUser)
             try {
                 var createdUser = getCreatedUser.await()
                 if (createdUser != null){

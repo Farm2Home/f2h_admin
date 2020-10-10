@@ -1,4 +1,4 @@
-package com.f2h.f2h_admin.screens.deliver
+package com.f2h.f2h_admin.screens.group.deliver
 
 import com.f2h.f2h_admin.network.models.Comment
 
@@ -20,21 +20,21 @@ data class DeliverItemsModel (
     var orderId: Long = 0,
     var orderedQuantity: Double = 0.0,
     var confirmedQuantity: Double = 0.0,
-    var confirmedQuantityJump: Double = 0.0,
-    var quantityChange: Double = 0.0,
-    var availableQuantity: Double = 0.0,
     var displayQuantity: Double = 0.0,
     var orderAmount: Double = 0.0,
     var orderStatus: String = "",
     var paymentStatus: String = "",
     var deliveryAddress: String = "",
-    var isFreezed: Boolean = false,
     var discountAmount: Double = 0.0,
     var isItemChecked: Boolean = false,
     var isMoreDetailsDisplayed: Boolean = false,
     var comments: ArrayList<Comment> = arrayListOf(),
     var newComment: String = "",
-    var isCommentProgressBarActive: Boolean = false
+    var isCommentProgressBarActive: Boolean = false,
+    var receivedPacketCount: Long = 0,
+    var isReceived: Boolean = false,
+    var packetCount: Long = 1,
+    var orderDescription: String = ""
 )
 
 

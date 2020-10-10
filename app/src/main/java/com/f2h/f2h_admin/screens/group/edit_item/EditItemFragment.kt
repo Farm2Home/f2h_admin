@@ -3,7 +3,6 @@ package com.f2h.f2h_admin.screens.group.edit_item
 import android.app.Activity.RESULT_OK
 import android.app.Application
 import android.content.Intent
-import android.media.Image
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -20,6 +19,8 @@ import com.f2h.f2h_admin.R
 import com.f2h.f2h_admin.database.F2HDatabase
 import com.f2h.f2h_admin.database.SessionDatabaseDao
 import com.f2h.f2h_admin.databinding.FragmentEditItemBinding
+import com.f2h.f2h_admin.screens.group.edit_item.CheckBoxClickListener
+import com.f2h.f2h_admin.screens.group.edit_item.HandlingChargesItemsAdapter
 import com.github.dhaval2404.imagepicker.ImagePicker
 
 
@@ -92,6 +93,23 @@ class EditItemFragment : Fragment() {
         }
 
         return binding.root
+    }
+
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val adapter = HandlingChargesItemsAdapter(CheckBoxClickListener { uiModel ->
+            viewModel.onCheckBoxClicked(uiModel)
+        })
+        binding.editHandlingChargeRV.adapter = adapter
+        viewModel.visibleHandlingChargeUiData.observe(viewLifecycleOwner, Observer {
+            it?.let {
+                adapter.submitList(it)
+                adapter.notifyDataSetChanged()
+            }
+        })
+
     }
 
 

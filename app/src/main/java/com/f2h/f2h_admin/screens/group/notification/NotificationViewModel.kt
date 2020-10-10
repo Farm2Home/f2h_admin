@@ -42,7 +42,7 @@ class NotificationViewModel(val database: SessionDatabaseDao, application: Appli
         coroutineScope.launch {
             userSession = retrieveSession()
             try {
-                var notificationMessages = NotificationApi.retrofitService.getAllNotificationMessages().await()
+                var notificationMessages = NotificationApi.retrofitService(getApplication()).getAllNotificationMessages().await()
                 notificationMessages.forEach{ message ->
                     var notificationMessageItem = NotificationItemsModel(
                         message.notificationId,
@@ -70,7 +70,7 @@ class NotificationViewModel(val database: SessionDatabaseDao, application: Appli
         }
         _isProgressBarActive.value = true
         coroutineScope.launch {
-            val sendNotificationDeferred = NotificationApi.retrofitService
+            val sendNotificationDeferred = NotificationApi.retrofitService(getApplication())
                 .sendNotificationToGroups(selectedNotificationItem.notificationId!!,
                     userSession.groupId!!.toString())
             try {

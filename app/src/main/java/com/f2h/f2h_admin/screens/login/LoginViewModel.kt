@@ -94,7 +94,7 @@ class LoginViewModel(val database: SessionDatabaseDao, application: Application)
 
     private fun tryToLogin (session: SessionEntity){
         coroutineScope.launch {
-            var getUserDataDeferred = LoginApi.retrofitService.tryUserLogin(session.mobile, session.password)
+            var getUserDataDeferred = LoginApi.retrofitService(getApplication()).tryUserLogin(session.mobile, session.password)
             try {
                 var updatedUserData = getUserDataDeferred.await()
                 if (updatedUserData != null){

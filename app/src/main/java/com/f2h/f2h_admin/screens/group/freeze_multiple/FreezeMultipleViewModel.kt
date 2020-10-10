@@ -73,7 +73,7 @@ class FreezeMultipleViewModel(val database: SessionDatabaseDao, application: App
 //            var endDateString = requestFormatter.format(endDate.time)
 
             var getItemsDeferred =
-                ItemApi.retrofitService.getItemsForGroup(sessionData.value?.groupId!!)
+                ItemApi.retrofitService(getApplication()).getItemsForGroup(sessionData.value?.groupId!!)
 
             try {
                 var items = getItemsDeferred.await()
@@ -85,10 +85,10 @@ class FreezeMultipleViewModel(val database: SessionDatabaseDao, application: App
                     .distinct()
 
                 var getAvailabilitiesDeferred =
-                    ItemAvailabilityApi.retrofitService.getItemAvailabilitiesByItemId(itemIdsList)
+                    ItemAvailabilityApi.retrofitService(getApplication()).getItemAvailabilitiesByItemId(itemIdsList)
 
                 var getUserDetailsDataDeferred =
-                    UserApi.retrofitService.getUserDetailsByUserIds(userIds.joinToString())
+                    UserApi.retrofitService(getApplication()).getUserDetailsByUserIds(userIds.joinToString())
 
                 var userDetailsList = getUserDetailsDataDeferred.await()
                 var availabilities = getAvailabilitiesDeferred.await()
@@ -268,26 +268,15 @@ class FreezeMultipleViewModel(val database: SessionDatabaseDao, application: App
         viewModelJob.cancel()
     }
 
-
-
     fun onFreezeStatusSelected(position: Int) {
-
         _reportUiFilterModel.value?.selectedFreezeStatus = _reportUiFilterModel.value?.freezeStatusList?.get(position) ?: ""
-
         filterVisibleItems()
     }
-
-
+    
     fun onTimeFilterSelected(position: Int) {
         for(i in 0..7){
             if (position == i) setTimeFilterRange(i,i)
         }
-//        if (position.equals(0)) setTimeFilterRange(0,0) //Today
-//        if (position.equals(1)) setTimeFilterRange(1,1) //Tomorrow
-//        if (position.equals(2)) setTimeFilterRange(2,2) //3rd day
-//        if (position.equals(3)) setTimeFilterRange(3,3) //4th day
-//        if (position.equals(4)) setTimeFilterRange(4,4) //5th day
-//        if (position.equals(5)) setTimeFilterRange(5,5) //5th day
         filterVisibleItems()
     }
 
@@ -331,7 +320,7 @@ class FreezeMultipleViewModel(val database: SessionDatabaseDao, application: App
     fun updateAvailability(availabilityUpdateRequests: List<ItemAvailabilityUpdateRequest>){
         _isProgressBarActive.value = true
         coroutineScope.launch {
-            var freezeAvailabilityDataDeferred = ItemAvailabilityApi.retrofitService.updateItemAvailabilities(availabilityUpdateRequests)
+            var freezeAvailabilityDataDeferred = ItemAvailabilityApi.retrofitService(getApplication()).updateItemAvailabilities(availabilityUpdateRequests)
             try{
                 freezeAvailabilityDataDeferred.await()
                 _toastMessage.value = "Successfull"
@@ -384,10 +373,12 @@ class FreezeMultipleViewModel(val database: SessionDatabaseDao, application: App
             itemShareArray.add(element.itemName + "  -  " + element.itemPrice.toString() + "/" + element.itemUom)
         }
         if (anyAvailability) {
+            var d = formatter.parse(date)
+            var day = SimpleDateFormat("E").format(d)
             var headerString =
-                "VILLAGE VEGGYS\n" + sessionData.value?.groupName + "\n Item list (" + date + "):\n"
+                "VILLAGE VEGGYS\n" + sessionData.value?.groupName + "\nItem list (" + date +", "+ day + "):\n"
             headerString += "--------------------------------------\n"
-            return headerString + itemShareArray.joinToString("\n") + "\nPlayStore link:\n" + BUYER_APP_LINK
+            return headerString + itemShareArray.joinToString("\n") + "\n\nPlayStore link:\n" + BUYER_APP_LINK
 
         } else {
             _toastMessage.value = "Oops, Please select the availabilities to share"

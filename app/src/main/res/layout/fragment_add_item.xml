@@ -12,7 +12,7 @@
     </data>
 
 
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -45,15 +45,26 @@
                 app:layout_constraintTop_toBottomOf="@+id/textView11" />
 
             <EditText
-                android:id="@+id/addItemPrice"
+                android:id="@+id/addFarmerPrice"
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:hint="Item Price"
+                android:hint="Farmer Price"
                 android:inputType="number|numberDecimal"
-                android:text="@={viewModel.itemPrice}"
+                android:text="@={viewModel.farmerPrice}"
                 app:layout_constraintStart_toEndOf="@+id/textView25"
                 app:layout_constraintTop_toBottomOf="@+id/textView22" />
+
+            <TextView
+                android:id="@+id/addV2Price"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="number|numberDecimal"
+                android:text="@={viewModel.v2Price}"
+                android:textSize="20sp"
+                app:layout_constraintStart_toEndOf="@+id/textView29"
+                app:layout_constraintTop_toBottomOf="@+id/textView28" />
 
             <Spinner
                 android:id="@+id/addUomSelector"
@@ -61,9 +72,9 @@
                 android:layout_height="wrap_content"
                 android:entries="@{viewModel.itemUomStringList}"
                 app:spinnerStatus="@{!viewModel.isProgressBarActive()}"
-                app:layout_constraintBottom_toBottomOf="@+id/addItemPrice"
+                app:layout_constraintBottom_toBottomOf="@+id/addFarmerPrice"
                 app:layout_constraintStart_toEndOf="@+id/textView9"
-                app:layout_constraintTop_toTopOf="@+id/addItemPrice" />
+                app:layout_constraintTop_toTopOf="@+id/addFarmerPrice" />
 
             <Spinner
                 android:id="@+id/addFarmerSelector"
@@ -84,7 +95,7 @@
                 android:text="    Per  "
                 android:textAlignment="gravity"
                 app:layout_constraintBottom_toBottomOf="@+id/addUomSelector"
-                app:layout_constraintStart_toEndOf="@+id/addItemPrice"
+                app:layout_constraintStart_toEndOf="@+id/addFarmerPrice"
                 app:layout_constraintTop_toTopOf="@+id/addUomSelector" />
 
             <TextView
@@ -102,10 +113,20 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                android:text="Price per unit"
+                android:text="Farmer Price Per Unit"
                 android:textSize="12sp"
                 app:layout_constraintStart_toStartOf="@+id/addItemDescription"
                 app:layout_constraintTop_toBottomOf="@+id/addItemDescription" />
+
+            <TextView
+                android:id="@+id/textView28"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="V2 Price Per Unit"
+                android:textSize="12sp"
+                app:layout_constraintStart_toStartOf="@+id/textView22"
+                app:layout_constraintTop_toBottomOf="@+id/addFarmerPrice" />
 
             <TextView
                 android:id="@+id/textView23"
@@ -148,9 +169,20 @@
                 android:gravity="center_vertical"
                 android:text="Rs  "
                 android:textAlignment="gravity"
-                app:layout_constraintBottom_toBottomOf="@+id/addItemPrice"
+                app:layout_constraintBottom_toBottomOf="@+id/addFarmerPrice"
                 app:layout_constraintStart_toStartOf="@+id/textView22"
-                app:layout_constraintTop_toTopOf="@+id/addItemPrice" />
+                app:layout_constraintTop_toTopOf="@+id/addFarmerPrice" />
+
+            <TextView
+                android:id="@+id/textView29"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:gravity="center_vertical"
+                android:text="Rs  "
+                android:textAlignment="gravity"
+                app:layout_constraintBottom_toBottomOf="@+id/addV2Price"
+                app:layout_constraintStart_toStartOf="@+id/textView28"
+                app:layout_constraintTop_toBottomOf="@+id/textView28" />
 
             <Button
                 android:id="@+id/addItemButton"
@@ -177,7 +209,7 @@
                 android:text="Order quantity jump"
                 android:textSize="12sp"
                 app:layout_constraintStart_toStartOf="@+id/addMinOrderedQuantity"
-                app:layout_constraintTop_toBottomOf="@+id/addItemPrice" />
+                app:layout_constraintTop_toBottomOf="@+id/handlingChargeRV" />
 
             <EditText
                 android:id="@+id/addMinOrderedQuantity"
@@ -234,9 +266,19 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/add_photo_icon" />
 
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/handlingChargeRV"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="20dp"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/textView29"
+                app:layout_constraintTop_toBottomOf="@+id/addV2Price" />
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 
 </layout>

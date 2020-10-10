@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="uiModel"
+            type="com.f2h.f2h_admin.screens.group.add_item.HandlingChargesItemsModel" />
+        <variable
+            name="checkBoxClickListener"
+            type="com.f2h.f2h_admin.screens.group.add_item.CheckBoxClickListener" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraintLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <CheckBox
+                    android:id="@+id/handlingSelectedCheckbox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:checked="@{uiModel.isItemChecked}"
+                    android:onClick="@{() -> checkBoxClickListener.onClick(uiModel)}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/handlingChargeName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="20dp"
+                    android:text="@{uiModel.name}"
+                    android:textSize="15sp"
+                    app:layout_constraintEnd_toStartOf="@+id/textView32"
+                    app:layout_constraintStart_toEndOf="@+id/handlingSelectedCheckbox"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/handlingChargeDescription"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:text="@{uiModel.description}"
+                    android:textSize="12sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="@+id/handlingChargeName"
+                    app:layout_constraintStart_toStartOf="@+id/handlingChargeName"
+                    app:layout_constraintTop_toBottomOf="@+id/handlingChargeName" />
+
+                <EditText
+                    android:id="@+id/handlingChargeAmount"
+                    android:layout_width="70dp"
+                    android:layout_height="0dp"
+                    android:layout_marginEnd="20dp"
+                    android:ems="10"
+                    android:inputType="numberSigned|numberDecimal"
+                    android:text="@={`` + uiModel.handlingCharge}"
+                    android:textAlignment="center"
+                    android:textSize="14sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/handlingChargeDescription"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/handlingChargeName" />
+
+                <TextView
+                    android:id="@+id/textView32"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_marginEnd="5dp"
+                    android:gravity="center_vertical"
+                    android:text="Rs"
+                    android:textAlignment="gravity"
+                    app:layout_constraintBottom_toBottomOf="@+id/handlingChargeAmount"
+                    app:layout_constraintEnd_toStartOf="@+id/handlingChargeAmount"
+                    app:layout_constraintTop_toTopOf="@+id/handlingChargeAmount" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="@color/grey" />
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

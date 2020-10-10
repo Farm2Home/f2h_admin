@@ -6,19 +6,19 @@
     <data>
         <variable
             name="uiModel"
-            type="com.f2h.f2h_admin.screens.deliver.DeliverItemsModel" />
+            type="com.f2h.f2h_admin.screens.group.deliver.DeliverItemsModel" />
         <variable
             name="clickListener"
-            type="com.f2h.f2h_admin.screens.deliver.OrderedItemClickListener" />
+            type="com.f2h.f2h_admin.screens.group.deliver.OrderedItemClickListener" />
         <variable
             name="checkBoxClickListener"
-            type="com.f2h.f2h_admin.screens.deliver.CheckBoxClickListener" />
+            type="com.f2h.f2h_admin.screens.group.deliver.CheckBoxClickListener" />
         <variable
-            name="callUserButtonClickListener"
-            type="com.f2h.f2h_admin.screens.deliver.CallUserButtonClickListener" />
+            name="receiveButtonClickListener"
+            type="com.f2h.f2h_admin.screens.group.deliver.ReceiveButtonClickListener" />
         <variable
             name="sendCommentButtonClickListener"
-            type="com.f2h.f2h_admin.screens.deliver.SendCommentButtonClickListener" />
+            type="com.f2h.f2h_admin.screens.group.deliver.SendCommentButtonClickListener" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -50,8 +50,8 @@
 
                     <ImageView
                         android:id="@+id/confirmItemImage"
-                        android:layout_width="70dp"
-                        android:layout_height="70dp"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
                         android:layout_marginStart="5dp"
                         android:layout_marginTop="10dp"
                         android:contentDescription="TODO"
@@ -72,40 +72,17 @@
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
-                        android:id="@+id/date"
+                        android:id="@+id/amount"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="20dp"
                         android:ellipsize="end"
+                        android:text="Rs. "
                         android:singleLine="true"
                         android:textSize="12sp"
-                        app:layout_constraintEnd_toStartOf="@+id/confirmedQuantity"
+                        app:layout_constraintEnd_toStartOf="@+id/deliverPageReceiveButton"
                         app:layout_constraintStart_toStartOf="@+id/confirmItemDetails"
                         app:layout_constraintTop_toBottomOf="@+id/confirmItemDetails"
-                        app:orderDateFormatted="@{uiModel}" />
-
-                    <TextView
-                        android:id="@+id/confirmedQuantity"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="20dp"
-                        android:text="@{`` + uiModel.confirmedQuantity}"
-                        android:textAlignment="center"
-                        android:textSize="16sp"
-                        app:layout_constraintBottom_toBottomOf="@+id/total"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/confirmItemDetails" />
-
-                    <TextView
-                        android:id="@+id/amount"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:text="Rs. "
-                        android:textAlignment="center"
-                        android:textSize="12sp"
-                        app:layout_constraintEnd_toEndOf="@+id/confirmItemImage"
-                        app:layout_constraintStart_toStartOf="@+id/confirmItemImage"
-                        app:layout_constraintTop_toBottomOf="@+id/confirmItemImage"
                         app:priceFormatted="@{uiModel}" />
 
 
@@ -113,12 +90,36 @@
                         android:id="@+id/total"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
                         android:text="Receivable - "
-                        app:layout_constraintEnd_toEndOf="@+id/confirmRejectUserName"
-                        app:layout_constraintStart_toStartOf="@+id/confirmRejectUserName"
-                        app:layout_constraintTop_toBottomOf="@+id/confirmRejectUserName"
+                        app:layout_constraintStart_toStartOf="@+id/amount"
+                        app:layout_constraintTop_toBottomOf="@+id/amount"
                         app:totalPriceFormatted="@{uiModel}" />
+
+                    <TextView
+                        android:id="@+id/numberOfPacketsText"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="Number Of Packets : "
+                        android:textSize="16sp"
+                        app:layout_constraintTop_toBottomOf="@+id/total"
+                        app:layout_constraintStart_toStartOf="@+id/total"  />
+
+
+                    <EditText
+                        android:id="@+id/numberOfPacketsEdit"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="20dp"
+                        android:text="@={`` + uiModel.receivedPacketCount}"
+                        android:textAlignment="center"
+                        android:textSize="16sp"
+                        android:ems="3"
+                        android:inputType="number"
+                        app:numberOfPacketsInputType="@{uiModel}"
+                        app:layout_constraintTop_toTopOf="@+id/numberOfPacketsText"
+                        app:layout_constraintBottom_toBottomOf="@+id/numberOfPacketsText"
+                        app:layout_constraintStart_toEndOf="@+id/numberOfPacketsText" />
+
 
                     <TextView
                         android:id="@+id/status"
@@ -128,70 +129,49 @@
                         android:textAlignment="center"
                         android:textSize="12sp"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="@+id/amount"
-                        app:layout_constraintStart_toStartOf="@+id/amount"
-                        app:layout_constraintTop_toBottomOf="@+id/amount"
+                        app:layout_constraintEnd_toEndOf="@+id/confirmItemImage"
+                        app:layout_constraintStart_toStartOf="@+id/confirmItemImage"
+                        app:layout_constraintTop_toBottomOf="@+id/confirmItemImage"
                         app:statusFormatted="@{uiModel}" />
 
-                    <TextView
-                        android:id="@+id/confirmRejectUserName"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="10dp"
-                        android:ellipsize="end"
-                        android:maxLines="2"
-                        android:singleLine="false"
-                        android:text="@{uiModel.buyerName}"
-                        android:textSize="10sp"
-                        app:layout_constraintEnd_toStartOf="@+id/deliverPageCallButton"
-                        app:layout_constraintStart_toStartOf="@+id/date"
-                        app:layout_constraintTop_toBottomOf="@+id/date" />
 
                     <CheckBox
                         android:id="@+id/confirmRejectCheckbox"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="5dp"
+                        android:layout_marginStart="25dp"
                         android:checked="@{uiModel.isItemChecked}"
                         android:onClick="@{() -> checkBoxClickListener.onClick(uiModel)}"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
-                    <TextView
-                        android:id="@+id/crUom"
-                        android:layout_width="wrap_content"
-                        android:layout_height="0dp"
-                        android:gravity="center_vertical"
-                        android:text="@{uiModel.itemUom}"
-                        android:textAlignment="gravity"
-                        app:layout_constraintEnd_toEndOf="@+id/confirmedQuantity"
-                        app:layout_constraintStart_toStartOf="@+id/confirmedQuantity"
-                        app:layout_constraintTop_toBottomOf="@+id/confirmedQuantity" />
+
 
                     <ImageButton
-                        android:id="@+id/deliverPageCallButton"
+                        android:id="@+id/deliverPageReceiveButton"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
-                        android:layout_marginEnd="10dp"
-                        android:onClick="@{() -> callUserButtonClickListener.onClick(uiModel)}"
-                        app:layout_constraintBottom_toBottomOf="@+id/crUom"
-                        app:layout_constraintEnd_toStartOf="@+id/crUom"
-                        app:layout_constraintTop_toTopOf="@+id/confirmedQuantity"
-                        app:layout_constraintVertical_bias="0.0"
-                        app:srcCompat="@drawable/contact_us_icon" />
+                        android:layout_marginEnd="20dp"
+                        android:onClick="@{() -> receiveButtonClickListener.onClick(uiModel)}"
+                        android:visibility="visible"
+                        app:receivedButtonCheck="@{uiModel}"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/check_box" />
 
                     <ImageView
-                        android:id="@+id/imageView2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
-                        android:layout_marginBottom="5dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="@+id/crUom"
-                        app:layout_constraintStart_toStartOf="@+id/total"
-                        app:layout_constraintTop_toBottomOf="@+id/total"
-                        app:srcCompat="@drawable/more_icon" />
+                        android:id="@+id/receivedCheck"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="20dp"
+                        android:visibility="gone"
+                        app:receivedImageCheck="@{uiModel}"
+                        app:layout_constraintBottom_toBottomOf="@+id/deliverPageReceiveButton"
+                        app:layout_constraintEnd_toEndOf="@+id/deliverPageReceiveButton"
+                        app:layout_constraintTop_toTopOf="@+id/deliverPageReceiveButton"
+                        app:srcCompat="@drawable/check" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
