@@ -24,6 +24,7 @@ data class ReportItemsModel (
     var displayQuantity: Double = 0.0,
     var farmerCommission: Double = 0.0,
     var handlingCharges: List<HandlingCharge> = listOf(),
+    var itemHandlingCharges: List<HandlingCharge> = listOf(),
     var v2Commission: Double = 0.0,
     var orderAmount: Double = 0.0,
     var orderStatus: String = "",

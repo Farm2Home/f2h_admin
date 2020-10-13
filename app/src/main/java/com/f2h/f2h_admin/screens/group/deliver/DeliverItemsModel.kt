@@ -26,7 +26,7 @@ data class DeliverItemsModel (
     var paymentStatus: String = "",
     var deliveryAddress: String = "",
     var discountAmount: Double = 0.0,
-    var isItemChecked: Boolean = false,
+    var isItemChecked: Boolean = true,
     var isMoreDetailsDisplayed: Boolean = false,
     var comments: ArrayList<Comment> = arrayListOf(),
     var newComment: String = "",

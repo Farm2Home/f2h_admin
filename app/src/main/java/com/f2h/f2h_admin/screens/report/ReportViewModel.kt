@@ -58,7 +58,7 @@ class ReportViewModel(val database: SessionDatabaseDao, application: Application
         _isProgressBarActive.value = true
         coroutineScope.launch {
             sessionData.value = retrieveSession()
-            var getOrderHeaderDataDeferred = OrderApi.retrofitService(getApplication()).getOrderHeaderForGroup(sessionData.value!!.groupId, fetchOrderDate(-3), fetchOrderDate(10))
+            var getOrderHeaderDataDeferred = OrderApi.retrofitService(getApplication()).getOrderHeaderForGroup(sessionData.value!!.groupId, fetchOrderDate(-15), fetchOrderDate(10))
             try {
                 var orderHeaders = getOrderHeaderDataDeferred.await()
                 var orders = arrayListOf<Order>()
@@ -124,16 +124,6 @@ class ReportViewModel(val database: SessionDatabaseDao, application: Application
                 }
             }
 
-            if (item != null) {
-                uiElement.itemId = item.itemId ?: -1
-                uiElement.itemName = item.itemName ?: ""
-                uiElement.itemDescription = item.description ?: ""
-                uiElement.itemUom = item.uom ?: ""
-                uiElement.itemImageLink = item.imageLink ?: ""
-                uiElement.price = item.pricePerUnit ?: 0.0
-                uiElement.handlingCharges = item.handlingCharges
-            }
-
             val buyerUserDetails = userDetailsList.filter { x -> x.userId?.equals(order.buyerUserId) ?: false }.firstOrNull()
             val sellerUserDetails = userDetailsList.filter { x -> x.userId?.equals(order.sellerUserId) ?: false }.firstOrNull()
             uiElement.buyerName = buyerUserDetails?.userName ?: ""
@@ -156,6 +146,21 @@ class ReportViewModel(val database: SessionDatabaseDao, application: Application
             uiElement.sellerUserId = order.sellerUserId ?: -1
             uiElement.deliveryAddress = order.deliveryLocation ?: ""
             uiElement.displayQuantity = getDisplayQuantity(uiElement.orderStatus, uiElement.orderedQuantity, uiElement.confirmedQuantity)
+
+            if (item != null) {
+                uiElement.itemId = item.itemId ?: -1
+                uiElement.itemName = item.itemName ?: ""
+                uiElement.itemDescription = item.description ?: ""
+                uiElement.itemUom = item.uom ?: ""
+                uiElement.itemImageLink = item.imageLink ?: ""
+                uiElement.price = item.pricePerUnit ?: 0.0
+                uiElement.itemHandlingCharges = item.handlingCharges
+                uiElement.handlingCharges = item.handlingCharges
+                uiElement.itemHandlingCharges.forEach { handlingCharge ->
+                    handlingCharge.amount = handlingCharge.amount * uiElement.displayQuantity
+                }
+            }
+
             allUiData.add(uiElement)
         }
 
@@ -187,7 +192,7 @@ class ReportViewModel(val database: SessionDatabaseDao, application: Application
 
         filters.farmerNameList = arrayListOf("ALL")
 
-        filters.timeFilterList = arrayListOf("Today", "Tomorrow", "Next 7 days", "Last 3 days")
+        filters.timeFilterList = arrayListOf("Today", "Tomorrow", "Next 7 days", "Last 15 days")
 
         filters.selectedItem = "ALL"
         filters.selectedPaymentStatus = "ALL"
@@ -329,7 +334,7 @@ class ReportViewModel(val database: SessionDatabaseDao, application: Application
         if (position.equals(0)) setTimeFilterRange(0,0) //Today
         if (position.equals(1)) setTimeFilterRange(1,1) //Tomorrow
         if (position.equals(2)) setTimeFilterRange(0,7) //Next 7 Days
-        if (position.equals(3)) setTimeFilterRange(-3,0) //Last 3 days
+        if (position.equals(3)) setTimeFilterRange(-15,0) //Last 15 days
         filterVisibleItems()
     }
 
