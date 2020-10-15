@@ -196,6 +196,7 @@
                         android:textSize="12sp"
                         android:onClick="@{() -> deliverClickListener.onClick(uiModel)}"
                         app:deliverButtonFormatted="@{uiModel}"
+                        app:buttonStatus="@{!uiModel.isProgressBarActive()}"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="1"

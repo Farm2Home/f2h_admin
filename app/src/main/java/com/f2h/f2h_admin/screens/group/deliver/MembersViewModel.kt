@@ -527,6 +527,7 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
     }
 
     fun onDeliverButtonClicked(element: MembersUiModel) {
+        _isProgressBarActive.value = true
         val deliveredOrderUpdateRequest = createDeliverOrderRequests(element.deliveryItems)
         if (deliveredOrderUpdateRequest.isEmpty()){
             _isProgressBarActive.value = false
