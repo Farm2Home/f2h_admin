@@ -7,5 +7,6 @@ data class ServiceOrder (
     @Json(name = "service_order_id") val serviceOrderId: Long? = -1L,
     @Json(name = "name") val name: String? = "",
     @Json(name = "description") val description: String? = "",
-    @Json(name = "amount") val amount: Double? = 0.0
+    @Json(name = "amount") val amount: Double? = 0.0,
+    @Json(name = "payment_status") val paymentStatus: String? = ""
 )

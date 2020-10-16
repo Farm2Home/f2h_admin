@@ -7,12 +7,14 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.f2h.f2h_admin.databinding.ListPaymentItemsBinding
 
-class PaymentItemsAdapter(val clickListener: OrderedItemClickListener,
-                                val checkBoxClickListener: CheckBoxClickListener
-): ListAdapter<PaymentItemsModel, PaymentItemsAdapter.ViewHolder>(ListItemDiffCallback()) {
+class DeliverItemsAdapter(val clickListener: OrderedItemClickListener,
+                          val checkBoxClickListener: CheckBoxClickListener,
+                          val sendCommentButtonClickListener: SendCommentButtonClickListener
+): ListAdapter<PaymentItemsModel, DeliverItemsAdapter.ViewHolder>(ListItemDiffCallback()) {
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(getItem(position)!!, clickListener, checkBoxClickListener)
+        holder.bind(getItem(position)!!, clickListener, checkBoxClickListener,
+            sendCommentButtonClickListener)
     }
 
 
@@ -26,11 +28,13 @@ class PaymentItemsAdapter(val clickListener: OrderedItemClickListener,
         fun bind(
             item: PaymentItemsModel,
             clickListener: OrderedItemClickListener,
-            checkBoxClickListener: CheckBoxClickListener
+            checkBoxClickListener: CheckBoxClickListener,
+            sendCommentButtonClickListener: SendCommentButtonClickListener
         ) {
             binding.uiModel = item
             binding.clickListener = clickListener
             binding.checkBoxClickListener = checkBoxClickListener
+            binding.sendCommentButtonClickListener = sendCommentButtonClickListener
             binding.executePendingBindings()
         }
 
@@ -64,3 +68,6 @@ class CheckBoxClickListener(val clickListener: (uiModel: PaymentItemsModel) -> U
     fun onClick(uiModel: PaymentItemsModel) = clickListener(uiModel)
 }
 
+class SendCommentButtonClickListener(val clickListener: (uiModel: PaymentItemsModel) -> Unit) {
+    fun onClick(uiModel: PaymentItemsModel) = clickListener(uiModel)
+}

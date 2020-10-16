@@ -547,6 +547,7 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
         )
 
         _isProgressBarActive.value = true
+        element.isProgressBarActive = true
         coroutineScope.launch {
             try{
                 val deliverOrdersDataDeferred = OrderApi.retrofitService(getApplication()).headerCashCollected(deliveryRequest)
@@ -570,6 +571,7 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
                 _toastMessage.value = "Oops, Something went wrong " + t.message
             }
             _isProgressBarActive.value = false
+            element.isProgressBarActive = false
         }
     }
 
