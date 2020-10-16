@@ -1,4 +1,4 @@
-package com.f2h.f2h_admin.screens.group.deliver
+package com.f2h.f2h_admin.screens.group.payment
 
 import android.app.Application
 import android.util.Log
@@ -6,10 +6,9 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.f2h.f2h_admin.constants.F2HConstants
-import com.f2h.f2h_admin.constants.F2HConstants.DELIVERY_AREA_NOT_ASSIGNED
-import com.f2h.f2h_admin.constants.F2HConstants.DELIVERY_STATUS_COMPLETED
-import com.f2h.f2h_admin.constants.F2HConstants.DELIVERY_STATUS_NOT_DONE
 import com.f2h.f2h_admin.constants.F2HConstants.ORDER_STATUS_DELIVERED
+import com.f2h.f2h_admin.constants.F2HConstants.PAYMENT_STATUS_PAID
+import com.f2h.f2h_admin.constants.F2HConstants.PAYMENT_STATUS_PENDING
 import com.f2h.f2h_admin.constants.F2HConstants.TIME_SELECTION_TODAY
 import com.f2h.f2h_admin.database.SessionDatabaseDao
 import com.f2h.f2h_admin.database.SessionEntity
@@ -48,16 +47,11 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
         get() = _toastMessage
 
     private var _selectedDate = MutableLiveData<String>()
-    private var _selectedArea = MutableLiveData<String>()
     private var _selectedStatus = MutableLiveData<String>()
-
-    private val _hasExitGroup = MutableLiveData<Boolean>()
-    val hasExitGroup: LiveData<Boolean>
-        get() = _hasExitGroup
 
     private val sessionData = MutableLiveData<SessionEntity>()
 
-    val parser: DateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+    private val parser: DateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
     private val formatter: DateFormat = SimpleDateFormat("dd-MMM-yyyy")
 
     private var allUiData = ArrayList<MembersUiModel>()
@@ -67,7 +61,6 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
 
     init {
         _isProgressBarActive.value = true
-        _hasExitGroup.value = false
         getUserDetailsInGroup()
     }
 
@@ -76,24 +69,21 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
         _isProgressBarActive.value = true
         coroutineScope.launch {
             sessionData.value = retrieveSession()
-            val getOrdersForDeliveryAgentDeferred = OrderApi.retrofitService(getApplication()).getOrderHeaderForGroup(sessionData.value!!.groupId, startDate(), endDate())
+            val getOrdersHeaderDeferred = OrderApi.retrofitService(getApplication()).getOrderHeaderForGroup(sessionData.value!!.groupId, startDate(), endDate())
             try {
-                val orderHeaders = getOrdersForDeliveryAgentDeferred.await()
+                val orderHeaders = getOrdersHeaderDeferred.await()
                 val buyerIds = arrayListOf<Long>(-1).plus(orderHeaders.map { x -> x.buyerUserId ?: -1})
                     .plus(orderHeaders.flatMap { x -> x.orders!!.map { it.sellerUserId }}).distinct()
 
                 val getMemberWallets = WalletApi.retrofitService(getApplication()).getWalletDetails(sessionData.value!!.groupId, null)
-                val getDeliveryArea = DeliveryAreaApi.retrofitService(getApplication()).getDeliveryAreaDetails(sessionData.value!!.groupId)
                 val getUserDetailsDeferred = UserApi.retrofitService(getApplication()).getUserDetailsByUserIds(buyerIds.joinToString())
                 val getUserMembershipDetailsDeferred = GroupMembershipApi.retrofitService(getApplication()).getGroupMembership(sessionData.value!!.groupId, null)
 
                 val buyerUserDetails = getUserDetailsDeferred.await()
                 val buyerMembershipDetails = getUserMembershipDetailsDeferred.await()
-                val deliveryAreaList = getDeliveryArea.await()
                 val memberWallets = getMemberWallets.await()
 
-                allUiData = createAllUiData(orderHeaders, buyerUserDetails, buyerMembershipDetails,
-                    deliveryAreaList, memberWallets)
+                allUiData = createAllUiData(orderHeaders, buyerUserDetails, buyerMembershipDetails, memberWallets)
                 createAllUiFilters()
                 filterVisibleItems()
             } catch (t:Throwable){
@@ -106,7 +96,7 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
 
 
     private fun createAllUiData(orderHeaders: List<OrderHeader>, userDetails: List<UserDetails>,
-                                userMemberships: List<GroupMembership>, deliveryAreaList: List<DeliveryArea>,
+                                userMemberships: List<GroupMembership>,
                                 memberWallets: List<Wallet>): ArrayList<MembersUiModel> {
         val allUiData = ArrayList<MembersUiModel>()
 
@@ -121,9 +111,6 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
                 userMemberships.firstOrNull { x ->
                     x.userId?.equals(orderHeader.buyerUserId) ?: false
                 }
-            val deliveryArea = deliveryAreaList.firstOrNull { x ->
-                x.deliveryAreaId?.equals(userMembership?.deliveryAreaId) ?: false
-            }
             val buyer = userDetails.firstOrNull { x ->
                 x.userId?.equals(orderHeader.buyerUserId) ?: false
             }
@@ -131,95 +118,95 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
                 x.userId?.equals(orderHeader.buyerUserId) ?: false
             }
             val uiElement = MembersUiModel()
-            uiElement.orderHeaderId = orderHeader.orderHeaderId ?: -1
             uiElement.userId = orderHeader.buyerUserId ?: -1
+            uiElement.orderHeaderId = orderHeader.orderHeaderId ?: -1
             uiElement.userName = buyer!!.userName ?: ""
             uiElement.deliveryAddress = buyer.address ?: ""
             uiElement.mobile = buyer.mobile ?: ""
             uiElement.email = buyer.email ?: ""
             uiElement.walletId = wallet!!.walletId ?: -1
             uiElement.walletBalance = wallet.balance ?: 0.0
-
-
-
             uiElement.packingNumber = orderHeader.packingNumber ?: -1
             uiElement.deliveryDate = orderHeader.deliveryDate ?: ""
             uiElement.totalAmount = orderHeader.final_amount ?: 0.0
-            uiElement.deliverySequence = userMembership?.deliverySequence ?: 0
             uiElement.groupMembershipId = userMembership?.groupMembershipId
-            uiElement.deliveryArea = deliveryArea?.deliveryArea ?: ""
-
-            val deliveryItemsList = arrayListOf<DeliverItemsModel>()
+            uiElement.serviceOrder = orderHeader.serviceOrders?: arrayListOf()
+            val paymentItemsList = arrayListOf<PaymentItemsModel>()
             orderHeader.orders!!.forEach { order ->
                 if (order.orderStatus == F2HConstants.ORDER_STATUS_REJECTED){
                     return@forEach
                 }
-                val deliverItemsModel = DeliverItemsModel()
+                val paymentItemsModel = PaymentItemsModel()
                 var item = Item()
                 try {
-                    item = jsonAdapter.fromJson(order.orderDescription) ?: Item()
+                    item = jsonAdapter.fromJson(order.orderDescription?:"") ?: Item()
                 } catch (e: Exception){
                     Log.e("Parse Error", e.message ?: "")
                 }
-                deliverItemsModel.itemId = item.itemId ?: -1
-                deliverItemsModel.itemName = item.itemName ?: ""
-                deliverItemsModel.itemDescription = item.description ?: ""
-                deliverItemsModel.itemUom = item.uom ?: ""
-                deliverItemsModel.itemImageLink = item.imageLink ?: ""
-                deliverItemsModel.price = item.pricePerUnit ?: 0.0
+                paymentItemsModel.itemId = item.itemId ?: -1
+                paymentItemsModel.itemName = item.itemName ?: ""
+                paymentItemsModel.itemDescription = item.description ?: ""
+                paymentItemsModel.itemUom = item.uom ?: ""
+                paymentItemsModel.itemImageLink = item.imageLink ?: ""
+                paymentItemsModel.price = item.pricePerUnit ?: 0.0
 
-                deliverItemsModel.orderedQuantity = order.orderedQuantity ?: 0.0
+                paymentItemsModel.orderedQuantity = order.orderedQuantity ?: 0.0
 
                 if(order.orderStatus.equals(F2HConstants.ORDER_STATUS_ORDERED)) {
-                    deliverItemsModel.confirmedQuantity =  order.orderedQuantity ?: 0.0
+                    paymentItemsModel.confirmedQuantity =  order.orderedQuantity ?: 0.0
                 } else {
-                    deliverItemsModel.confirmedQuantity = order.confirmedQuantity ?: 0.0
+                    paymentItemsModel.confirmedQuantity = order.confirmedQuantity ?: 0.0
                 }
                 val sellerUserDetails =
                     userDetails.firstOrNull { x -> x.userId?.equals(order.sellerUserId) ?: false }
 
-                deliverItemsModel.sellerName = sellerUserDetails?.userName ?: ""
-                deliverItemsModel.sellerMobile = sellerUserDetails?.mobile ?: ""
+                paymentItemsModel.sellerName = sellerUserDetails?.userName ?: ""
+                paymentItemsModel.sellerMobile = sellerUserDetails?.mobile ?: ""
 
-                deliverItemsModel.orderDescription = order.orderDescription ?: ""
-                deliverItemsModel.orderId = order.orderId ?: -1L
-                deliverItemsModel.orderAmount = order.orderedAmount ?: 0.0
-                deliverItemsModel.discountAmount = order.discountAmount ?: 0.0
-                deliverItemsModel.orderStatus = order.orderStatus ?: ""
-                deliverItemsModel.paymentStatus = order.paymentStatus ?: ""
-                deliverItemsModel.sellerUserId = order.sellerUserId ?: -1
+                paymentItemsModel.orderId = order.orderId ?: -1L
+                paymentItemsModel.orderDescription = order.orderDescription ?: ""
+                paymentItemsModel.orderAmount = order.orderedAmount ?: 0.0
+                paymentItemsModel.discountAmount = order.discountAmount ?: 0.0
+                paymentItemsModel.orderStatus = order.orderStatus ?: ""
+                paymentItemsModel.paymentStatus = order.paymentStatus ?: ""
+                paymentItemsModel.sellerUserId = order.sellerUserId ?: -1
 
-                deliverItemsModel.displayQuantity = getDisplayQuantity(deliverItemsModel.orderStatus,
-                    deliverItemsModel.orderedQuantity, deliverItemsModel.confirmedQuantity)
-                deliverItemsModel.packetCount = order.numberOfPackets ?: 1
+                paymentItemsModel.displayQuantity = getDisplayQuantity(paymentItemsModel.orderStatus,
+                    paymentItemsModel.orderedQuantity, paymentItemsModel.confirmedQuantity)
 
-
-                deliverItemsModel.receivedPacketCount = order.receivedNumberOfPackets ?: -1
-                if (deliverItemsModel.receivedPacketCount == -1L){
-                    deliverItemsModel.receivedPacketCount = deliverItemsModel.packetCount
-                    deliverItemsModel.isReceived = false
-                }
-                else{
-                    deliverItemsModel.isReceived = true
-                }
-
-                deliveryItemsList.add(deliverItemsModel)
+                paymentItemsList.add(paymentItemsModel)
             }
-            uiElement.deliveryItems = deliveryItemsList
-            uiElement.anyDeliveredOrder = getDeliveredOrder(uiElement.deliveryItems)
-            uiElement.anyOpenOrder = getAnyOpenOrder(uiElement.deliveryItems)
+            uiElement.paymentItems = paymentItemsList
+            uiElement.anyPaymentCompletedOrder = getPaymentCompletedOrder(uiElement.paymentItems)
+            uiElement.anyPaymentPendingOrder = getPaymentPendingOrder(uiElement.paymentItems)
+            uiElement.remainingAmount = getRemainingAmount(uiElement)
 
+            uiElement.amountCollected = uiElement.remainingAmount - uiElement.walletBalance
+            if (uiElement.amountCollected < 0){
+                uiElement.amountCollected = 0.0
+            }
             allUiData.add(uiElement)
         }
         return allUiData
     }
 
-    private fun getDeliveredOrder(element: List<DeliverItemsModel>): Boolean{
-        return element.filter{x -> x.orderStatus == ORDER_STATUS_DELIVERED }.any()
+    private fun getPaymentCompletedOrder(element: List<PaymentItemsModel>): Boolean{
+        return element.filter{x -> x.paymentStatus.toUpperCase() == PAYMENT_STATUS_PAID }.any()
     }
 
-    private fun getAnyOpenOrder(element: List<DeliverItemsModel>): Boolean{
-        return element.filter{x -> x.orderStatus != ORDER_STATUS_DELIVERED }.any()
+    private fun getRemainingAmount(uiElement: MembersUiModel): Double{
+        var remainingAmount = 0.0
+        uiElement.paymentItems.filter { x -> x.paymentStatus != PAYMENT_STATUS_PAID }.forEach {
+            remainingAmount += it.orderAmount
+        }
+        uiElement.serviceOrder.filter { x -> x.paymentStatus != PAYMENT_STATUS_PAID }.forEach {
+            remainingAmount += it.amount?:0.0
+        }
+        return remainingAmount
+    }
+
+    private fun getPaymentPendingOrder(element: List<PaymentItemsModel>): Boolean{
+        return element.filter{x -> x.paymentStatus.toUpperCase() != PAYMENT_STATUS_PAID }.any()
     }
 
 
@@ -235,23 +222,18 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
         val filteredItems = ArrayList<MembersUiModel>()
         val selectedStartDate = _selectedDate.value ?: formatter.format(todayDate.time)
         val selectedEndDate = _selectedDate.value ?: formatter.format(todayDate.time)
-        val selectedDeliveryArea = _selectedArea.value ?: ""
         val selectedStatus = _selectedStatus.value ?: ""
 
         elements.forEach { element ->
             if (isInSelectedDateRange(element, selectedStartDate, selectedEndDate) &&
-                (selectedDeliveryArea == "ALL"
-                        || element.deliveryArea == selectedDeliveryArea
-                        || (selectedDeliveryArea == DELIVERY_AREA_NOT_ASSIGNED && element.deliveryArea == "")) &&
-                ((selectedStatus == DELIVERY_STATUS_NOT_DONE && element.anyOpenOrder)
-                        ||(selectedStatus == DELIVERY_STATUS_COMPLETED && element.anyDeliveredOrder))
+                ((selectedStatus == PAYMENT_STATUS_PENDING && element.anyPaymentPendingOrder)
+                        ||(selectedStatus == PAYMENT_STATUS_PAID && element.anyPaymentCompletedOrder))
             ) {
                 filteredItems.add(element)
             }
         }
 
         filteredItems.sortBy { it.userName }
-        filteredItems.sortBy { it.deliverySequence }
         _visibleUiData.value = filteredItems
     }
 
@@ -304,28 +286,18 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
         return formatter.format(today.time)
     }
 
-    // call button
-    fun onCallUserButtonClicked(uiElement: MembersUiModel){
-        _selectedUiElement.value = uiElement
+    fun getInitialStatusIndex(): Int{
+        return _uiFilterModel.value?.statusList?.indexOf(_selectedStatus.value)?:0
     }
 
-
-//    fun getInitialDeliveryIndex(): Int{
-//        return _uiFilterModel.value?.deliveryAreaList?.indexOf(_selectedArea.value)?:0
-//    }
-//
-//    fun getInitialStatusIndex(): Int{
-//        return _uiFilterModel.value?.statusList?.indexOf(_selectedStatus.value)?:0
-//    }
-
-//    fun getInitialTimeIndex(): Int{
-//        val rangeStartDate = Calendar.getInstance()
-//        val today = formatter.format(rangeStartDate.time)
-//        if (_selectedDate.value!! == today){
-//            return 0
-//        }
-//        return _uiFilterModel.value?.timeFilterList?.indexOf(_selectedDate.value!!)?:0
-//    }
+    fun getInitialTimeIndex(): Int{
+        val rangeStartDate = Calendar.getInstance()
+        val today = formatter.format(rangeStartDate.time)
+        if (_selectedDate.value!! == today){
+            return 0
+        }
+        return _uiFilterModel.value?.timeFilterList?.indexOf(_selectedDate.value!!)?:0
+    }
 
     private fun createAllUiFilters() {
 
@@ -343,15 +315,11 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
                     .filter { uiElement -> uiElement != today }
                     .distinctBy { it }
                     .sorted())
-            uiModel.statusList = arrayListOf(DELIVERY_STATUS_NOT_DONE, DELIVERY_STATUS_COMPLETED)
-            uiModel.deliveryAreaList = arrayListOf("ALL").plus(
-                allUiData
-                    .filter { uiElement -> !uiElement.deliveryArea.isBlank() }
-                    .distinctBy { it.deliveryArea }
-                    .map { uiElement -> uiElement.deliveryArea }
-                    .sorted())
-            .plus(DELIVERY_AREA_NOT_ASSIGNED)
+            uiModel.statusList = arrayListOf(PAYMENT_STATUS_PENDING, PAYMENT_STATUS_PAID)
 
+            // Set date range as today
+            setTimeFilterRange(TIME_SELECTION_TODAY)
+            _selectedStatus.value = PAYMENT_STATUS_PENDING
             //Refresh filter
             _uiFilterModel.value = uiModel
         }
@@ -360,11 +328,6 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
     fun onTimeFilterSelected(position: Int) {
         val selectedTime = _uiFilterModel.value?.timeFilterList?.get(position) ?: TIME_SELECTION_TODAY
         setTimeFilterRange(selectedTime)
-        filterVisibleItems()
-    }
-
-    fun onDeliveryAreaSelected(position: Int) {
-        _selectedArea.value = _uiFilterModel.value?.deliveryAreaList?.get(position) ?: F2HConstants.ALL_DELIVERY_AREA
         filterVisibleItems()
     }
 
@@ -384,37 +347,8 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
         }
     }
 
-    fun onUpdateDeliverySequenceButtonClicked() {
-        _isProgressBarActive.value = true
-        var position: Long = 0
-        val requests: ArrayList<GroupMembershipUpdateRequest> = arrayListOf()
-        visibleUiData.value?.forEach { element ->
-            element.deliverySequence = position
-            position++
 
-            val deliverySequenceUpdateRequest = GroupMembershipUpdateRequest(
-                element.groupMembershipId,
-                element.deliverySequence,
-                sessionData.value?.userName
-            )
-
-            requests.add(deliverySequenceUpdateRequest)
-        }
-
-        coroutineScope.launch {
-            val getGroupMembershipDataDeferred = GroupMembershipApi.retrofitService(getApplication()).updateGroupMembershipList(requests)
-            try {
-                getGroupMembershipDataDeferred.await()
-            } catch (t:Throwable){
-                println(t.message)
-                _toastMessage.value = "Oops, something went wrong!"
-            }
-            _isProgressBarActive.value = false
-        }
-    }
-
-
-    fun onCheckboxClicked(selectedUiModel: DeliverItemsModel) {
+    fun onCheckboxClicked(selectedUiModel: PaymentItemsModel) {
         selectedUiModel.isItemChecked = !selectedUiModel.isItemChecked
         _visibleUiData.value = _visibleUiData.value
 
@@ -433,43 +367,20 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
         _visibleUiData.value = _visibleUiData.value
     }
 
-    fun onReceiveButtonClicked(element: DeliverItemsModel) {
-        element.isReceived = true
-        updateAsReceived(element)
-        _visibleUiData.value = _visibleUiData.value
 
-    }
 
-    private fun updateAsReceived(element: DeliverItemsModel) {
-        val updateReceivedNumber = OrderReceivedNumberUpdateRequest(
-            orderId = element.orderId,
-            receivedNumberOfPackets = element.receivedPacketCount
-        )
-        println(updateReceivedNumber)
-        coroutineScope.launch {
-            val updateReceivedOrderApi = OrderApi.retrofitService(getApplication()).updateReceivedNumber(arrayListOf(updateReceivedNumber))
-            try {
-                updateReceivedOrderApi.await()
-
-            } catch (t: Throwable) {
-                println(t.message)
-            }
-            _visibleUiData.value = _visibleUiData.value
-        }
-    }
-
-    private fun setCommentProgressBar(isProgressActive: Boolean, element: DeliverItemsModel){
+    private fun setCommentProgressBar(isProgressActive: Boolean, element: PaymentItemsModel){
         element.isCommentProgressBarActive = isProgressActive
         _visibleUiData.value = _visibleUiData.value
     }
 
-    private fun clearCommentTypeBox(element: DeliverItemsModel){
+    private fun clearCommentTypeBox(element: PaymentItemsModel){
         element.newComment = ""
         _visibleUiData.value = _visibleUiData.value
     }
 
 
-    private fun fetchCommentsForOrder(element: DeliverItemsModel) {
+    private fun fetchCommentsForOrder(element: PaymentItemsModel) {
         setCommentProgressBar(true, element)
         coroutineScope.launch {
             val getCommentsDataDeferred = CommentApi.retrofitService.getComments(element.orderId)
@@ -484,7 +395,7 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
         }
     }
 
-    fun moreDetailsButtonClicked(element: DeliverItemsModel) {
+    fun moreDetailsButtonClicked(element: PaymentItemsModel) {
         if(element.isMoreDetailsDisplayed){
             element.isMoreDetailsDisplayed = false
             _visibleUiData.value = _visibleUiData.value
@@ -496,7 +407,7 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
         _visibleUiData.value = _visibleUiData.value
     }
 
-    fun onSendCommentButtonClicked(element: DeliverItemsModel){
+    fun onSendCommentButtonClicked(element: PaymentItemsModel){
         if(element.newComment.isBlank()){
             return
         }
@@ -526,9 +437,10 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
 
     }
 
-    fun onDeliverButtonClicked(element: MembersUiModel) {
+
+    fun onCashCollectedButtonClicked(element: MembersUiModel) {
         _isProgressBarActive.value = true
-        val deliveredOrderUpdateRequest = createDeliverOrderRequests(element.deliveryItems)
+        val deliveredOrderUpdateRequest = createPaymentOrderRequests(element.paymentItems)
         if (deliveredOrderUpdateRequest.isEmpty()){
             _isProgressBarActive.value = false
             _toastMessage.value = "Please select the orders to deliver"
@@ -552,20 +464,24 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
             try{
                 val deliverOrdersDataDeferred = OrderApi.retrofitService(getApplication()).headerCashCollected(deliveryRequest)
                 val updatedOrders = deliverOrdersDataDeferred.await()
-                _toastMessage.value = "Successfully delivered orders"
-                element.deliveryItems.filter { it.isItemChecked }.forEach { deliverItem ->
-                    deliverItem.orderStatus = ORDER_STATUS_DELIVERED
+                _toastMessage.value = "Payment collected Successfully"
+                element.paymentItems.filter { it.isItemChecked }.forEach { deliverItem ->
                     deliverItem.isItemChecked = false
                 }
                 updatedOrders.orders?.forEach {updatedOrder ->
-                    val order = element.deliveryItems.first { x-> updatedOrder.orderId == x.orderId }
+                    val order = element.paymentItems.first { x-> updatedOrder.orderId == x.orderId }
                     order.orderStatus = updatedOrder.orderStatus ?: ""
                     order.paymentStatus = updatedOrder.paymentStatus ?:""
                     order.orderAmount = updatedOrder.orderedAmount ?: 0.0
                 }
-                element.anyDeliveredOrder = getDeliveredOrder(element.deliveryItems)
-                element.anyOpenOrder = getAnyOpenOrder(element.deliveryItems)
-                element.amountCollected = 0.0
+                element.anyPaymentCompletedOrder = getPaymentCompletedOrder(element.paymentItems)
+                element.anyPaymentPendingOrder = getPaymentPendingOrder(element.paymentItems)
+                element.remainingAmount = getRemainingAmount(element)
+
+                element.amountCollected = element.remainingAmount - element.walletBalance
+                if (element.amountCollected < 0){
+                    element.amountCollected = 0.0
+                }
                 filterVisibleItems()
             } catch (t:Throwable){
                 _toastMessage.value = "Oops, Something went wrong " + t.message
@@ -576,14 +492,14 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
     }
 
 
-    private fun createDeliverOrderRequests(uiDataElements: List<DeliverItemsModel>?): List<OrderUpdateRequest> {
+    private fun createPaymentOrderRequests(uiDataElements: List<PaymentItemsModel>?): List<OrderUpdateRequest> {
         val orderUpdateRequestList: ArrayList<OrderUpdateRequest> = arrayListOf()
-        uiDataElements?.filter { it.isItemChecked && it.orderStatus != ORDER_STATUS_DELIVERED
+        uiDataElements?.filter { it.isItemChecked && it.paymentStatus != PAYMENT_STATUS_PAID
                 && it.orderStatus != F2HConstants.ORDER_STATUS_REJECTED}?.forEach { element ->
             val updateRequest = OrderUpdateRequest(
                 orderId = element.orderId,
                 orderStatus = ORDER_STATUS_DELIVERED,
-                paymentStatus = F2HConstants.PAYMENT_STATUS_PAID,
+                paymentStatus = PAYMENT_STATUS_PAID,
                 orderDescription = element.orderDescription,
                 orderedQuantity = null,
                 confirmedQuantity = element.confirmedQuantity,
@@ -596,6 +512,7 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
         }
         return orderUpdateRequestList
     }
+
 
 
     override fun onCleared() {
