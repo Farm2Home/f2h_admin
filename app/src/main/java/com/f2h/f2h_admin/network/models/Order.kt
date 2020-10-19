@@ -74,5 +74,6 @@ data class OrderHeaderDeliveryRequest (
     @Json(name = "group_id") var groupId: Long?,
     @Json(name = "buyer_name") var buyerName: String?,
     @Json(name = "delivery_date") var deliveryDate: String?,
-    @Json(name = "orders") var orders: List<OrderUpdateRequest>?
+    @Json(name = "orders") var orders: List<OrderUpdateRequest>?,
+    @Json(name = "updated_by") var updatedBy: String?
 )

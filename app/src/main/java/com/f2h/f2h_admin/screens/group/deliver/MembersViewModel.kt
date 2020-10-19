@@ -543,7 +543,8 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
             groupId = sessionData.value?.groupId,
             buyerId = element.userId,
             buyerName = element.userName,
-            deliveryDate = element.deliveryDate
+            deliveryDate = element.deliveryDate,
+            updatedBy = sessionData.value?.userName
         )
 
         _isProgressBarActive.value = true
