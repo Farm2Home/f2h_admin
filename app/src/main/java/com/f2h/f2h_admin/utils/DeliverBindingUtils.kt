@@ -86,6 +86,10 @@ fun ImageView.setReceivedImageCheck(data: DeliverItemsModel){
         visibility = VISIBLE
         setImageResource(R.drawable.warning)
     }
+
+    if(data.receivedPacketCount <= 0){
+        visibility = GONE
+    }
 }
 
 @BindingAdapter("numberOfPacketsInputType")
@@ -94,6 +98,11 @@ fun EditText.setNumberOfPacketsInputType(data: DeliverItemsModel){
         inputType = InputType.TYPE_NULL
         isEnabled = false
     }
+
+    if(data.receivedPacketCount <= 0){
+       visibility = GONE
+    }
+
 }
 
 
