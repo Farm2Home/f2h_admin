@@ -191,7 +191,7 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
 
                 deliverItemsModel.displayQuantity = getDisplayQuantity(deliverItemsModel.orderStatus,
                     deliverItemsModel.orderedQuantity, deliverItemsModel.confirmedQuantity)
-                deliverItemsModel.packetCount = order.numberOfPackets ?: 1
+                deliverItemsModel.packetCount = order.numberOfPackets ?: 0
 
 
                 deliverItemsModel.receivedPacketCount = order.receivedNumberOfPackets ?: -1
@@ -543,7 +543,8 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
             groupId = sessionData.value?.groupId,
             buyerId = element.userId,
             buyerName = element.userName,
-            deliveryDate = element.deliveryDate
+            deliveryDate = element.deliveryDate,
+            updatedBy = sessionData.value?.userName
         )
 
         _isProgressBarActive.value = true
