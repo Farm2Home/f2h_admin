@@ -219,7 +219,7 @@ fun TextView.setOrderedItemAmountFormatted(data: MembersUiModel){
 
 @BindingAdapter("minCollectAmountFormatted")
 fun TextView.setMinCollectAmountFormatted(data: MembersUiModel){
-    var minPayable = data.totalAmount - data.walletBalance
+    var minPayable = data.remainingAmount - data.walletBalance
     if (minPayable < 0){
         minPayable = 0.0
     }

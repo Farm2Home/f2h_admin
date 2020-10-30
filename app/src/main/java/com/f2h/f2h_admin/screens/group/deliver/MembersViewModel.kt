@@ -208,10 +208,21 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
             uiElement.deliveryItems = deliveryItemsList
             uiElement.anyDeliveredOrder = getDeliveredOrder(uiElement.deliveryItems)
             uiElement.anyOpenOrder = getAnyOpenOrder(uiElement.deliveryItems)
-
+            uiElement.remainingAmount = getRemainingAmount(uiElement)
             allUiData.add(uiElement)
         }
         return allUiData
+    }
+
+    private fun getRemainingAmount(uiElement: MembersUiModel): Double{
+        var remainingAmount = 0.0
+        uiElement.deliveryItems.filter { x -> x.paymentStatus != F2HConstants.PAYMENT_STATUS_PAID }.forEach {
+            remainingAmount += it.orderAmount
+        }
+        uiElement.serviceOrder.filter { x -> x.paymentStatus != F2HConstants.PAYMENT_STATUS_PAID }.forEach {
+            remainingAmount += it.amount?:0.0
+        }
+        return remainingAmount
     }
 
     private fun getDeliveredOrder(element: List<DeliverItemsModel>): Boolean{
@@ -566,6 +577,7 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
                 }
                 element.anyDeliveredOrder = getDeliveredOrder(element.deliveryItems)
                 element.anyOpenOrder = getAnyOpenOrder(element.deliveryItems)
+                element.remainingAmount = getRemainingAmount(element)
                 element.amountCollected = 0.0
                 filterVisibleItems()
             } catch (t:Throwable){
