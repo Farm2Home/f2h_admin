@@ -223,7 +223,7 @@ fun TextView.setMinCollectAmountFormatted(data: MembersUiModel){
     if (minPayable < 0){
         minPayable = 0.0
     }
-    text = String.format("Min Receivable - ₹%.0f", minPayable)
+    text = String.format("COD Amount - ₹%.0f", minPayable)
 }
 
 
