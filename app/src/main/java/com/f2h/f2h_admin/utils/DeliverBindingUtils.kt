@@ -86,6 +86,10 @@ fun ImageView.setReceivedImageCheck(data: DeliverItemsModel){
         visibility = VISIBLE
         setImageResource(R.drawable.warning)
     }
+
+    if(data.receivedPacketCount <= 0){
+        visibility = GONE
+    }
 }
 
 @BindingAdapter("numberOfPacketsInputType")
@@ -94,6 +98,11 @@ fun EditText.setNumberOfPacketsInputType(data: DeliverItemsModel){
         inputType = InputType.TYPE_NULL
         isEnabled = false
     }
+
+    if(data.receivedPacketCount <= 0){
+       visibility = GONE
+    }
+
 }
 
 
@@ -210,7 +219,7 @@ fun TextView.setOrderedItemAmountFormatted(data: MembersUiModel){
 
 @BindingAdapter("minCollectAmountFormatted")
 fun TextView.setMinCollectAmountFormatted(data: MembersUiModel){
-    var minPayable = data.totalAmount - data.walletBalance
+    var minPayable = data.remainingAmount - data.walletBalance
     if (minPayable < 0){
         minPayable = 0.0
     }

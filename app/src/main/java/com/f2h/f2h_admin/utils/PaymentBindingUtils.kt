@@ -5,8 +5,9 @@ import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
 import android.text.style.RelativeSizeSpan
 import android.text.style.StrikethroughSpan
-import android.widget.Button
-import android.widget.TextView
+import android.view.View
+import android.widget.*
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
 import com.f2h.f2h_admin.R
@@ -16,13 +17,16 @@ import com.f2h.f2h_admin.constants.F2HConstants.ORDER_STATUS_ORDERED
 import com.f2h.f2h_admin.constants.F2HConstants.ORDER_STATUS_REJECTED
 import com.f2h.f2h_admin.constants.F2HConstants.PAYMENT_STATUS_PAID
 import com.f2h.f2h_admin.constants.F2HConstants.PAYMENT_STATUS_PENDING
+import com.f2h.f2h_admin.screens.group.payment.MembersUiModel
 import com.f2h.f2h_admin.screens.group.payment.PaymentItemsModel
-
+import java.text.DateFormat
+import java.text.SimpleDateFormat
+import java.util.*
 
 @BindingAdapter("priceFormatted")
 fun TextView.setPriceFormatted(data: PaymentItemsModel?){
     data?.let {
-        text =  String.format("₹ %.0f /%s", data.price, data.itemUom)
+        text =  String.format("₹ %.0f/%s x %s", data.price, data.itemUom, data.confirmedQuantity)
     }
 }
 
@@ -50,6 +54,13 @@ fun Button.setQuantityChangeButtonState(data: PaymentItemsModel){
         isEnabled = false
         return
     }
+}
+
+@BindingAdapter("deliverButtonFormatted")
+fun Button.setDeliverButtonFormatted(data: MembersUiModel){
+    isEnabled = (data.paymentItems.firstOrNull{
+        it.isItemChecked && it.paymentStatus != PAYMENT_STATUS_PAID
+    } != null) && !data.isProgressBarActive
 }
 
 
@@ -115,6 +126,28 @@ fun TextView.setTotalPriceFormatted(data: PaymentItemsModel){
 }
 
 
+@BindingAdapter("aggregationFormatted")
+fun TextView.setAggregationFormatted(list: List<PaymentItemsModel>?){
+    if (list != null) {
+        var totalAmount = (0).toDouble()
+        var totalQuantity: Double? = (0).toDouble()
+//        var uom = ""
+        list.forEach { element ->
+            totalAmount += (element.orderAmount)
+            totalQuantity = totalQuantity?.plus((element.displayQuantity))
+//            uom = element.itemUom
+        }
+
+        //If there are multiple items do not show the UOM/Quantity
+        if (list.map { x -> x.itemName }.distinct().count() == 1){
+            text = String.format("₹%.0f", totalAmount)
+        } else {
+            text = String.format("₹%.0f", totalAmount)
+        }
+
+    }
+}
+
 
 @BindingAdapter("statusFormatted")
 fun TextView.setStatusFormatted(data: PaymentItemsModel){
@@ -134,33 +167,54 @@ fun TextView.setStatusFormatted(data: PaymentItemsModel){
     text = colouredText
 }
 
-@BindingAdapter("aggregationFormatted")
-fun TextView.setAggregationFormatted(list: List<PaymentItemsModel>?){
-    if (list != null) {
-        var totalAmount = (0).toDouble()
-        var totalQuantity: Double? = (0).toDouble()
-        var uom = ""
-        list.forEach { element ->
-            totalAmount += (element.orderAmount)
-            totalQuantity = totalQuantity?.plus((element.displayQuantity))
-            uom = element.itemUom
-        }
+@BindingAdapter("orderedItemAmountFormatted")
+fun TextView.setOrderedItemAmountFormatted(data: MembersUiModel){
 
-        //If there are multiple items do not show the UOM/Quantity
-        if (list.map { x -> x.itemName }.distinct().count() == 1){
-            text = String.format("₹%.0f", totalAmount)
-        } else {
-            text = String.format("₹%.0f", totalAmount)
-        }
-
-    }
+    text = String.format("Total Order Amount - ₹%.0f", data.totalAmount)
+//    text = "Receivable - Rs. " + getFormattedQtyNumber(totalAmount)
 }
 
-private fun isOrderFreezed(data: PaymentItemsModel) : Boolean {
-    if (data.isFreezed.equals(false) &&
-        (data.orderStatus.equals(ORDER_STATUS_ORDERED) ||
-                data.orderStatus.isBlank())){
-        return false
+@BindingAdapter("minCollectAmountFormatted")
+fun TextView.setMinCollectAmountFormatted(data: MembersUiModel){
+    var minPayable = data.remainingAmount - data.walletBalance
+    if (minPayable < 0){
+        minPayable = 0.0
     }
-    return true
+    text = String.format("Min Receivable - ₹%.0f", minPayable)
 }
+
+
+
+@BindingAdapter("commentFormatted")
+fun TextView.setCommentFormatted(data: PaymentItemsModel){
+    val parser: DateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SS'Z'")
+    val formatter: DateFormat = SimpleDateFormat("dd-MMMM, hh:mm a")
+    var displayText = ""
+    data.comments.sortByDescending { comment -> parser.parse(comment.createdAt) }
+    data.comments.forEach { comment ->
+        parser.setTimeZone(TimeZone.getTimeZone("UTC"));
+        var date = formatter.format(parser.parse(comment.createdAt))
+        displayText = String.format("%s%s : %s - %s\n\n", displayText, date, comment.commenter, comment.comment)
+    }
+    text = displayText
+}
+
+
+@BindingAdapter("moreDetailsLayoutFormatted")
+fun ConstraintLayout.setMoreDetailsLayoutFormatted(data: PaymentItemsModel){
+    if(data.isMoreDetailsDisplayed){
+        visibility = View.VISIBLE
+        return
+    }
+    visibility = View.GONE
+}
+
+@BindingAdapter("orderedItemDetailsLayoutFormatted")
+fun ConstraintLayout.setOrderedItemDetailsLayoutFormatted(data: MembersUiModel){
+    if(data.isItemsDisplayed){
+        visibility = View.VISIBLE
+        return
+    }
+    visibility = View.GONE
+}
+

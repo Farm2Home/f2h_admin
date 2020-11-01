@@ -191,7 +191,7 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
 
                 deliverItemsModel.displayQuantity = getDisplayQuantity(deliverItemsModel.orderStatus,
                     deliverItemsModel.orderedQuantity, deliverItemsModel.confirmedQuantity)
-                deliverItemsModel.packetCount = order.numberOfPackets ?: 1
+                deliverItemsModel.packetCount = order.numberOfPackets ?: 0
 
 
                 deliverItemsModel.receivedPacketCount = order.receivedNumberOfPackets ?: -1
@@ -208,10 +208,21 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
             uiElement.deliveryItems = deliveryItemsList
             uiElement.anyDeliveredOrder = getDeliveredOrder(uiElement.deliveryItems)
             uiElement.anyOpenOrder = getAnyOpenOrder(uiElement.deliveryItems)
-
+            uiElement.remainingAmount = getRemainingAmount(uiElement)
             allUiData.add(uiElement)
         }
         return allUiData
+    }
+
+    private fun getRemainingAmount(uiElement: MembersUiModel): Double{
+        var remainingAmount = 0.0
+        uiElement.deliveryItems.filter { x -> x.paymentStatus != F2HConstants.PAYMENT_STATUS_PAID }.forEach {
+            remainingAmount += it.orderAmount
+        }
+        uiElement.serviceOrder.filter { x -> x.paymentStatus != F2HConstants.PAYMENT_STATUS_PAID }.forEach {
+            remainingAmount += it.amount?:0.0
+        }
+        return remainingAmount
     }
 
     private fun getDeliveredOrder(element: List<DeliverItemsModel>): Boolean{
@@ -543,10 +554,12 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
             groupId = sessionData.value?.groupId,
             buyerId = element.userId,
             buyerName = element.userName,
-            deliveryDate = element.deliveryDate
+            deliveryDate = element.deliveryDate,
+            updatedBy = sessionData.value?.userName
         )
 
         _isProgressBarActive.value = true
+        element.isProgressBarActive = true
         coroutineScope.launch {
             try{
                 val deliverOrdersDataDeferred = OrderApi.retrofitService(getApplication()).headerCashCollected(deliveryRequest)
@@ -564,12 +577,14 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
                 }
                 element.anyDeliveredOrder = getDeliveredOrder(element.deliveryItems)
                 element.anyOpenOrder = getAnyOpenOrder(element.deliveryItems)
+                element.remainingAmount = getRemainingAmount(element)
                 element.amountCollected = 0.0
                 filterVisibleItems()
             } catch (t:Throwable){
                 _toastMessage.value = "Oops, Something went wrong " + t.message
             }
             _isProgressBarActive.value = false
+            element.isProgressBarActive = false
         }
     }
 

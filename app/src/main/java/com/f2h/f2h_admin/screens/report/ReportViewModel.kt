@@ -9,6 +9,7 @@ import com.f2h.f2h_admin.constants.F2HConstants.ORDER_STATUS_CONFIRMED
 import com.f2h.f2h_admin.constants.F2HConstants.ORDER_STATUS_DELIVERED
 import com.f2h.f2h_admin.constants.F2HConstants.ORDER_STATUS_ORDERED
 import com.f2h.f2h_admin.constants.F2HConstants.PAYMENT_STATUS_PENDING
+import com.f2h.f2h_admin.constants.F2HConstants.TIME_SELECTION_TODAY
 import com.f2h.f2h_admin.database.SessionDatabaseDao
 import com.f2h.f2h_admin.database.SessionEntity
 import com.f2h.f2h_admin.network.CommentApi
@@ -54,15 +55,15 @@ class ReportViewModel(val database: SessionDatabaseDao, application: Application
         getOrdersReportForGroup()
     }
 
-    fun getOrdersReportForGroup() {
+    private fun getOrdersReportForGroup() {
         _isProgressBarActive.value = true
         coroutineScope.launch {
             sessionData.value = retrieveSession()
-            var getOrderHeaderDataDeferred = OrderApi.retrofitService(getApplication()).getOrderHeaderForGroup(sessionData.value!!.groupId, fetchOrderDate(-15), fetchOrderDate(10))
+            val getOrderHeaderDataDeferred = OrderApi.retrofitService(getApplication()).getOrderHeaderForGroup(sessionData.value!!.groupId, fetchOrderDate(-15), fetchOrderDate(10))
             try {
-                var orderHeaders = getOrderHeaderDataDeferred.await()
-                var orders = arrayListOf<Order>()
-                var serviceOrders = arrayListOf<ServiceOrder>()
+                val orderHeaders = getOrderHeaderDataDeferred.await()
+                val orders = arrayListOf<Order>()
+                val serviceOrders = arrayListOf<ServiceOrder>()
                 orderHeaders.forEach { header ->
                     header.orders?.map { it ->
                         it.deliveryLocation = header.deliveryLocation
@@ -71,18 +72,18 @@ class ReportViewModel(val database: SessionDatabaseDao, application: Application
                     orders.addAll(header.orders ?: arrayListOf())
                     serviceOrders.addAll(header.serviceOrders ?: arrayListOf())
                 }
-                var userIds = orderHeaders.map { x -> x.buyerUserId ?: -1}
+                val userIds = orderHeaders.map { x -> x.buyerUserId ?: -1}
                     .plus(orders.map { x -> x.sellerUserId ?: -1}).distinct()
-                var availabilityIds = orders.map { x -> x.itemAvailabilityId ?: -1 }.distinct()
+                val availabilityIds = orders.map { x -> x.itemAvailabilityId ?: -1 }.distinct()
 
-                var getUserDetailsDataDeferred =
+                val getUserDetailsDataDeferred =
                     UserApi.retrofitService(getApplication()).getUserDetailsByUserIds(userIds.joinToString())
 
-                var getItemAvailabilitiesDataDeferred =
+                val getItemAvailabilitiesDataDeferred =
                     ItemAvailabilityApi.retrofitService(getApplication()).getItemAvailabilities(availabilityIds.joinToString())
 
-                var itemAvailabilities = getItemAvailabilitiesDataDeferred.await()
-                var userDetailsList = getUserDetailsDataDeferred.await()
+                val itemAvailabilities = getItemAvailabilitiesDataDeferred.await()
+                val userDetailsList = getUserDetailsDataDeferred.await()
 
                 allUiData = createAllUiData(itemAvailabilities, orders, userDetailsList)
                 _reportUiFilterModel.value = createAllUiFilters()
@@ -99,19 +100,19 @@ class ReportViewModel(val database: SessionDatabaseDao, application: Application
 
     private fun createAllUiData(itemAvailabilitys: List<ItemAvailability>,
                                 orders: List<Order>, userDetailsList: List<UserDetails>): ArrayList<ReportItemsModel> {
-        var allUiData = ArrayList<ReportItemsModel>()
+        val allUiData = ArrayList<ReportItemsModel>()
         val moshi = Moshi.Builder()
             .add(KotlinJsonAdapterFactory())
             .build()
         val jsonAdapter: JsonAdapter<Item> = moshi.adapter(Item::class.java)
         orders.forEach { order ->
 
-            var uiElement = ReportItemsModel()
+            val uiElement = ReportItemsModel()
             var item = Item()
             try {
                 item = jsonAdapter.fromJson(order.orderDescription) ?: Item()
             } catch (e: Exception){
-                Log.e("Parse Error", e.message)
+                Log.e("Parse Error", e.message?:"")
             }
 
             // Check item availability for the order. freezed etc
@@ -124,8 +125,10 @@ class ReportViewModel(val database: SessionDatabaseDao, application: Application
                 }
             }
 
-            val buyerUserDetails = userDetailsList.filter { x -> x.userId?.equals(order.buyerUserId) ?: false }.firstOrNull()
-            val sellerUserDetails = userDetailsList.filter { x -> x.userId?.equals(order.sellerUserId) ?: false }.firstOrNull()
+            val buyerUserDetails =
+                userDetailsList.firstOrNull { x -> x.userId?.equals(order.buyerUserId) ?: false }
+            val sellerUserDetails =
+                userDetailsList.firstOrNull { x -> x.userId?.equals(order.sellerUserId) ?: false }
             uiElement.buyerName = buyerUserDetails?.userName ?: ""
             uiElement.buyerMobile = buyerUserDetails?.mobile ?: ""
             uiElement.sellerName = sellerUserDetails?.userName ?: ""
@@ -147,18 +150,16 @@ class ReportViewModel(val database: SessionDatabaseDao, application: Application
             uiElement.deliveryAddress = order.deliveryLocation ?: ""
             uiElement.displayQuantity = getDisplayQuantity(uiElement.orderStatus, uiElement.orderedQuantity, uiElement.confirmedQuantity)
 
-            if (item != null) {
-                uiElement.itemId = item.itemId ?: -1
-                uiElement.itemName = item.itemName ?: ""
-                uiElement.itemDescription = item.description ?: ""
-                uiElement.itemUom = item.uom ?: ""
-                uiElement.itemImageLink = item.imageLink ?: ""
-                uiElement.price = item.pricePerUnit ?: 0.0
-                uiElement.itemHandlingCharges = item.handlingCharges
-                uiElement.handlingCharges = item.handlingCharges
-                uiElement.itemHandlingCharges.forEach { handlingCharge ->
-                    handlingCharge.amount = handlingCharge.amount * uiElement.displayQuantity
-                }
+            uiElement.itemId = item.itemId ?: -1
+            uiElement.itemName = item.itemName ?: ""
+            uiElement.itemDescription = item.description ?: ""
+            uiElement.itemUom = item.uom ?: ""
+            uiElement.itemImageLink = item.imageLink ?: ""
+            uiElement.price = item.pricePerUnit ?: 0.0
+            uiElement.itemHandlingCharges = item.handlingCharges
+            uiElement.handlingCharges = item.handlingCharges
+            uiElement.itemHandlingCharges.forEach { handlingCharge ->
+                handlingCharge.amount = handlingCharge.amount * uiElement.displayQuantity
             }
 
             allUiData.add(uiElement)
@@ -169,37 +170,46 @@ class ReportViewModel(val database: SessionDatabaseDao, application: Application
     }
 
     private fun getDisplayQuantity(displayStatus: String, orderedQuantity: Double, confirmedQuantity: Double): Double {
-        if (displayStatus.equals("ORDERED")) return orderedQuantity
+        if (displayStatus == "ORDERED") return orderedQuantity
         return confirmedQuantity
     }
 
 
     private fun createAllUiFilters(): ReportUiModel {
-        var filters = ReportUiModel()
+        val filters = ReportUiModel()
+
+        val orderedDates = allUiData.map{ x -> formatter.format(formatter.parse(x.orderedDate))}
+        val rangeStartDate = Calendar.getInstance()
+        val today = formatter.format(rangeStartDate.time)
+        filters.timeFilterList = arrayListOf(TIME_SELECTION_TODAY).plus(
+            orderedDates
+                .filter { uiElement -> uiElement != today }
+                .distinctBy { it }
+                .sorted())
 
         filters.itemList = arrayListOf("ALL").plus(allUiData
-            .filter { uiElement -> !uiElement.itemName.isNullOrBlank() }
+            .filter { uiElement -> !uiElement.itemName.isBlank() }
             .distinctBy { it.itemId }
             .map { uiElement -> generateUniqueFilterName(uiElement.itemName, uiElement.itemId.toString()) }.sorted())
 
         filters.orderStatusList = arrayListOf("ALL", "Open Orders", "Delivered Orders", "Payment Pending", "Ordered", "Confirmed")
 
         filters.paymentStatusList = arrayListOf("ALL").plus(allUiData
-            .filter { uiElement -> !uiElement.paymentStatus.isNullOrBlank() }
+            .filter { uiElement -> !uiElement.paymentStatus.isBlank() }
             .map { uiElement -> uiElement.paymentStatus }.sorted())
 
         filters.buyerNameList = arrayListOf("ALL")
 
         filters.farmerNameList = arrayListOf("ALL")
 
-        filters.timeFilterList = arrayListOf("Today", "Tomorrow", "Next 7 days", "Last 15 days")
+//        filters.timeFilterList = arrayListOf("Today", "Tomorrow", "Next 7 days", "Last 15 days")
 
         filters.selectedItem = "ALL"
         filters.selectedPaymentStatus = "ALL"
         filters.selectedOrderStatus = "ALL"
         filters.selectedFarmer = "ALL"
         filters.selectedBuyer = "ALL"
-        setTimeFilterRange(0,0) //Today
+        setTimeFilterRange(TIME_SELECTION_TODAY) //Today
 
         return filters
     }
@@ -230,27 +240,39 @@ class ReportViewModel(val database: SessionDatabaseDao, application: Application
         return String.format("%s (%s)",name, mobile)
     }
 
+    private fun setTimeFilterRange(selectedDate: String) {
+        val rangeStartDate = Calendar.getInstance()
+        val today = formatter.format(rangeStartDate.time)
+        if (selectedDate == TIME_SELECTION_TODAY) {
+            _reportUiFilterModel.value?.selectedStartDate = today
+            _reportUiFilterModel.value?.selectedEndDate = today
+        }
+        else{
+            _reportUiFilterModel.value?.selectedStartDate = selectedDate
+            _reportUiFilterModel.value?.selectedEndDate = selectedDate
+        }
+    }
+
     private fun filterVisibleItems() {
         val elements = allUiData
-        var todayDate = Calendar.getInstance()
-        var filteredItems = ArrayList<ReportItemsModel>()
-        var selectedItem = reportUiFilterModel.value?.selectedItem ?: ""
-        var selectedOrderStatus = reportUiFilterModel.value?.selectedOrderStatus ?: ""
-        var selectedPaymentStatus = reportUiFilterModel.value?.selectedPaymentStatus ?: ""
-        var selectedStartDate = reportUiFilterModel.value?.selectedStartDate ?: formatter.format(todayDate.time)
-        var selectedEndDate = reportUiFilterModel.value?.selectedEndDate ?: formatter.format(todayDate.time)
-        var selectedBuyer = reportUiFilterModel.value?.selectedBuyer ?: ""
-        var selectedFarmer = reportUiFilterModel.value?.selectedFarmer ?: ""
+        val todayDate = Calendar.getInstance()
+        val filteredItems = ArrayList<ReportItemsModel>()
+        val selectedItem = reportUiFilterModel.value?.selectedItem ?: ""
+        val selectedOrderStatus = reportUiFilterModel.value?.selectedOrderStatus ?: ""
+        val selectedPaymentStatus = reportUiFilterModel.value?.selectedPaymentStatus ?: ""
+        val selectedStartDate = reportUiFilterModel.value?.selectedStartDate ?: formatter.format(todayDate.time)
+        val selectedEndDate = reportUiFilterModel.value?.selectedEndDate ?: formatter.format(todayDate.time)
+        val selectedBuyer = reportUiFilterModel.value?.selectedBuyer ?: ""
+        val selectedFarmer = reportUiFilterModel.value?.selectedFarmer ?: ""
 
         elements.forEach { element ->
-            if ((selectedItem == "ALL" || generateUniqueFilterName(element.itemName, element.itemId.toString()).equals(selectedItem)) &&
+            if ((selectedItem == "ALL" || generateUniqueFilterName(element.itemName, element.itemId.toString()) == selectedItem) &&
                 (selectedOrderStatus == "ALL" || selectedOrderStatus.split(",").contains(element.orderStatus)) &&
-                (selectedPaymentStatus == "ALL" || element.paymentStatus.equals(selectedPaymentStatus))  &&
-                (selectedBuyer == "ALL" || generateUniqueFilterName(element.buyerName,element.buyerMobile).equals(selectedBuyer)) &&
-                (selectedFarmer == "ALL" || generateUniqueFilterName(element.sellerName,element.sellerMobile).equals(selectedFarmer)) &&
+                (selectedPaymentStatus == "ALL" || element.paymentStatus == selectedPaymentStatus)  &&
+                (selectedBuyer == "ALL" || generateUniqueFilterName(element.buyerName,element.buyerMobile) == selectedBuyer) &&
+                (selectedFarmer == "ALL" || generateUniqueFilterName(element.sellerName,element.sellerMobile) == selectedFarmer) &&
                 (isInSelectedDateRange(element, selectedStartDate, selectedEndDate))) {
 
-                //TODO - add date range not just one date
                 filteredItems.add(element)
             }
         }
@@ -266,9 +288,9 @@ class ReportViewModel(val database: SessionDatabaseDao, application: Application
         selectedEndDate: String
     ) : Boolean {
 
-        if (element.orderedDate.isNullOrBlank() ||
-                selectedEndDate.isNullOrBlank() ||
-                selectedStartDate.isNullOrBlank()) return true
+        if (element.orderedDate.isBlank() ||
+                selectedEndDate.isBlank() ||
+                selectedStartDate.isBlank()) return true
 
         return formatter.parse(element.orderedDate) >= formatter.parse(selectedStartDate) &&
                 formatter.parse(element.orderedDate) <= formatter.parse(selectedEndDate)
@@ -279,7 +301,7 @@ class ReportViewModel(val database: SessionDatabaseDao, application: Application
         return withContext(Dispatchers.IO) {
             val sessions = database.getAll()
             var session = SessionEntity()
-            if (sessions != null && sessions.size==1) {
+            if (sessions.size==1) {
                 session = sessions[0]
                 println(session.toString())
             } else {
@@ -331,10 +353,12 @@ class ReportViewModel(val database: SessionDatabaseDao, application: Application
 
 
     fun onTimeFilterSelected(position: Int) {
-        if (position.equals(0)) setTimeFilterRange(0,0) //Today
-        if (position.equals(1)) setTimeFilterRange(1,1) //Tomorrow
-        if (position.equals(2)) setTimeFilterRange(0,7) //Next 7 Days
-        if (position.equals(3)) setTimeFilterRange(-15,0) //Last 15 days
+//        if (position.equals(0)) setTimeFilterRange(0,0) //Today
+//        if (position.equals(1)) setTimeFilterRange(1,1) //Tomorrow
+//        if (position.equals(2)) setTimeFilterRange(0,7) //Next 7 Days
+//        if (position.equals(3)) setTimeFilterRange(-15,0) //Last 15 days
+        val selectedTime = _reportUiFilterModel.value?.timeFilterList?.get(position) ?: TIME_SELECTION_TODAY
+        setTimeFilterRange(selectedTime)
         filterVisibleItems()
     }
 
@@ -348,40 +372,39 @@ class ReportViewModel(val database: SessionDatabaseDao, application: Application
         filterVisibleItems()
     }
 
-    fun setTimeFilterRange(startDateOffset: Int, endDateOffset: Int) {
-        var rangeStartDate = Calendar.getInstance()
-        var rangeEndDate = Calendar.getInstance()
-        rangeStartDate.add(Calendar.DATE, startDateOffset)
-        rangeEndDate.add(Calendar.DATE, endDateOffset)
-        _reportUiFilterModel.value?.selectedStartDate = formatter.format(rangeStartDate.time)
-        _reportUiFilterModel.value?.selectedEndDate = formatter.format(rangeEndDate.time)
-        filterVisibleItems()
-    }
+//    fun setTimeFilterRange(startDateOffset: Int, endDateOffset: Int) {
+//        var rangeStartDate = Calendar.getInstance()
+//        var rangeEndDate = Calendar.getInstance()
+//        rangeStartDate.add(Calendar.DATE, startDateOffset)
+//        rangeEndDate.add(Calendar.DATE, endDateOffset)
+//        _reportUiFilterModel.value?.selectedStartDate = formatter.format(rangeStartDate.time)
+//        _reportUiFilterModel.value?.selectedEndDate = formatter.format(rangeEndDate.time)
+//        filterVisibleItems()
+//    }
 
     fun moreDetailsButtonClicked(element: ReportItemsModel) {
         if(element.isMoreDetailsDisplayed){
-            _visibleUiData.value?.filter { data -> data.orderId.equals(element.orderId) }
-                ?.firstOrNull()?.isMoreDetailsDisplayed = false
+            element.isMoreDetailsDisplayed = false
+//            _visibleUiData.value?.firstOrNull { data -> data.orderId.equals(element.orderId) }?.isMoreDetailsDisplayed = false
             _visibleUiData.value = _visibleUiData.value
             return
         }
 
         // Do API call to fetch comments
         fetchCommentsForOrder(element)
-
-        _visibleUiData.value?.filter { data -> data.orderId.equals(element.orderId) }
-            ?.firstOrNull()?.isMoreDetailsDisplayed = true
+        element.isMoreDetailsDisplayed = true
+//        _visibleUiData.value?.firstOrNull { data -> data.orderId == element.orderId }?.isMoreDetailsDisplayed = true
         _visibleUiData.value = _visibleUiData.value
     }
 
     private fun fetchCommentsForOrder(element: ReportItemsModel) {
         setCommentProgressBar(true, element)
         coroutineScope.launch {
-            var getCommentsDataDeferred = CommentApi.retrofitService.getComments(element.orderId)
+            val getCommentsDataDeferred = CommentApi.retrofitService.getComments(element.orderId)
             try {
                 val comments: List<Comment> = getCommentsDataDeferred.await()
-                _visibleUiData.value?.filter { data -> data.orderId.equals(element.orderId) }
-                    ?.firstOrNull()?.comments = ArrayList(comments)
+                element.comments = ArrayList(comments)
+//                _visibleUiData.value?.firstOrNull { data -> data.orderId == element.orderId }?.comments = ArrayList(comments)
                 _visibleUiData.value = _visibleUiData.value
             } catch (t: Throwable) {
                 println(t.message)
@@ -391,8 +414,8 @@ class ReportViewModel(val database: SessionDatabaseDao, application: Application
     }
 
     private fun setCommentProgressBar(isProgressActive: Boolean, element: ReportItemsModel){
-        _visibleUiData.value?.filter { data -> data.orderId.equals(element.orderId) }
-            ?.firstOrNull()?.isCommentProgressBarActive = isProgressActive
+        element.isCommentProgressBarActive = isProgressActive
+//        _visibleUiData.value?.firstOrNull { data -> data.orderId == element.orderId }?.isCommentProgressBarActive = isProgressActive
         _visibleUiData.value = _visibleUiData.value
     }
 }

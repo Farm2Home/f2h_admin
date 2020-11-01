@@ -10,300 +10,312 @@
             type="com.f2h.f2h_admin.screens.report.ReportViewModel" />
     </data>
 
-    <androidx.core.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" >
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".screens.report.ReportFragment">
 
-        <View
-            android:id="@+id/view4"
-            android:layout_width="0dp"
-            android:layout_height="0.5dp"
-            android:background="@color/grey"
-            app:layout_constraintBottom_toTopOf="@+id/horizontalScrollView"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
-
-        <HorizontalScrollView
-            android:id="@+id/horizontalScrollView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginEnd="0dp"
-                android:layout_marginRight="0dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <TextView
-                    android:id="@+id/textView4"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:text="Time Filter"
-                    android:textSize="12sp"
-                    app:layout_constraintStart_toStartOf="@+id/timeFilterSelector"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <Spinner
-                    android:id="@+id/orderStatusSelector"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginBottom="5dp"
-                    android:ellipsize="end"
-                    android:entries="@{viewModel.reportUiFilterModel.orderStatusList}"
-                    android:singleLine="true"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textView10" />
-
-                <Spinner
-                    android:id="@+id/timeFilterSelector"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginBottom="5dp"
-                    android:ellipsize="end"
-                    android:entries="@{viewModel.reportUiFilterModel.timeFilterList}"
-                    android:singleLine="true"
-                    android:visibility="visible"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/orderStatusSelector"
-                    app:layout_constraintTop_toBottomOf="@+id/textView4" />
-
-                <TextView
-                    android:id="@+id/textView10"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:text="Order Status"
-                    android:textSize="12sp"
-                    app:layout_constraintStart_toStartOf="@+id/orderStatusSelector"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <Spinner
-                    android:id="@+id/buyerNameSelector"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginBottom="5dp"
-                    android:entries="@{viewModel.reportUiFilterModel.buyerNameList}"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/farmerNameSelector"
-                    app:layout_constraintTop_toBottomOf="@+id/textView20" />
-
-                <TextView
-                    android:id="@+id/textView20"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:text="Buyer"
-                    android:textSize="12sp"
-                    app:layout_constraintStart_toStartOf="@+id/buyerNameSelector"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/textView8"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:text="Select Item"
-                    android:textSize="12sp"
-                    app:layout_constraintStart_toStartOf="@+id/itemSelector"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <Spinner
-                    android:id="@+id/itemSelector"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginBottom="5dp"
-                    android:ellipsize="end"
-                    android:entries="@{viewModel.reportUiFilterModel.itemList}"
-                    android:singleLine="true"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/timeFilterSelector"
-                    app:layout_constraintTop_toBottomOf="@+id/textView8" />
-
-                <Spinner
-                    android:id="@+id/farmerNameSelector"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginBottom="5dp"
-                    android:entries="@{viewModel.reportUiFilterModel.farmerNameList}"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/itemSelector" />
-
-                <TextView
-                    android:id="@+id/textView3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:text="Farmer"
-                    android:textSize="12sp"
-                    app:layout_constraintBottom_toTopOf="@+id/farmerNameSelector"
-                    app:layout_constraintStart_toStartOf="@+id/farmerNameSelector"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="1.0" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </HorizontalScrollView>
-
-        <View
-            android:id="@+id/view6"
-            android:layout_width="0dp"
-            android:layout_height="0.5dp"
-            android:background="@color/grey"
-            app:layout_constraintBottom_toBottomOf="@+id/horizontalScrollView"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/constraintLayout2"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginBottom="10dp"
-                android:orientation="vertical"
-                app:layout_constraintBottom_toTopOf="@+id/aggregation"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="1.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/horizontalScrollView"
-                app:layout_constraintVertical_bias="1.0">
-
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/reportListRecyclerView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/constraintLayout4">
-
-                </androidx.recyclerview.widget.RecyclerView>
-
-                <ProgressBar
-                    android:id="@+id/progressBar"
-                    style="@style/Widget.AppCompat.ProgressBar"
-                    android:layout_width="wrap_content"
-                    android:layout_height="50dp"
-                    android:indeterminate="true"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:progressBarVisibility="@{viewModel.isProgressBarActive().booleanValue()}" />
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/constraintLayout4"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
-
-                    <TextView
-                        android:id="@+id/textView30"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="20dp"
-                        android:layout_marginTop="20dp"
-                        android:text="Farmer Commission"
-                        android:textSize="15sp"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <TextView
-                        android:id="@+id/textView35"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:text="V2 Commission"
-                        android:textSize="15sp"
-                        app:layout_constraintEnd_toEndOf="@+id/textView30"
-                        app:layout_constraintStart_toStartOf="@+id/textView30"
-                        app:layout_constraintTop_toBottomOf="@+id/textView30" />
-
-                    <TextView
-                        android:id="@+id/farmerCommission"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="20dp"
-                        android:hint="0.0"
-                        android:textSize="15sp"
-                        app:farmerCommission="@{viewModel.visibleUiData}"
-                        app:layout_constraintBottom_toBottomOf="@+id/textView30"
-                        app:layout_constraintStart_toEndOf="@+id/textView30"
-                        app:layout_constraintTop_toTopOf="@+id/textView30" />
-
-                    <TextView
-                        android:id="@+id/v2Commission"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:hint="0.0"
-                        android:textSize="15sp"
-                        app:layout_constraintBottom_toBottomOf="@+id/textView35"
-                        app:layout_constraintStart_toStartOf="@+id/farmerCommission"
-                        app:layout_constraintTop_toTopOf="@+id/textView35"
-                        app:v2Commission="@{viewModel.visibleUiData}" />
-
-                    <TextView
-                        android:id="@+id/textView39"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:text="Handling Charges"
-                        android:textSize="15sp"
-                        app:layout_constraintStart_toStartOf="@+id/textView35"
-                        app:layout_constraintTop_toBottomOf="@+id/textView35" />
-
-                    <TextView
-                        android:id="@+id/handlingCharges"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="20dp"
-                        android:layout_marginBottom="20dp"
-                        android:hint="0.0"
-                        android:textSize="15sp"
-                        app:handlingChargesFormatted="@{viewModel.visibleUiData}"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="@+id/v2Commission"
-                        app:layout_constraintTop_toTopOf="@+id/textView39" />
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
         <TextView
             android:id="@+id/aggregation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
+            android:layout_marginBottom="5dp"
             android:textSize="18sp"
             app:aggregationFormatted="@{viewModel.visibleUiData}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/nestedScrollView2"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginBottom="5dp"
+            app:layout_constraintBottom_toTopOf="@+id/aggregation"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:context=".screens.report.ReportFragment">
+
+                <View
+                    android:id="@+id/view4"
+                    android:layout_width="0dp"
+                    android:layout_height="0.5dp"
+                    android:background="@color/grey"
+                    app:layout_constraintBottom_toTopOf="@+id/horizontalScrollView"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+
+                <HorizontalScrollView
+                    android:id="@+id/horizontalScrollView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginEnd="0dp"
+                        android:layout_marginRight="0dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <TextView
+                            android:id="@+id/textView4"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:text="Time Filter"
+                            android:textSize="12sp"
+                            app:layout_constraintStart_toStartOf="@+id/timeFilterSelector"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <Spinner
+                            android:id="@+id/orderStatusSelector"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginBottom="5dp"
+                            android:ellipsize="end"
+                            android:entries="@{viewModel.reportUiFilterModel.orderStatusList}"
+                            android:singleLine="true"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/textView10" />
+
+                        <Spinner
+                            android:id="@+id/timeFilterSelector"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="20dp"
+                            android:layout_marginBottom="5dp"
+                            android:ellipsize="end"
+                            android:entries="@{viewModel.reportUiFilterModel.timeFilterList}"
+                            android:singleLine="true"
+                            android:visibility="visible"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toEndOf="@+id/orderStatusSelector"
+                            app:layout_constraintTop_toBottomOf="@+id/textView4" />
+
+                        <TextView
+                            android:id="@+id/textView10"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:text="Order Status"
+                            android:textSize="12sp"
+                            app:layout_constraintStart_toStartOf="@+id/orderStatusSelector"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <Spinner
+                            android:id="@+id/buyerNameSelector"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="20dp"
+                            android:layout_marginBottom="5dp"
+                            android:entries="@{viewModel.reportUiFilterModel.buyerNameList}"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toEndOf="@+id/farmerNameSelector"
+                            app:layout_constraintTop_toBottomOf="@+id/textView20" />
+
+                        <TextView
+                            android:id="@+id/textView20"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:text="Buyer"
+                            android:textSize="12sp"
+                            app:layout_constraintStart_toStartOf="@+id/buyerNameSelector"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <TextView
+                            android:id="@+id/textView8"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:text="Select Item"
+                            android:textSize="12sp"
+                            app:layout_constraintStart_toStartOf="@+id/itemSelector"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <Spinner
+                            android:id="@+id/itemSelector"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="20dp"
+                            android:layout_marginBottom="5dp"
+                            android:ellipsize="end"
+                            android:entries="@{viewModel.reportUiFilterModel.itemList}"
+                            android:singleLine="true"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toEndOf="@+id/timeFilterSelector"
+                            app:layout_constraintTop_toBottomOf="@+id/textView8" />
+
+                        <Spinner
+                            android:id="@+id/farmerNameSelector"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="20dp"
+                            android:layout_marginBottom="5dp"
+                            android:entries="@{viewModel.reportUiFilterModel.farmerNameList}"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toEndOf="@+id/itemSelector" />
+
+                        <TextView
+                            android:id="@+id/textView3"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:text="Farmer"
+                            android:textSize="12sp"
+                            app:layout_constraintBottom_toTopOf="@+id/farmerNameSelector"
+                            app:layout_constraintStart_toStartOf="@+id/farmerNameSelector"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintVertical_bias="1.0" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </HorizontalScrollView>
+
+                <View
+                    android:id="@+id/view6"
+                    android:layout_width="0dp"
+                    android:layout_height="0.5dp"
+                    android:background="@color/grey"
+                    app:layout_constraintBottom_toBottomOf="@+id/horizontalScrollView"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/constraintLayout2"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="10dp"
+                    android:orientation="vertical"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="1.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/horizontalScrollView"
+                    app:layout_constraintVertical_bias="1.0">
+
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/reportListRecyclerView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/constraintLayout4">
+
+                    </androidx.recyclerview.widget.RecyclerView>
+
+                    <ProgressBar
+                        android:id="@+id/progressBar"
+                        style="@style/Widget.AppCompat.ProgressBar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="50dp"
+                        android:indeterminate="true"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:progressBarVisibility="@{viewModel.isProgressBarActive().booleanValue()}" />
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/constraintLayout4"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <TextView
+                            android:id="@+id/textView30"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="20dp"
+                            android:layout_marginTop="20dp"
+                            android:text="Farmer Commission"
+                            android:textSize="15sp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <TextView
+                            android:id="@+id/textView35"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:text="V2 Commission"
+                            android:textSize="15sp"
+                            app:layout_constraintEnd_toEndOf="@+id/textView30"
+                            app:layout_constraintStart_toStartOf="@+id/textView30"
+                            app:layout_constraintTop_toBottomOf="@+id/textView30" />
+
+                        <TextView
+                            android:id="@+id/farmerCommission"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="20dp"
+                            android:hint="0.0"
+                            android:textSize="15sp"
+                            app:farmerCommission="@{viewModel.visibleUiData}"
+                            app:layout_constraintBottom_toBottomOf="@+id/textView30"
+                            app:layout_constraintStart_toEndOf="@+id/textView30"
+                            app:layout_constraintTop_toTopOf="@+id/textView30" />
+
+                        <TextView
+                            android:id="@+id/v2Commission"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:hint="0.0"
+                            android:textSize="15sp"
+                            app:layout_constraintBottom_toBottomOf="@+id/textView35"
+                            app:layout_constraintStart_toStartOf="@+id/farmerCommission"
+                            app:layout_constraintTop_toTopOf="@+id/textView35"
+                            app:v2Commission="@{viewModel.visibleUiData}" />
+
+                        <TextView
+                            android:id="@+id/textView39"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:text="Handling Charges"
+                            android:textSize="15sp"
+                            app:layout_constraintStart_toStartOf="@+id/textView35"
+                            app:layout_constraintTop_toBottomOf="@+id/textView35" />
+
+                        <TextView
+                            android:id="@+id/handlingCharges"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="20dp"
+                            android:layout_marginBottom="20dp"
+                            android:hint="0.0"
+                            android:textSize="15sp"
+                            app:handlingChargesFormatted="@{viewModel.visibleUiData}"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="@+id/v2Commission"
+                            app:layout_constraintTop_toTopOf="@+id/textView39" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.core.widget.NestedScrollView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-    </androidx.core.widget.NestedScrollView>
 
 </layout>

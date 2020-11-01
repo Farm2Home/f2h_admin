@@ -2,23 +2,18 @@ package com.f2h.f2h_admin.screens.group.payment
 
 import android.app.Application
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Toast
-import androidx.databinding.DataBindingUtil
+import androidx.databinding.DataBindingUtil.inflate
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.fragment.findNavController
-import androidx.navigation.ui.NavigationUI
-
 import com.f2h.f2h_admin.R
 import com.f2h.f2h_admin.database.F2HDatabase
 import com.f2h.f2h_admin.database.SessionDatabaseDao
 import com.f2h.f2h_admin.databinding.FragmentPaymentBinding
-import com.f2h.f2h_admin.screens.group.group_tabs.GroupDetailsTabsFragmentDirections
 
 /**
  * A simple [Fragment] subclass.
@@ -28,46 +23,35 @@ class PaymentFragment : Fragment() {
     private lateinit var binding: FragmentPaymentBinding
     private val application: Application by lazy { requireNotNull(this.activity).application }
     private val dataSource: SessionDatabaseDao by lazy { F2HDatabase.getInstance(application).sessionDatabaseDao }
-    private val viewModelFactory: PaymentViewModelFactory by lazy {
-        PaymentViewModelFactory(
-            dataSource,
-            application
-        )
-    }
-    private val viewModel: PaymentViewModel by lazy {
-        ViewModelProvider(this, viewModelFactory).get(
-            PaymentViewModel::class.java
-        )
-    }
+    private val viewModelFactory: MembersViewModelFactory by lazy { MembersViewModelFactory(dataSource, application) }
+    private val viewModel: MembersViewModel by lazy { ViewModelProvider(this, viewModelFactory).get(
+        MembersViewModel::class.java) }
 
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_payment, container, false)
+        super.onCreate(savedInstanceState)
+
+        binding = inflate(inflater, R.layout.fragment_payment, container, false)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
-
-        //Toast Message
-        viewModel.toastMessage.observe(viewLifecycleOwner, Observer { message ->
-            Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
-        })
 
         return binding.root
     }
 
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Daily Orders List recycler view
-        val adapter = PaymentItemsAdapter(OrderedItemClickListener { uiDataElement ->
-            println("Clicked Report Item")
-        }, CheckBoxClickListener {uiModel ->
-            viewModel.onCheckBoxClicked(uiModel)
-        })
-        binding.reportListRecyclerView.adapter = adapter
+        // Members List recycler view
+        val adapter = MemberItemsAdapter( MembersItemClickListener { uiDataElement ->
+            viewModel.onMemberSelected(uiDataElement)
+        }, viewModel)
+        binding.itemListRecyclerView.adapter = adapter
+
         viewModel.visibleUiData.observe(viewLifecycleOwner, Observer {
             it?.let {
                 adapter.submitList(it)
@@ -75,41 +59,13 @@ class PaymentFragment : Fragment() {
             }
         })
 
-
-        //Item Spinner
-        binding.itemSelector?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-                TODO("Not yet implemented")
-            }
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                viewModel.onItemSelected(position)
-            }
-        }
-
-
-        //Order Status Spinner
-        binding.orderStatusSelector?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-                TODO("Not yet implemented")
-            }
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                viewModel.onOrderStatusSelected(position)
-            }
-        }
-
+        //Toast Message
+        viewModel.toastMessage.observe(viewLifecycleOwner, Observer { message ->
+            Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
+        })
 
         //End Date Selector Spinner
-        binding.timeFilterSelector?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+        binding.memberTimeFilterSelector.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(parent: AdapterView<*>?) {
                 TODO("Not yet implemented")
             }
@@ -123,8 +79,7 @@ class PaymentFragment : Fragment() {
             }
         }
 
-        //Buyer Selector Spinner
-        binding.buyerNameSelector?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+        binding.statusSelector.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(parent: AdapterView<*>?) {
                 TODO("Not yet implemented")
             }
@@ -134,25 +89,39 @@ class PaymentFragment : Fragment() {
                 position: Int,
                 id: Long
             ) {
-                viewModel.onBuyerSelected(position)
+                viewModel.onStatusSelected(position)
             }
         }
 
-        //Farmer Selector Spinner
-        binding.farmerNameSelector?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-                TODO("Not yet implemented")
-            }
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                viewModel.onFarmerSelected(position)
-            }
-        }
+        viewModel.uiFilterModel.observe(viewLifecycleOwner, Observer { uiItems ->
+
+
+            val statusSpinnerArrayAdapter: ArrayAdapter<String> = ArrayAdapter(
+                requireContext(), android.R.layout.simple_spinner_item, uiItems.statusList
+            )
+            statusSpinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            binding.statusSelector.adapter = statusSpinnerArrayAdapter
+            var pos = viewModel.getInitialStatusIndex()
+            binding.statusSelector.setSelection(pos)
+
+            val timeSpinnerArrayAdapter: ArrayAdapter<String> = ArrayAdapter(
+                requireContext(), android.R.layout.simple_spinner_item, uiItems.timeFilterList
+            )
+            timeSpinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            binding.memberTimeFilterSelector.adapter = timeSpinnerArrayAdapter
+            pos = viewModel.getInitialTimeIndex()
+            binding.memberTimeFilterSelector.setSelection(pos)
+
+        })
+
 
     }
+
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.getUserDetailsInGroup()
+    }
+
 
 }
