@@ -2,11 +2,14 @@ package com.f2h.f2h_admin.screens.report
 
 import com.f2h.f2h_admin.network.models.Comment
 import com.f2h.f2h_admin.network.models.HandlingCharge
+import java.util.*
+import kotlin.collections.ArrayList
 
 data class ReportItemsModel (
     var itemId: Long = 0,
     var orderedDate: String = "",
     var itemName: String = "",
+    var currency: String = "",
     var itemDescription: String = "",
     var buyerName: String = "",
     var sellerName: String= "",

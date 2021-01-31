@@ -44,6 +44,10 @@ class AddItemViewModel(val database: SessionDatabaseDao, application: Applicatio
     val toastText: LiveData<String>
         get() = _toastText
 
+    private val _currency = MutableLiveData<String>()
+    val currency: LiveData<String>
+        get() = _currency
+
     private val _isAddItemActionComplete = MutableLiveData<Boolean>()
     val isAddItemActionComplete: LiveData<Boolean>
         get() = _isAddItemActionComplete
@@ -60,6 +64,7 @@ class AddItemViewModel(val database: SessionDatabaseDao, application: Applicatio
     init {
         _isAddItemActionComplete.value = false
         _isProgressBarActive.value = true
+        _currency.value = ""
         farmerPrice.value = "0.0"
         v2Price.value = "0.0"
         _visibleHandlingChargeUiData.value = arrayListOf<HandlingChargesItemsModel>()
@@ -72,6 +77,7 @@ class AddItemViewModel(val database: SessionDatabaseDao, application: Applicatio
     private fun getFarmersAndUoms() {
         coroutineScope.launch {
             _sessionData.value = retrieveSession()
+            _currency.value = _sessionData.value?.groupCurrency
             val getAllUomsDataDeferred = UomApi.retrofitService(getApplication()).getAllUoms()
             val getAllFarmersInGroupDataDeferred = GroupMembershipApi.retrofitService(getApplication()).getGroupMembership(_sessionData.value!!.groupId, "FARMER")
             try {
@@ -103,6 +109,7 @@ class AddItemViewModel(val database: SessionDatabaseDao, application: Applicatio
     private fun createRecyclerView() {
         handlingOptions.forEach { option ->
             var uiModel = HandlingChargesItemsModel()
+            uiModel.currency = _sessionData.value?.groupCurrency ?: ""
             uiModel.handlingOptionId = option.handlingOptionId
             uiModel.name = option.name
             uiModel.description = option.description

@@ -69,12 +69,14 @@ class GroupWalletViewModel(val database: SessionDatabaseDao, application: Applic
                     walletTransactions = activeWalletTransactionData
                 }
                 _wallet.value = walletData
+                _wallet.value?.currency = userSession.groupCurrency
                 walletTransactions.forEach { transaction ->
                     var walletItemsModel = WalletItemsModel(
                         transaction.walletLedgerId ?: -1,
                         transaction.transactionDate ?: "",
                         transaction.transactionDescription?.trim() ?: "",
-                        transaction.amount ?: 0.0
+                        currency = userSession.groupCurrency,
+                        amount = transaction.amount ?: 0.0
                     )
                     allUiData.add(walletItemsModel)
                 }

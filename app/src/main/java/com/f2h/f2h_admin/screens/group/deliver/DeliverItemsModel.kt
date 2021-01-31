@@ -6,6 +6,7 @@ import com.f2h.f2h_admin.network.models.Comment
 data class DeliverItemsModel (
     var itemId: Long = 0,
     var orderedDate: String = "",
+    var currency: String = "",
     var itemName: String = "",
     var itemDescription: String = "",
     var buyerMobile: String = "",

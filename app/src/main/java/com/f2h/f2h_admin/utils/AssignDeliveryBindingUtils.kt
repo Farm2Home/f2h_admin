@@ -51,7 +51,7 @@ fun TextView.setDeliveryUserDetailsFormatted(data: AssignDeliveryItemsModel?){
 @BindingAdapter("numberOfPacketsFormatted")
 fun TextView.setNumberOfPacketsFormatted(data: AssignDeliveryItemsModel?){
     data?.let {
-        text = String.format("₹%.0f  (%s Packets)", data.finalAmount, data.totalNumberOfPackets)
+        text = String.format("%s%.0f  (%s Packets)", data.currency, data.finalAmount, data.totalNumberOfPackets)
     }
 }
 

@@ -29,6 +29,7 @@ data class HandlingCharge (
     @Json(name = "handling_charge_id") var handlingChargeId: Long = -1,
     @Json(name = "handling_option_id") var handlingOptionId: Long = -1,
     @Json(name = "item_id") var itemId: Long = -1,
+    @Json(name = "currency") var currency: String = "",
     @Json(name = "group_id") var groupId: Long = -1,
     @Json(name = "description") var description: String = "",
     @Json(name = "name") var name: String = "",

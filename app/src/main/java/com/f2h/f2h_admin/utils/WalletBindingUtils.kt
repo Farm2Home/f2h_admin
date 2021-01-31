@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
 import com.f2h.f2h_admin.R
+import com.f2h.f2h_admin.network.models.Wallet
 import com.f2h.f2h_admin.screens.group.group_wallet.WalletItemsModel
 import com.f2h.f2h_admin.screens.report.ReportItemsModel
 import java.text.DateFormat
@@ -16,15 +17,15 @@ import java.text.SimpleDateFormat
 
 
 @BindingAdapter("walletBalanceFormatted")
-fun TextView.setWalletBalanceFormatted(balance: Double?) {
-    text = String.format("Balance : ₹%.0f", balance)
+fun TextView.setWalletBalanceFormatted(wallet: Wallet?) {
+    text = String.format("Balance : %s%.0f", wallet?.currency, wallet?.balance)
 }
 
 
 @BindingAdapter("transactionAmountFormatted")
 fun TextView.setPriceFormatted(data: WalletItemsModel?){
     data?.let {
-        val colouredText = SpannableString(String.format("₹ %.0f", data.amount))
+        val colouredText = SpannableString(String.format("%s %.0f", data.currency, data.amount))
 
         if (data.amount > 0){
             colouredText.setSpan(ForegroundColorSpan(ContextCompat.getColor(context, R.color.green_status)),0, colouredText.length,0)

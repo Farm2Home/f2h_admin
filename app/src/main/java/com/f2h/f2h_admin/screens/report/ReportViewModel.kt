@@ -129,6 +129,7 @@ class ReportViewModel(val database: SessionDatabaseDao, application: Application
                 userDetailsList.firstOrNull { x -> x.userId?.equals(order.buyerUserId) ?: false }
             val sellerUserDetails =
                 userDetailsList.firstOrNull { x -> x.userId?.equals(order.sellerUserId) ?: false }
+            uiElement.currency = sessionData.value?.groupCurrency ?: ""
             uiElement.buyerName = buyerUserDetails?.userName ?: ""
             uiElement.buyerMobile = buyerUserDetails?.mobile ?: ""
             uiElement.sellerName = sellerUserDetails?.userName ?: ""
@@ -159,6 +160,7 @@ class ReportViewModel(val database: SessionDatabaseDao, application: Application
             uiElement.itemHandlingCharges = item.handlingCharges
             uiElement.handlingCharges = item.handlingCharges
             uiElement.itemHandlingCharges.forEach { handlingCharge ->
+                handlingCharge.currency = sessionData.value?.groupCurrency ?: ""
                 handlingCharge.amount = handlingCharge.amount * uiElement.displayQuantity
             }
 

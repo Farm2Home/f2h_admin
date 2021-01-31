@@ -131,6 +131,7 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
                 x.userId?.equals(orderHeader.buyerUserId) ?: false
             }
             val uiElement = MembersUiModel()
+            uiElement.currency = sessionData.value?.groupCurrency ?: ""
             uiElement.orderHeaderId = orderHeader.orderHeaderId ?: -1
             uiElement.userId = orderHeader.buyerUserId ?: -1
             uiElement.userName = buyer!!.userName ?: ""
@@ -161,6 +162,7 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
                 } catch (e: Exception){
                     Log.e("Parse Error", e.message ?: "")
                 }
+                deliverItemsModel.currency = sessionData.value?.groupCurrency ?: ""
                 deliverItemsModel.itemId = item.itemId ?: -1
                 deliverItemsModel.itemName = item.itemName ?: ""
                 deliverItemsModel.itemDescription = item.description ?: ""

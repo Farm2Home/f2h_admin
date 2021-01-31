@@ -3,6 +3,7 @@ package com.f2h.f2h_admin.screens.group.assign_delivery
 
 data class AssignDeliveryItemsModel (
     var orderHeaderId: Long = 0,
+    var currency: String = "",
     var packingNumber: Long = 0,
     var totalNumberOfPackets: Long = 0,
     var finalAmount: Double = 0.0,

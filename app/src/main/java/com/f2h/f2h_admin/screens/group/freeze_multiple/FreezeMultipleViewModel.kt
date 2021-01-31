@@ -122,6 +122,7 @@ class FreezeMultipleViewModel(val database: SessionDatabaseDao, application: App
                 uiElement.itemPrice = itemDetail.pricePerUnit ?: 0.0
                 uiElement.itemUom = itemDetail.uom ?: ""
             }
+            uiElement.currency = sessionData.value?.groupCurrency ?: ""
             uiElement.sellerUserId = sellerUserDetails?.userId ?: -1
             uiElement.sellerName = sellerUserDetails?.userName ?: ""
             uiElement.sellerMobile = sellerUserDetails?.mobile ?: ""

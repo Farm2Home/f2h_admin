@@ -11,6 +11,7 @@ data class Item (
     @Json(name = "item_name") var itemName: String? = "",
     @Json(name = "description") var description: String? = "",
     @Json(name = "uom") var uom: String? = "",
+    @Json(name = "currency") var currency: String? = "",
     @Json(name = "handling_charges") var handlingCharges: List<HandlingCharge> = listOf(),
     @Json(name = "price_per_unit") var pricePerUnit: Double? = 0.0,
     @Json(name = "v2_price") var v2Price: Double? = 0.0,

@@ -26,7 +26,7 @@ fun TextView.setDescriptionFormatted(data: PreOrderUiModel?){
 @BindingAdapter("toolbarTitleFormatted")
 fun CollapsingToolbarLayout.setToolbarTitleFormattedFromPreOrderUiModel(data: PreOrderUiModel?){
     data?.let {
-        title = String.format("%s (₹%.0f/%s)", data.itemName, data.itemPrice, data.itemUom)
+        title = String.format("%s (%s%.0f/%s)", data.itemName, data.currency, data.itemPrice, data.itemUom)
         setExpandedTitleColor(Color.WHITE)
     }
 }
