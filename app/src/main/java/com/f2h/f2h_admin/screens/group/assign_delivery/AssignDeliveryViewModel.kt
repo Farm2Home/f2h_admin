@@ -70,6 +70,7 @@ class AssignDeliveryViewModel(val database: SessionDatabaseDao, application: App
 
         coroutineScope.launch {
             sessionData.value = retrieveSession()
+
             var getOrderHeadersDataDeferred =
                 OrderApi.retrofitService(getApplication()).getOrderHeaderForGroup(sessionData.value!!.groupId, fetchOrderDate(-1), fetchOrderDate(3))
 
@@ -170,6 +171,7 @@ class AssignDeliveryViewModel(val database: SessionDatabaseDao, application: App
             val deliveryArea = deliveryAreaList.filter{ x-> x.deliveryAreaId?.equals(buyerMembershipDetails?.deliveryAreaId)?: false}.firstOrNull()
             val deliveryUserDetails = userDetailsList.filter { x -> x.userId?.equals(orderHeader.deliveryUserId) ?: false }.firstOrNull()
 
+            headerUiElement.currency = sessionData.value?.groupCurrency ?: ""
             headerUiElement.orderHeaderId = orderHeader.orderHeaderId ?: -1
             headerUiElement.packingNumber = orderHeader.packingNumber ?: 0
             headerUiElement.totalNumberOfPackets = orderUiElements.map { it.numberOfPackets }

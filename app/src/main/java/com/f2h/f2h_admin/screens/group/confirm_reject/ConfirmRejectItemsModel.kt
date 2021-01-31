@@ -5,6 +5,7 @@ import com.f2h.f2h_admin.network.models.Comment
 
 data class ConfirmRejectItemsModel (
     var itemId: Long = 0,
+    var currency: String = "",
     var orderedDate: String = "",
     var itemName: String = "",
     var itemDescription: String = "",

@@ -108,7 +108,7 @@
                         android:id="@+id/amount"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="Rs. "
+                        android:text=""
                         android:textAlignment="center"
                         android:textSize="12sp"
                         app:layout_constraintEnd_toEndOf="@+id/confirmItemImage"

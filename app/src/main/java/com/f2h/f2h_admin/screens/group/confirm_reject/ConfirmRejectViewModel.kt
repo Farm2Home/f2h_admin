@@ -151,6 +151,7 @@ class ConfirmRejectViewModel(val database: SessionDatabaseDao, application: Appl
             uiElement.sellerName = sellerUserDetails?.userName ?: ""
             uiElement.sellerMobile = sellerUserDetails?.mobile ?: ""
 
+            uiElement.currency = sessionData.value?.groupCurrency ?: ""
             uiElement.orderId = order.orderId ?: -1L
             uiElement.orderAmount = order.orderedAmount ?: 0.0
             uiElement.discountAmount = order.discountAmount ?: 0.0

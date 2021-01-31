@@ -58,7 +58,7 @@
                         app:layout_constraintHorizontal_bias="1.0"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/walletUserName"
-                        app:walletBalanceFormatted="@{viewModel.wallet.balance}" />
+                        app:walletBalanceFormatted="@{viewModel.wallet}" />
 
                     <TextView
                         android:id="@+id/tvWalletAmount"

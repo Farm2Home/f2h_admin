@@ -30,6 +30,10 @@ class MembershipRequestViewModel (val database: SessionDatabaseDao, application:
     val userName: LiveData<String>
         get() = _userName
 
+    private var _currency = MutableLiveData<String>()
+    val currency: LiveData<String>
+        get() = _currency
+
     private var _deliveryAddress = MutableLiveData<String>()
     val deliveryAddress: LiveData<String>
         get() = _deliveryAddress
@@ -68,6 +72,7 @@ class MembershipRequestViewModel (val database: SessionDatabaseDao, application:
     init {
         _isProgressBarActive.value = true
         _isMembershipActionComplete.value = false
+        _currency.value = ""
         _userName.value = navArgs.memberUiModel.userName
         _deliveryAddress.value = navArgs.memberUiModel.deliveryAddress
         _mobile.value = navArgs.memberUiModel.mobile
@@ -83,6 +88,7 @@ class MembershipRequestViewModel (val database: SessionDatabaseDao, application:
         _isProgressBarActive.value = true
         coroutineScope.launch {
             sessionData = retrieveSession()
+            _currency.value = sessionData.groupCurrency
             var deliveryAreaNameList = ArrayList<String>()
             var deliveryAreaIdList = ArrayList<Long>()
             deliveryAreaNameList.add("Not Assigned")

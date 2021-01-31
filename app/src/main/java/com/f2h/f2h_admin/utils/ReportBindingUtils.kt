@@ -28,7 +28,7 @@ import java.util.*
 @BindingAdapter("priceFormatted")
 fun TextView.setPriceFormatted(data: ReportItemsModel?){
     data?.let {
-        text =  String.format("₹ %.0f /%s", data.price, data.itemUom)
+        text =  String.format("%s %.0f /%s", data.currency, data.price, data.itemUom)
     }
 }
 
@@ -104,7 +104,7 @@ private fun getFormattedQtyNumber(number: Double?): String {
 @BindingAdapter("discountFormatted")
 fun TextView.setDiscountFormatted(data: ReportItemsModel){
     if (data.discountAmount > 0) {
-        text = String.format("Discount  ₹%.0f", data.discountAmount)
+        text = String.format("Discount  %s%.0f", data.currency,  data.discountAmount)
     } else {
         text = ""
     }
@@ -128,10 +128,10 @@ fun TextView.setTotalPriceFormatted(data: ReportItemsModel){
 
     var markupPrice = ""
     if (data.discountAmount > 0) {
-        markupPrice = String.format("₹%.0f", data.orderAmount + data.discountAmount)
+        markupPrice = String.format("%s%.0f", data.currency, data.orderAmount + data.discountAmount)
     }
 
-    val receivableString = String.format("Receivable  %s ₹%.0f \n%s", markupPrice, data.orderAmount, data.paymentStatus)
+    val receivableString = String.format("Receivable  %s %s%.0f \n%s", markupPrice, data.currency,  data.orderAmount, data.paymentStatus)
     val receivaableStringFormatted = SpannableString(receivableString)
     receivaableStringFormatted.setSpan(StrikethroughSpan(),11,12+markupPrice.length,0)
     receivaableStringFormatted.setSpan(ForegroundColorSpan(Color.parseColor("#dbdbdb")),11,12+markupPrice.length,0)
@@ -168,7 +168,9 @@ fun TextView.setAggregationFormatted(list: List<ReportItemsModel>?){
         var totalAmount = (0).toDouble()
         var totalQuantity: Double? = (0).toDouble()
         var uom = ""
+        var currency = ""
         list.forEach { element ->
+            currency = element.currency
             totalAmount += (element.orderAmount)
             totalQuantity = totalQuantity?.plus((element.displayQuantity))
             uom = element.itemUom
@@ -176,9 +178,9 @@ fun TextView.setAggregationFormatted(list: List<ReportItemsModel>?){
 
         //If there are multiple items do not show the UOM/Quantity
         if (list.map { x -> x.itemName }.distinct().count() == 1){
-            text = String.format("₹%.0f - %s %s", totalAmount, getFormattedQtyNumber(totalQuantity), uom)
+            text = String.format("%s%.0f - %s %s", currency, totalAmount, getFormattedQtyNumber(totalQuantity), uom)
         } else {
-            text = String.format("₹%.0f", totalAmount)
+            text = String.format("%s%.0f", currency, totalAmount)
         }
 
     }
@@ -189,10 +191,12 @@ fun TextView.setAggregationFormatted(list: List<ReportItemsModel>?){
 fun TextView.setFarmerCommission(list: List<ReportItemsModel>?){
     if (list != null) {
         var totalFarmerCommission = (0).toDouble()
+        var currency = ""
         list.forEach { element ->
+            currency = element.currency
             totalFarmerCommission += (element.farmerCommission)
         }
-        text = String.format("₹%.0f", totalFarmerCommission)
+        text = String.format("%s%.0f", currency,  totalFarmerCommission)
     }
 }
 
@@ -200,11 +204,13 @@ fun TextView.setFarmerCommission(list: List<ReportItemsModel>?){
 @BindingAdapter("v2Commission")
 fun TextView.setV2Commission(list: List<ReportItemsModel>?){
     if (list != null) {
+        var currency = ""
         var totalV2Commission = (0).toDouble()
         list.forEach { element ->
+            currency = element.currency
             totalV2Commission += (element.v2Commission)
         }
-        text = String.format("₹%.0f", totalV2Commission)
+        text = String.format("%s%.0f", currency, totalV2Commission)
     }
 }
 
@@ -226,7 +232,11 @@ fun TextView.setHandlingCharges(list: List<ReportItemsModel>?){
 fun calculateTotalChargeForEach(id: Long, handlingCharges: List<HandlingCharge>): Any? {
     var handlingChargeName: String = handlingCharges.firstOrNull()?.name ?: ""
     var totalCharge = handlingCharges.sumByDouble { it.amount }
-    return String.format("%s = ₹%.0f\n", handlingChargeName, totalCharge)
+    var currency = ""
+    if(handlingCharges.isNotEmpty()){
+        currency = handlingCharges.get(0).currency
+    }
+    return String.format("%s = %s%.0f\n", handlingChargeName, currency, totalCharge)
 }
 
 

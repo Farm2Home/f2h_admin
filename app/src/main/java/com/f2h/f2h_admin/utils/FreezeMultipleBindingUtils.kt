@@ -14,7 +14,7 @@ import com.f2h.f2h_admin.screens.group.freeze_multiple.FreezeMultipleItemsModel
 fun TextView.setPriceFormatted(data: FreezeMultipleItemsModel?){
     data?.let {
 //        text =  String.format("₹ %.0f /%s", data.itemPrice, data.itemUom)
-        text = String.format("₹ %.0f", data.itemPrice)
+        text = String.format("%s %.0f", data.currency, data.itemPrice)
     }
 }
 

@@ -1,7 +1,10 @@
 package com.f2h.f2h_admin.screens.group.freeze_multiple
 
+import java.util.*
+
 data class FreezeMultipleItemsModel (
     var itemId: Long = 0,
+    var currency: String = "",
     var availabilityId: Long = 0,
     var availableDate: String = "",
     var itemName: String = "",
