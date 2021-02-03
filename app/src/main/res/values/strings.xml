@@ -25,6 +25,11 @@
         <item>Afternoon</item>
         <item>Evening</item>
     </string-array>
+
+    <string-array name="country_codes">
+        <item>+91</item>
+        <item>+61</item>
+    </string-array>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="assign_delivery">Assign Delivery</string>
