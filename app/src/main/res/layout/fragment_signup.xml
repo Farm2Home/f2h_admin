@@ -208,32 +208,40 @@
                 android:id="@+id/mobile"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
                 android:ems="13"
                 android:hint="Mobile Number*"
                 android:inputType="phone"
                 android:maxLength="10"
                 android:text="@={viewModel.mobile}"
                 app:editTextVisibility="@{viewModel.isEnteringMobile()}"
-                app:layout_constraintStart_toEndOf="@+id/textView12"
+                app:layout_constraintStart_toEndOf="@+id/countryCodeSpinner"
                 app:layout_constraintTop_toTopOf="parent" />
 
-
-            <EditText
-                android:id="@+id/textView12"
+            <Spinner
+                android:id="@+id/countryCodeSpinner"
                 android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_marginStart="20dp"
-                android:editable="false"
-                android:gravity="center_vertical"
-                android:inputType="none"
-                android:text="+91"
-                android:textAlignment="gravity"
-                android:textSize="18sp"
-                android:textStyle="normal"
-                app:editTextVisibility="@{viewModel.isEnteringMobile()}"
+                android:layout_height="wrap_content"
+                android:entries="@array/country_codes"
+                app:layout_constraintBottom_toBottomOf="@+id/mobile"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="@+id/mobile"
+                app:spinnerVisibility="@{viewModel.isEnteringMobile()}" />
+
+<!--            <EditText-->
+<!--                android:id="@+id/textView12"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="0dp"-->
+<!--                android:layout_marginStart="20dp"-->
+<!--                android:editable="false"-->
+<!--                android:gravity="center_vertical"-->
+<!--                android:inputType="none"-->
+<!--                android:text="+91"-->
+<!--                android:textAlignment="gravity"-->
+<!--                android:textSize="18sp"-->
+<!--                android:textStyle="normal"-->
+<!--                app:editTextVisibility="@{viewModel.isEnteringMobile()}"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toTopOf="parent" />-->
 
             <Button
                 android:id="@+id/sendOtpButton"
@@ -262,7 +270,6 @@
                 android:maxLength="6"
                 android:text="@={viewModel.otp}"
                 app:editTextVisibility="@{viewModel.isVerifyingOtp()}"
-                app:layout_constraintStart_toStartOf="@+id/textView12"
                 app:layout_constraintTop_toBottomOf="@+id/resend" />
 
             <Button

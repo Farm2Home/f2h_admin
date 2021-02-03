@@ -18,6 +18,15 @@ fun TextView.setPriceFormattedFromItem(data: Item?){
     }
 }
 
+@BindingAdapter("spinnerVisibility")
+fun Spinner.setVisibility(isVisible: Boolean){
+    if (isVisible){
+        visibility = View.VISIBLE
+    } else {
+        visibility = View.GONE
+    }
+}
+
 @BindingAdapter("buttonStatus")
 fun Button.setButtonStatus(status: Boolean){
     isEnabled = status
