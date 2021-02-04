@@ -19,12 +19,12 @@ android {
         applicationId "com.f2h.f2h_admin"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 15 //Should be always increasing - every deploy to playstore, add 1
-        versionName "2.0.5"
+        versionCode 16 //Should be always increasing - every deploy to playstore, add 1
+        versionName "2.1.1"
         /*
              versionName Major.Minor.Patch
              Major - Not Backward compatible, absolutely new
-             Minor - New functionality in backward compatible manner
+             Minor - New functionality in backward compatabible manner
              Patch - Bug fixes in backward compatible manner
         */
 

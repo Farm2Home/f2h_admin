@@ -4,5 +4,6 @@ data class WalletItemsModel (
     var walletLedgerId: Long = 0,
     var transactionDate: String = "",
     var transactionDescription: String = "",
+    var currency: String = "",
     var amount: Double = 0.0
 )

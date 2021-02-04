@@ -7,6 +7,7 @@ data class MembersUiModel (
     var userId: Long = 0,
     var orderHeaderId: Long = 0,
     var userName: String = "",
+    var currency: String = "",
     var deliveryAddress: String = "",
     var mobile: String = "",
     var email: String = "",

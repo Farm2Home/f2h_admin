@@ -14,7 +14,16 @@ import com.f2h.f2h_admin.network.models.Item
 @BindingAdapter("priceFormattedFromItem")
 fun TextView.setPriceFormattedFromItem(data: Item?){
     data?.let {
-        text = "\u20B9 " + String.format("%.0f", data.pricePerUnit) + "/" + data.uom
+        text = String.format("%s%.0f", data.currency, data.pricePerUnit) + "/" + data.uom
+    }
+}
+
+@BindingAdapter("spinnerVisibility")
+fun Spinner.setVisibility(isVisible: Boolean){
+    if (isVisible){
+        visibility = View.VISIBLE
+    } else {
+        visibility = View.GONE
     }
 }
 

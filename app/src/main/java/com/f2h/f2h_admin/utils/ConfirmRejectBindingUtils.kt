@@ -30,7 +30,7 @@ import java.util.*
 @BindingAdapter("priceFormatted")
 fun TextView.setPriceFormatted(data: ConfirmRejectItemsModel?){
     data?.let {
-        text =  String.format("₹ %.0f /%s", data.price, data.itemUom)
+        text =  String.format("%s %.0f /%s", data.currency, data.price, data.itemUom)
     }
 }
 
@@ -80,7 +80,7 @@ private fun getFormattedQtyNumber(number: Double?): String {
 @BindingAdapter("discountFormatted")
 fun TextView.setDiscountFormatted(data: ConfirmRejectItemsModel){
     if (data.discountAmount > 0) {
-        text = String.format("Discount  ₹%.0f", data.discountAmount)
+        text = String.format("Discount  %s%.0f", data.currency, data.discountAmount)
     } else {
         text = ""
     }
@@ -97,10 +97,10 @@ fun TextView.setTotalPriceFormatted(data: ConfirmRejectItemsModel){
 
     var markupPrice = ""
     if (data.discountAmount > 0) {
-        markupPrice = String.format("₹%.0f", data.orderAmount + data.discountAmount)
+        markupPrice = String.format("%s%.0f", data.currency, data.orderAmount + data.discountAmount)
     }
 
-    val receivableString = String.format("Receivable  %s ₹%.0f \n%s", markupPrice, data.orderAmount, data.paymentStatus)
+    val receivableString = String.format("Receivable  %s %s%.0f \n%s", markupPrice, data.currency, data.orderAmount, data.paymentStatus)
     val receivaableStringFormatted = SpannableString(receivableString)
     receivaableStringFormatted.setSpan(StrikethroughSpan(),11,12+markupPrice.length,0)
     receivaableStringFormatted.setSpan(ForegroundColorSpan(Color.parseColor("#dbdbdb")),11,12+markupPrice.length,0)

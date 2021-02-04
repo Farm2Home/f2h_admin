@@ -41,7 +41,7 @@ class GroupsViewModel(val database: SessionDatabaseDao, application: Application
     fun updateSessionWithGroupInfo(group: Group){
         coroutineScope.launch {
             withContext(Dispatchers.IO) {
-                database.updateActiveGroup(group.groupId ?: -1, group.description ?: "", group.groupName ?: "")
+                database.updateActiveGroup(group.groupId ?: -1, group.description ?: "", group.groupName ?: "", group.groupCurrency ?: "")
             }
         }
     }

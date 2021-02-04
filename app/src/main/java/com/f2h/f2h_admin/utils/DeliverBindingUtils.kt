@@ -31,7 +31,7 @@ import kotlin.reflect.jvm.internal.impl.types.AbstractTypeCheckerContext
 @BindingAdapter("priceFormatted")
 fun TextView.setPriceFormatted(data: DeliverItemsModel?){
     data?.let {
-        text =  String.format("₹ %.0f/%s x %s", data.price, data.itemUom, data.confirmedQuantity)
+        text =  String.format("%s %.0f/%s x %s", data.currency, data.price, data.itemUom, data.confirmedQuantity)
     }
 }
 
@@ -118,7 +118,7 @@ private fun getFormattedQtyNumber(number: Double?): String {
 @BindingAdapter("discountFormatted")
 fun TextView.setDiscountFormatted(data: DeliverItemsModel){
     if (data.discountAmount > 0) {
-        text = String.format("Discount  ₹%.0f", data.discountAmount)
+        text = String.format("Discount  %s%.0f", data.currency, data.discountAmount)
     } else {
         text = ""
     }
@@ -135,10 +135,10 @@ fun TextView.setTotalPriceFormatted(data: DeliverItemsModel){
 
     var markupPrice = ""
     if (data.discountAmount > 0) {
-        markupPrice = String.format("₹%.0f", data.orderAmount + data.discountAmount)
+        markupPrice = String.format("%s%.0f", data.currency, data.orderAmount + data.discountAmount)
     }
 
-    val receivableString = String.format("Receivable  %s ₹%.0f \n%s", markupPrice, data.orderAmount, data.paymentStatus)
+    val receivableString = String.format("Receivable  %s %s%.0f \n%s", markupPrice, data.currency, data.orderAmount, data.paymentStatus)
     val receivaableStringFormatted = SpannableString(receivableString)
     receivaableStringFormatted.setSpan(StrikethroughSpan(),11,12+markupPrice.length,0)
     receivaableStringFormatted.setSpan(ForegroundColorSpan(Color.parseColor("#dbdbdb")),11,12+markupPrice.length,0)
@@ -173,8 +173,10 @@ fun TextView.setAggregationFormatted(list: List<DeliverItemsModel>?){
     if (list != null) {
         var totalAmount = (0).toDouble()
         var totalQuantity: Double? = (0).toDouble()
+        var currency: String? = ""
         var uom = ""
         list.forEach { element ->
+            currency = element.currency
             totalAmount += (element.orderAmount)
             totalQuantity = totalQuantity?.plus((element.displayQuantity))
             uom = element.itemUom
@@ -182,9 +184,9 @@ fun TextView.setAggregationFormatted(list: List<DeliverItemsModel>?){
 
         //If there are multiple items do not show the UOM/Quantity
         if (list.map { x -> x.itemName }.distinct().count() == 1){
-            text = String.format("₹%.0f", totalAmount)
+            text = String.format("%s%.0f", currency, totalAmount)
         } else {
-            text = String.format("₹%.0f", totalAmount)
+            text = String.format("%s%.0f", currency, totalAmount)
         }
 
     }
@@ -213,7 +215,7 @@ fun TextView.setStatusFormatted(data: DeliverItemsModel){
 @BindingAdapter("orderedItemAmountFormatted")
 fun TextView.setOrderedItemAmountFormatted(data: MembersUiModel){
 
-    text = String.format("Total Order Amount - ₹%.0f", data.totalAmount)
+    text = String.format("Total Order Amount - %s%.0f", data.currency, data.totalAmount)
 //    text = "Receivable - Rs. " + getFormattedQtyNumber(totalAmount)
 }
 
@@ -223,7 +225,7 @@ fun TextView.setMinCollectAmountFormatted(data: MembersUiModel){
     if (minPayable < 0){
         minPayable = 0.0
     }
-    text = String.format("Min Receivable - ₹%.0f", minPayable)
+    text = String.format("Min Receivable - %s%.0f", data.currency, minPayable)
 }
 
 

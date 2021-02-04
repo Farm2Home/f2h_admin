@@ -82,6 +82,7 @@ class PreOrderViewModel(val database: SessionDatabaseDao, application: Applicati
         var list = arrayListOf<AvailabilityItemsModel>()
 
         var uiModel = PreOrderUiModel()
+        uiModel.currency = sessionData.groupCurrency
         uiModel.itemId = item.itemId ?: -1
         uiModel.itemName = item.itemName ?: ""
         uiModel.itemDescription = item.description ?: ""

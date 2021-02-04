@@ -34,6 +34,9 @@ data class SessionEntity (
     @ColumnInfo(name = "group_name")
     var groupName: String = "",
 
+    @ColumnInfo(name = "group_currency")
+    var groupCurrency: String = "",
+
     @ColumnInfo(name = "group_description")
     var groupDescription: String = ""
 

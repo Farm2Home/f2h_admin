@@ -26,6 +26,7 @@ class EditItemViewModel(val database: SessionDatabaseDao, application: Applicati
     val itemDescription = MutableLiveData<String>()
     val farmerPrice = MutableLiveData<String>()
     val v2Price = MutableLiveData<String>()
+    val currency = MutableLiveData<String>()
     val confirmQuantityJump = MutableLiveData<String>()
     val orderQuantityJump = MutableLiveData<String>()
     val imageFilePath = MutableLiveData<String>()
@@ -89,6 +90,7 @@ class EditItemViewModel(val database: SessionDatabaseDao, application: Applicati
             uiModel.description = charge.description
             uiModel.isItemChecked = true
             uiModel.handlingCharge = charge.amount
+            uiModel.currency = _sessionData.value?.groupCurrency ?: ""
             _visibleHandlingChargeUiData.value?.add(uiModel)
         }
 
@@ -111,6 +113,7 @@ class EditItemViewModel(val database: SessionDatabaseDao, application: Applicati
     private fun getItemFarmersAndUoms() {
         coroutineScope.launch {
             _sessionData.value = retrieveSession()
+            currency.value = _sessionData.value?.groupCurrency ?: ""
             val getAllUomsDataDeferred = UomApi.retrofitService(getApplication()).getAllUoms()
             val getAllFarmersInGroupDataDeferred = GroupMembershipApi.retrofitService(getApplication()).getGroupMembership(_sessionData.value!!.groupId, "FARMER")
             val getSelectedItemDataDeferred = ItemApi.retrofitService(getApplication()).getItem(selectedItemId)

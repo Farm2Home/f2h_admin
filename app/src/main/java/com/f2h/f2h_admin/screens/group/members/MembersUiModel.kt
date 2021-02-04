@@ -6,6 +6,7 @@ import kotlinx.android.parcel.Parcelize
 @Parcelize
 data class MembersUiModel(
     var userId: Long = 0,
+    var currency: String = "",
     var userName: String = "",
     var deliveryAddress: String = "",
     var mobile: String = "",

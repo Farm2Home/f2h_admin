@@ -82,6 +82,7 @@ class MembersViewModel(val database: SessionDatabaseDao, application: Applicatio
             var uiElement = MembersUiModel()
             var membershipUserDetail = userDetails.filter { x -> x.userId?.equals(membership.userId) ?: false }.first()
             if (membershipUserDetail != null){
+                uiElement.currency = sessionData.value?.groupCurrency ?: ""
                 uiElement.userId = membershipUserDetail.userId ?: -1
                 uiElement.userName = membershipUserDetail.userName ?: ""
                 uiElement.deliveryAddress = membershipUserDetail.address ?: ""

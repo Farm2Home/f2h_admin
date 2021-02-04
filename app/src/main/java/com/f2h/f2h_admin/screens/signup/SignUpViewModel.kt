@@ -27,6 +27,7 @@ class SignUpViewModel(val database: SessionDatabaseDao, application: Application
     var mResendToken: PhoneAuthProvider.ForceResendingToken? = null
     var mVerificationId: String? = "default"
 
+    var countryCode = MutableLiveData<String>()
     val userName = MutableLiveData<String>()
     val password = MutableLiveData<String>()
     val confirmPassword = MutableLiveData<String>()

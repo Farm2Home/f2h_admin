@@ -69,6 +69,7 @@ class AllItemsViewModel(val database: SessionDatabaseDao, application: Applicati
     private fun filterEarliestAvailableItemAsVisibleItems(items: List<Item>) {
         var filteredItems = ArrayList<Item>()
         items.forEach {item ->
+            item.currency = _sessionData.value?.groupCurrency
             if(!item.itemAvailability.isEmpty()) {
                 var earliestItemAvailability = fetchEarliestItemAvailability(item)
                 item.itemAvailability = arrayOf(earliestItemAvailability).toList()
